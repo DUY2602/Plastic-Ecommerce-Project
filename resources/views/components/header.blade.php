@@ -29,7 +29,13 @@
                             </ul>
                         </div>
                         <div class="header__top__right__auth">
-                            <a href="#"><i class="fa fa-user"></i> Login</a>
+                            @if(auth()->check())
+                            <a href="#"><i class="fa fa-user"></i> My Account</a>
+                            <a href="#" style="margin-left: 10px;"><i class="fa fa-sign-out"></i> Logout</a>
+                            @else
+                            <a href="{{ route('login') }}"><i class="fa fa-user"></i> Login</a>
+                            <a href="{{ route('register') }}" style="margin-left: 10px;"><i class="fa fa-user-plus"></i> Register</a>
+                            @endif
                         </div>
                     </div>
                 </div>
