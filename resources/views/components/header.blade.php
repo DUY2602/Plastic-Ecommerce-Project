@@ -6,36 +6,29 @@
                 <div class="col-lg-6 col-md-6">
                     <div class="header__top__left">
                         <ul>
-                            <li><i class="fa fa-envelope"></i> hello@polysite.com</li>
-                            <li>Free Shipping for all Order of $99</li>
+                            <li><i class="fa fa-envelope"></i> hello@plastic.com</li>
+                            <li>Miễn phí vận chuyển cho đơn hàng từ 500.000đ</li>
                         </ul>
                     </div>
                 </div>
                 <div class="col-lg-6 col-md-6">
                     <div class="header__top__right">
-                        <div class="header__top__right__social">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-linkedin"></i></a>
-                            <a href="#"><i class="fa fa-pinterest-p"></i></a>
-                        </div>
-                        <div class="header__top__right__language">
-                            <img src="{{ asset('img/language.png') }}" alt="">
-                            <div>English</div>
-                            <span class="arrow_carrot-down"></span>
-                            <ul>
-                                <li><a href="#">Spanish</a></li>
-                                <li><a href="#">English</a></li>
-                            </ul>
-                        </div>
                         <div class="header__top__right__auth">
-                            @if(auth()->check())
-                            <a href="#"><i class="fa fa-user"></i> My Account</a>
-                            <a href="#" style="margin-left: 10px;"><i class="fa fa-sign-out"></i> Logout</a>
+                            @auth
+                            @if(Auth::user()->isAdmin())
+                            <a href="{{ route('admin.dashboard') }}"><i class="fa fa-user"></i> Admin</a>
                             @else
-                            <a href="{{ route('login') }}"><i class="fa fa-user"></i> Login</a>
-                            <a href="{{ route('register') }}" style="margin-left: 10px;"><i class="fa fa-user-plus"></i> Register</a>
+                            <a href="{{ route('profile') }}"><i class="fa fa-user"></i> {{ Auth::user()->Username }}</a>
                             @endif
+                            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                                @csrf
+                                <a href="#" onclick="this.closest('form').submit(); return false;">
+                                    <i class="fa fa-sign-out-alt"></i> Đăng xuất
+                                </a>
+                            </form>
+                            @else
+                            <a href="{{ route('login') }}"><i class="fa fa-user"></i> Đăng nhập</a>
+                            @endauth
                         </div>
                     </div>
                 </div>
@@ -46,16 +39,27 @@
         <div class="row">
             <div class="col-lg-3">
                 <div class="header__logo">
-                    <a href="{{ url('/') }}"><img src="{{ asset('img/logo.png') }}" alt="PolySite Logo"></a>
+                    <a href="{{ route('home') }}"><img src="{{ asset('img/logo.png') }}" alt="Plastic Store"></a>
                 </div>
             </div>
             <div class="col-lg-6">
                 <nav class="header__menu">
                     <ul>
-                        <li class="active"><a href="{{ url('/') }}">Home</a></li>
-                        <li><a href="{{ url('/shop') }}">Our Products</a></li>
-                        <li><a href="{{ url('/blog') }}">Blog</a></li>
-                        <li><a href="{{ url('/contact') }}">Contact</a></li>
+                        <li class="{{ request()->routeIs('home') ? 'active' : '' }}">
+                            <a href="{{ route('home') }}">Trang chủ</a>
+                        </li>
+                        <li class="{{ request()->routeIs('products') ? 'active' : '' }}">
+                            <a href="{{ route('products') }}">Sản phẩm</a>
+                        </li>
+                        <li class="{{ request()->routeIs('blog') ? 'active' : '' }}">
+                            <a href="{{ route('blog') }}">Blog</a> <!-- 👈 ĐỔI THÀNH BLOG -->
+                        </li>
+                        <li class="{{ request()->routeIs('about') ? 'active' : '' }}">
+                            <a href="{{ route('about') }}">Giới thiệu</a>
+                        </li>
+                        <li class="{{ request()->routeIs('contact') ? 'active' : '' }}">
+                            <a href="{{ route('contact') }}">Liên hệ</a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -65,7 +69,7 @@
                         <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
                         <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
                     </ul>
-                    <div class="header__cart__price">item: <span>$150.00</span></div>
+                    <div class="header__cart__price">Tổng: <span>150.000đ</span></div>
                 </div>
             </div>
         </div>
