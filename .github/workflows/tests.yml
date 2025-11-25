@@ -1,3 +1,17 @@
+...
+- name: 📦 Install Composer dependencies
+  uses: ramsey/composer-install@v3
+  # Hoặc lệnh run: composer install --no-dev --prefer-dist (tùy thuộc vào cách bạn cài đặt)
+
+- name: 💾 Setup Database (Run Migrations)
+  run: |
+    # Lệnh này sẽ tạo các bảng cần thiết, bao gồm bảng "category"
+    php artisan migrate --force
+    
+- name: 🏃 Run Tests (PHPUnit)
+  run: vendor/bin/phpunit
+...
+
 name: Tests
 
 on:
