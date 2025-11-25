@@ -47,20 +47,11 @@ jobs:
       - name: Generate app key
         run: php artisan key:generate
 
-      # 🚨 BƯỚC MỚI: Thiết lập và Chạy Migration
-      - name: Setup Database (SQLite In-Memory) and Migrate
-        # Thiết lập biến môi trường cho bước này
-        env:
-          DB_CONNECTION: sqlite 
-          DB_DATABASE: ':memory:' # Buộc sử dụng DB trong bộ nhớ
-        run: |
-          # Chạy migration để tạo các bảng
-          php artisan migrate --force
+      # 🚨 XÓA BƯỚC MIGRATION ĐÃ THÊM TRƯỚC ĐÓ
 
-      # 🚨 BƯỚC THAY ĐỔI: Chạy kiểm thử với biến môi trường
       - name: Execute tests
-        # Thiết lập biến môi trường cho bước này để nó dùng cùng DB trong bộ nhớ
+        # 🚨 Đặt biến môi trường SQLite cho PHPUnit và RefreshDatabase sử dụng
         env:
           DB_CONNECTION: sqlite
-          DB_DATABASE: ':memory:'
+          DB_DATABASE: ':memory:' # Tối ưu hóa tốc độ
         run: php artisan test
