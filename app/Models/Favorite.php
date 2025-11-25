@@ -11,6 +11,8 @@ class Favorite extends Model
 
     protected $fillable = ['AccountID', 'ProductID'];
 
+    const UPDATED_AT = null;
+
     public function user()
     {
         return $this->belongsTo(Account::class, 'AccountID');

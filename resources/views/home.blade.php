@@ -55,15 +55,13 @@
         </div>
         <div class="row">
             @foreach($featuredProducts as $product)
-            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+            <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
                 <div class="featured__item">
-                    <div class="featured__item__pic set-bg" data-setbg="{{ asset($product->Photo) }}">
+                    <div class="featured__item__pic set-bg" data-setbg="{{ asset($product->Photo) }}" style="height: 180px; width: 100%; background-size: contain; background-position: center; background-repeat: no-repeat;">
                         <ul class="featured__item__pic__hover">
                             <li>
                                 <a href="#" class="favorite-btn" data-product-id="{{ $product->ProductID }}">
-                                    <!-- LUÔN HIỂN THỊ TRÁI TIM -->
-                                    <i class="fa @if(in_array($product->ProductID, $favoriteProductIds)) fa-heart @else fa-heart @endif"
-                                        style="@if(in_array($product->ProductID, $favoriteProductIds)) color: #ff0000; @else color: #000000; @endif"></i>
+                                    <i class="fa fa-heart" style="color: <?php echo in_array($product->ProductID, $favoriteProductIds) ? '#ff0000' : '#000000'; ?>"></i>
                                 </a>
                             </li>
                             <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>

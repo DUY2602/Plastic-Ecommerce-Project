@@ -18,7 +18,7 @@ class HomeController extends Controller
             ->where('Status', 1) // Thay ->active() bằng where
             ->withCount('variants')
             ->orderBy('CreatedAt', 'desc')
-            ->take(8)
+            ->take(12)
             ->get();
 
         $favoriteProductIds = [];
