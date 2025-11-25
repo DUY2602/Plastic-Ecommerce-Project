@@ -37,25 +37,30 @@ jobs:
 
     name: PHP ${{ matrix.php }}
 
+    ...
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
-          coverage: none
-
-      - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction --no-progress
-
-      - name: Copy environment file
-        run: cp .env.example .env
+      # ... (Các bước Setup PHP, Install Composer dependencies, Copy environment file, Generate app key giữ nguyên) ...
 
       - name: Generate app key
         run: php artisan key:generate
 
+      # 🚨 BƯỚC MỚI: Thiết lập và Chạy Migration
+      - name: Setup Database (SQLite In-Memory) and Migrate
+        # Thiết lập biến môi trường cho bước này
+        env:
+          DB_CONNECTION: sqlite 
+          DB_DATABASE: ':memory:' # Buộc sử dụng DB trong bộ nhớ
+        run: |
+          # Chạy migration để tạo các bảng
+          php artisan migrate --force
+
+      # 🚨 BƯỚC THAY ĐỔI: Chạy kiểm thử với biến môi trường
       - name: Execute tests
+        # Thiết lập biến môi trường cho bước này để nó dùng cùng DB trong bộ nhớ
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
         run: php artisan test
