@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 
@@ -36,3 +37,7 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
     Route::get('/categories', [AdminController::class, 'categories'])->name('admin.categories');
     Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
 });
+
+// Favorite routes
+Route::post('/favorite/toggle', [FavoriteController::class, 'toggle'])->name('favorite.toggle');
+Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');

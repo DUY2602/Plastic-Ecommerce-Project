@@ -30,7 +30,7 @@
                         <img class="product__details__pic__item--large"
                             src="{{ asset($product->Photo ? str_replace('/images/', '/img/', $product->Photo) : 'img/product/default.jpg') }}"
                             alt="{{ $product->ProductName }}"
-                            id="mainProductImage" style="width: 100%; height: 500px; object-fit: cover;">
+                            id="mainProductImage" style="width: 100px; height: 800px; object-fit: fit;">
                     </div>
                     @if($product->variants->count() > 0)
                     <div class="product__details__pic__slider owl-carousel">
@@ -115,7 +115,8 @@
                                 <div class="color__item"
                                     data-color="{{ $colorId }}"
                                     data-image="{{ asset($firstVariant->MainImage ? str_replace('/images/', '/img/', $firstVariant->MainImage) : 'img/product/default.jpg') }}">
-                                    <span class="color-swatch" style="{{ $swatchStyle }}"></span>
+
+                                    <span class="color-swatch" data-custom-style="{{ $swatchStyle }}"></span>
                                     {{ $color->ColourName }}
                                 </div>
                                 @endforeach
@@ -358,8 +359,13 @@ $variantsData[$key] = [
 @endphp
 
 <script>
+    document.querySelectorAll('.color-swatch[data-custom-style]').forEach(swatch => {
+        const styleValue = swatch.getAttribute('data-custom-style');
+        swatch.style.cssText = styleValue;
+    });
+    
     document.addEventListener('DOMContentLoaded', function() {
-        const allVariants = @json($variantsData);
+        const allVariants = JSON.parse('{!! json_encode($variantsData) !!}');
         let selectedColor = '{{ $firstColorID }}';
         let selectedSize = '{{ $firstVolumeID }}';
 

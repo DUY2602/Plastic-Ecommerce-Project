@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Product extends Model
 {
-    use HasFactory;
-
     protected $table = 'product';
     protected $primaryKey = 'ProductID';
 
@@ -21,53 +19,27 @@ class Product extends Model
         'CreatedAt'
     ];
 
-    public $timestamps = false;
-
-    /**
-     * Get the category that owns the product
-     */
     public function category()
     {
-        return $this->belongsTo(Category::class, 'CategoryID', 'CategoryID');
+        return $this->belongsTo(Category::class, 'CategoryID');
     }
 
-    /**
-     * Get variants for the product
-     */
     public function variants()
     {
-        return $this->hasMany(ProductVariant::class, 'ProductID', 'ProductID');
+        return $this->hasMany(ProductVariant::class, 'ProductID');
     }
 
-    /**
-     * Get feedback for the product
-     */
-    public function feedback()
+    public function favorites()
     {
-        return $this->hasMany(Feedback::class, 'ProductID', 'ProductID');
+        return $this->hasMany(Favorite::class, 'ProductID');
     }
 
-    /**
-     * Get documents for the product
-     */
-    public function documents()
+    public function isFavorite()
     {
-        return $this->hasMany(ProductDocument::class, 'ProductID', 'ProductID');
-    }
+        if (!Auth::check()) {
+            return false;
+        }
 
-    /**
-     * Scope active products
-     */
-    public function scopeActive($query)
-    {
-        return $query->where('Status', 1);
-    }
-
-    /**
-     * Scope products by category
-     */
-    public function scopeByCategory($query, $categoryId)
-    {
-        return $query->where('CategoryID', $categoryId);
+        return $this->favorites()->where('AccountID', Auth::id())->exists();
     }
 }

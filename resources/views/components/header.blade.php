@@ -37,12 +37,12 @@
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-lg-3">
+            <div class="col-lg-2">
                 <div class="header__logo">
                     <a href="{{ route('home') }}"><img src="{{ asset('img/logo.png') }}" alt="Plastic Store"></a>
                 </div>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-7">
                 <nav class="header__menu">
                     <ul>
                         <li class="{{ request()->routeIs('home') ? 'active' : '' }}">
@@ -52,7 +52,7 @@
                             <a href="{{ route('products') }}">Sản phẩm</a>
                         </li>
                         <li class="{{ request()->routeIs('blog') ? 'active' : '' }}">
-                            <a href="{{ route('blog') }}">Blog</a> <!-- 👈 ĐỔI THÀNH BLOG -->
+                            <a href="{{ route('blog') }}">Blog</a>
                         </li>
                         <li class="{{ request()->routeIs('about') ? 'active' : '' }}">
                             <a href="{{ route('about') }}">Giới thiệu</a>
@@ -66,7 +66,14 @@
             <div class="col-lg-3">
                 <div class="header__cart">
                     <ul>
-                        <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
+                        <li>
+                            <a href="{{ route('favorites.index') }}">
+                                <i class="fa fa-heart"></i>
+                                <span class="favorite-count">
+                                    {{ Auth::check() ? Auth::user()->favorites()->count() : 0 }}
+                                </span>
+                            </a>
+                        </li>
                         <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
                     </ul>
                     <div class="header__cart__price">Tổng: <span>150.000đ</span></div>

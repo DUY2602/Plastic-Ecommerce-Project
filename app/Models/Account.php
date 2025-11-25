@@ -73,4 +73,9 @@ class Account extends Authenticatable
     {
         return $this->Status == 1;
     }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'AccountID');
+    }
 }
