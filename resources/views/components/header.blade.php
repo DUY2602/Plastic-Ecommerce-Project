@@ -60,6 +60,12 @@
                         <li class="{{ request()->routeIs('contact') ? 'active' : '' }}">
                             <a href="{{ route('contact') }}">Liên hệ</a>
                         </li>
+                        <!-- THÊM AI ASSISTANT VÀO ĐÂY -->
+                        <li class="{{ request()->routeIs('chat.index') ? 'active' : '' }}">
+                            <a href="{{ route('chat.index') }}">
+                                <i class="fa fa-robot" style="margin-right: 5px;"></i>AI Assistant
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>

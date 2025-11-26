@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
@@ -23,6 +24,8 @@ Route::get('/blog/{id}', [BlogController::class, 'show'])->name('blog.show');
 // Auth routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register'); // Thêm route đăng ký
+Route::post('/register', [AuthController::class, 'register']); // Thêm route xử lý đăng ký
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // User routes (require login)
@@ -41,3 +44,7 @@ Route::prefix('admin')->middleware(['admin'])->group(function () {
 // Favorite routes
 Route::post('/favorite/toggle', [FavoriteController::class, 'toggle'])->name('favorite.toggle');
 Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
+
+// Chat routes
+Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');

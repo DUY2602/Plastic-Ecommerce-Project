@@ -73,8 +73,8 @@
                         </div>
                         <button type="submit" class="site-btn">ĐĂNG NHẬP</button>
                     </form>
-                    <div class="mt-3 text-center">
-                        <p>Chưa có tài khoản? <a href="#" class="text-primary">Liên hệ quản trị viên</a></p>
+                    <div class="text-center mt-3">
+                        <p>Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký ngay</a></p>
                     </div>
 
                     @if(session('error'))
@@ -89,3 +89,15 @@
 </section>
 <!-- Login Section End -->
 @endsection
+
+<script>
+    // Chạy ngay khi page load, không chờ DOMContentLoaded
+    (function() {
+        setTimeout(function() {
+            const inputs = document.querySelectorAll('.checkout__input input');
+            inputs.forEach(input => {
+                input.style.cssText += 'font-weight: 600 !important; color: #000000 !important;';
+            });
+        }, 100);
+    })();
+</script>

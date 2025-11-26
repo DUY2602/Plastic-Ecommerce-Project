@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 
 class Account extends Authenticatable
 {
@@ -25,6 +26,14 @@ class Account extends Authenticatable
     ];
 
     public $timestamps = false;
+
+    /**
+     * Tự động mã hóa mật khẩu khi gán giá trị
+     */
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['Password'] = Hash::make($value);
+    }
 
     /**
      * Get the name of the unique identifier for the user.
@@ -55,7 +64,7 @@ class Account extends Authenticatable
      */
     public function getRememberTokenName()
     {
-        return null; // Không dùng remember token
+        return null;
     }
 
     /**

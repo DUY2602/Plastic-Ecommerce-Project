@@ -28,84 +28,78 @@
             <div class="col-lg-8">
                 <div class="checkout__form">
                     <h4>Create New Account</h4>
-                    <form action="#">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="checkout__input">
-                                    <label for="first_name">First Name<span>*</span></label>
-                                    <input type="text" id="first_name" name="first_name" placeholder="Enter your first name" required>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="checkout__input">
-                                    <label for="last_name">Last Name<span>*</span></label>
-                                    <input type="text" id="last_name" name="last_name" placeholder="Enter your last name" required>
-                                </div>
-                            </div>
-                        </div>
+
+                    @if($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
+                    @if(session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('register') }}">
+                        @csrf
 
                         <div class="checkout__input">
-                            <label for="company">Company Name <small>(Optional)</small></label>
-                            <input type="text" id="company" name="company" placeholder="Enter your company name">
+                            <label for="username">Username<span>*</span></label>
+                            <input type="text" id="username" name="username"
+                                value="{{ old('username') }}"
+                                placeholder="Enter your username" required>
+                            @error('username')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="checkout__input">
                             <label for="email">Email Address<span>*</span></label>
-                            <input type="email" id="email" name="email" placeholder="Enter your email" required>
-                        </div>
-
-                        <div class="checkout__input">
-                            <label for="phone">Phone Number<span>*</span></label>
-                            <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                            <input type="email" id="email" name="email"
+                                value="{{ old('email') }}"
+                                placeholder="Enter your email" required>
+                            @error('email')
+                            <span class="text-danger">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="checkout__input">
                                     <label for="password">Password<span>*</span></label>
-                                    <input type="password" id="password" name="password" placeholder="Create password" required>
+                                    <input type="password" id="password" name="password"
+                                        placeholder="Create password (min 6 characters)" required>
+                                    @error('password')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="checkout__input">
                                     <label for="password_confirmation">Confirm Password<span>*</span></label>
-                                    <input type="password" id="password_confirmation" name="password_confirmation" placeholder="Confirm password" required>
+                                    <input type="password" id="password_confirmation"
+                                        name="password_confirmation"
+                                        placeholder="Confirm password" required>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="checkout__input">
-                            <label for="address">Address</label>
-                            <input type="text" id="address" name="address" placeholder="Street Address">
-                        </div>
-
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="checkout__input">
-                                    <label for="city">City</label>
-                                    <input type="text" id="city" name="city" placeholder="City">
-                                </div>
+                        <div class="checkout__input__checkbox mb-3" style="background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin: 0 !important;">
+                                <input type="checkbox" id="terms" name="terms" required {{ old('terms') ? 'checked' : '' }}
+                                    style="width: 18px !important; height: 18px !important; margin: 0 !important; display: block !important;">
+                                <label for="terms" style="font-weight: 700 !important; color: #000 !important; margin: 0 !important; display: block !important; line-height: 1.4;">
+                                    I agree to the <a href="#" style="font-weight: 800 !important; color: #007bff !important; text-decoration: underline;">Terms and Conditions</a> and <a href="#" style="font-weight: 800 !important; color: #007bff !important; text-decoration: underline;">Privacy Policy</a>
+                                </label>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="checkout__input">
-                                    <label for="country">Country</label>
-                                    <input type="text" id="country" name="country" placeholder="Country">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="checkout__input__checkbox mb-3">
-                            <label for="terms">
-                                <input type="checkbox" id="terms" name="terms" required>
-                                I agree to the <a href="#" class="terms-link">Terms and Conditions</a> and <a href="#" class="privacy-link">Privacy Policy</a>
-                            </label>
-                        </div>
-
-                        <div class="checkout__input__checkbox mb-3">
-                            <label for="newsletter">
-                                <input type="checkbox" id="newsletter" name="newsletter">
-                                Subscribe to our newsletter for updates and offers
-                            </label>
+                            @error('terms')
+                            <span class="text-danger d-block mt-2">{{ $message }}</span>
+                            @enderror
                         </div>
 
                         <button type="submit" class="site-btn btn-block">CREATE ACCOUNT</button>
@@ -124,30 +118,94 @@
 <!-- Register Section End -->
 @endsection
 
+@section('styles')
+<style>
+    /* Làm đậm chữ trong form register */
+    .checkout__input label,
+    .checkout__input p {
+        font-weight: 700 !important;
+        color: #000 !important;
+        font-size: 15px;
+    }
+
+    /* Làm đậm chữ terms đặc biệt */
+    .checkout__input__checkbox label {
+        font-weight: 700 !important;
+        color: #000 !important;
+    }
+
+    /* Làm đậm links trong terms */
+    .checkout__input__checkbox a {
+        font-weight: 800 !important;
+        color: #007bff !important;
+        text-decoration: underline;
+    }
+
+    /* Làm đậm chữ KHI ĐANG NHẬP trong input */
+    .checkout__input input {
+        font-weight: 600 !important;
+        color: #000 !important;
+    }
+
+    /* Đảm bảo chữ đậm khi có giá trị */
+    .checkout__input input,
+    .checkout__input input:focus,
+    .checkout__input input:not(:placeholder-shown) {
+        font-weight: 600 !important;
+        color: #000 !important;
+    }
+
+    /* Làm rõ placeholder */
+    .checkout__input input::placeholder {
+        font-weight: 500 !important;
+        color: #666 !important;
+        opacity: 1;
+    }
+</style>
+@endsection
+
 @section('scripts')
 <script>
-    document.querySelector('form').addEventListener('submit', function(e) {
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('password_confirmation').value;
-        const terms = document.getElementById('terms').checked;
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
 
-        if (password !== confirmPassword) {
-            e.preventDefault();
-            alert('Passwords do not match.');
-            return;
-        }
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('password_confirmation').value;
+            const terms = document.getElementById('terms').checked;
 
-        if (!terms) {
-            e.preventDefault();
-            alert('Please agree to the Terms and Conditions.');
-            return;
-        }
+            // Clear previous errors
+            document.querySelectorAll('.text-danger').forEach(el => el.remove());
 
-        if (password.length < 6) {
-            e.preventDefault();
-            alert('Password must be at least 6 characters long.');
-            return;
-        }
+            if (password.length < 6) {
+                isValid = false;
+                const errorElement = document.createElement('span');
+                errorElement.className = 'text-danger';
+                errorElement.textContent = 'Password must be at least 6 characters long.';
+                document.getElementById('password').parentNode.appendChild(errorElement);
+            }
+
+            if (password !== confirmPassword) {
+                isValid = false;
+                const errorElement = document.createElement('span');
+                errorElement.className = 'text-danger';
+                errorElement.textContent = 'Passwords do not match.';
+                document.getElementById('password_confirmation').parentNode.appendChild(errorElement);
+            }
+
+            if (!terms) {
+                isValid = false;
+                const errorElement = document.createElement('span');
+                errorElement.className = 'text-danger';
+                errorElement.textContent = 'Please agree to the Terms and Conditions.';
+                document.getElementById('terms').parentNode.appendChild(errorElement);
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
     });
 </script>
 @endsection

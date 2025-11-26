@@ -41,16 +41,25 @@
             <div class="col-lg-9">
                 <div class="filter__item">
                     <div class="row">
-                        <div class="col-lg-4 col-md-5">
-                            <div class="filter__sort">
-                                <span>Sắp xếp theo</span>
-                                <select>
-                                    <option value="0">Mặc định</option>
-                                    <option value="0">Giá thấp đến cao</option>
-                                    <option value="0">Giá cao đến thấp</option>
+                        <div class="col-lg-4 col-md-4">
+                            <span>Sắp xếp theo</span>
+                            <!-- có 3 thay đổi: 
+                             1 là ở đây, 
+                             2 là thêm javascript ở cuối trang này để tự submit form khi chọn thay đổi, 
+                             3 là sửa ProductController cụ thể là function index để nhận tham số sort_by -->
+                            <form id="sort-form" method="GET" action="{{ url()->current() }}">
+                                @foreach(request()->except(['sort_by', 'page']) as $key => $value)
+                                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                                @endforeach
+
+                                <select name="sort_by" id="sort-select">
+                                    <option value="default" {{ request('sort_by', 'default') == 'default' ? 'selected' : '' }}>Mặc định</option>
+                                    <option value="price_asc" {{ request('sort_by') == 'price_asc' ? 'selected' : '' }}>Giá thấp đến cao</option>
+                                    <option value="price_desc" {{ request('sort_by') == 'price_desc' ? 'selected' : '' }}>Giá cao đến thấp</option>
                                 </select>
-                            </div>
+                            </form>
                         </div>
+
                         <div class="col-lg-4 col-md-4">
                             <div class="filter__found">
                                 <h6><span>{{ $products->total() }}</span> sản phẩm được tìm thấy</h6>
@@ -67,8 +76,8 @@
                                     <li>
                                         <a href="#" class="favorite-btn" data-product-id="{{ $product->ProductID }}">
                                             <!-- LUÔN HIỂN THỊ TRÁI TIM -->
-                                            <i class="fa fa-heart"
-                                                style="@if(in_array($product->ProductID, $favoriteProductIds)) color: #ff0000; @else color: #000000; @endif"></i>
+                                            <i class="fa fa-heart {{ in_array($product->ProductID, $favoriteProductIds) ? 'text-red' : 'text-black' }}"></i>
+
                                         </a>
                                     </li>
                                     <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
@@ -95,6 +104,15 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
+
+        // Xử lý thay đổi sắp xếp
+        // Thêm vào trong $(document).ready(function() { ... });
+        $('#sort-select').on('change', function() {
+            // Khi giá trị của select thay đổi, submit form chứa nó
+            $('#sort-form').submit();
+        });
+
+
         // Dropdown danh mục - hover effect
         $('.hero__categories').hover(
             function() {
@@ -141,6 +159,14 @@
 </script>
 
 <style>
+    .text-red {
+        color: #ff0000;
+    }
+
+    .text-black {
+        color: #000000;
+    }
+
     /* CSS cho dropdown danh mục */
     .hero__categories {
         position: relative;
