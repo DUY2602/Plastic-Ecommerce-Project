@@ -63,16 +63,18 @@
                                         </td>
                                         <td>{{ date('d/m/Y H:i', strtotime($user->CreatedAt)) }}</td>
                                         <td>
+                                            {{-- Trong phần action buttons --}}
                                             <div class="btn-group">
-                                                <a href="#" class="btn btn-sm btn-info" title="Xem chi tiết">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="#" class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                                <a href="{{ route('admin.users.edit', $user->AccountID) }}" class="btn btn-sm btn-warning" title="Chỉnh sửa">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <button type="button" class="btn btn-sm {{ $user->Status == 1 ? 'btn-danger' : 'btn-success' }}" title="{{ $user->Status == 1 ? 'Khóa tài khoản' : 'Mở khóa tài khoản' }}">
-                                                    <i class="fas {{ $user->Status == 1 ? 'fa-lock' : 'fa-unlock' }}"></i>
-                                                </button>
+                                                <form action="{{ route('admin.users.destroy', $user->AccountID) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>

@@ -27,7 +27,7 @@
                     <div class="card-header">
                         <h3 class="card-title">Danh sách danh mục</h3>
                         <div class="card-tools">
-                            <a href="#" class="btn btn-sm btn-primary">
+                            <a href="{{ route('admin.categories.create') }}" class="btn btn-sm btn-primary">
                                 <i class="fas fa-plus"></i> Thêm danh mục
                             </a>
                         </div>
@@ -63,15 +63,19 @@
                                         </td>
                                         <td>
                                             <div class="btn-group">
-                                                <a href="#" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                                <a href="{{ route('admin.categories.show', $category->CategoryID) }}" class="btn btn-sm btn-info" title="Xem chi tiết">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="#" class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                                <a href="{{ route('admin.categories.edit', $category->CategoryID) }}" class="btn btn-sm btn-warning" title="Chỉnh sửa">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
-                                                <a href="#" class="btn btn-sm btn-danger" title="Xóa">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
+                                                <form action="{{ route('admin.categories.destroy', $category->CategoryID) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa?')">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>

@@ -42,4 +42,16 @@ class Product extends Model
 
         return $this->favorites()->where('AccountID', Auth::id())->exists();
     }
+    // Product.php
+
+    // ... bên trong class Product extends Model
+
+    // THÊM DÒNG NÀY:
+    public function feedback()
+    {
+        // 1 Sản phẩm có nhiều Feedback (1-nhiều)
+        return $this->hasMany(Feedback::class, 'ProductID', 'ProductID');
+    }
+
+    // ...
 }

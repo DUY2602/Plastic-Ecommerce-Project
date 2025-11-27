@@ -34,10 +34,33 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Visitor Count Script for Main Site -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chỉ đếm khi không phải trang admin
+            if (!window.location.pathname.startsWith('/admin')) {
+                fetch('{{ route("visitor.increment") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Visitor count:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error with visitor count:', error);
+                    });
+            }
+        });
+    </script>
+
     <!-- Template Javascript -->
     <script src="{{ asset('js/main.js') }}"></script>
 
-    @yield('scripts')
+
 </body>
 
 </html>

@@ -104,6 +104,36 @@
                     <div class="alert alert-danger">{{ session('error') }}</div>
                     @endif
 
+                    <!-- THÊM VISITOR COUNT STATS VÀO ĐÂY -->
+                    @if(request()->routeIs('admin.dashboard'))
+                    <div class="row mb-4">
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-info">
+                                <div class="inner">
+                                    <h3 id="today-visitor">0</h3>
+                                    <p>Lượt truy cập hôm nay</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">Xem chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-success">
+                                <div class="inner">
+                                    <h3 id="total-visitor">0</h3>
+                                    <p>Tổng lượt truy cập</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">Xem chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     @yield('admin-content')
                 </div>
             </section>
@@ -115,6 +145,25 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/js/adminlte.min.js"></script>
+
+    <!-- Visitor Count Script for Admin Only -->
+    @if(request()->routeIs('admin.dashboard'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Chỉ lấy số liệu, không tăng count (vì admin đang xem thống kê)
+            fetch('{{ route("visitor.stats") }}')
+                .then(response => response.json())
+                .then(data => {
+                    // Hiển thị số liệu trong admin dashboard
+                    document.getElementById('today-visitor').textContent = data.today_count;
+                    document.getElementById('total-visitor').textContent = data.total_count;
+                })
+                .catch(error => {
+                    console.error('Error fetching visitor stats:', error);
+                });
+        });
+    </script>
+    @endif
 
     @yield('scripts')
 </body>
