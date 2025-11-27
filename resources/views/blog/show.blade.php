@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $blog['title'] . ' - Plastic Store')
+@section('title', $blog->Title . ' - Plastic Store')
 
 @section('content')
 <!-- Breadcrumb Section Begin -->
@@ -12,7 +12,7 @@
                     <h2>Blog</h2>
                     <div class="breadcrumb__option">
                         <a href="{{ route('home') }}">Trang chủ</a>
-                        <a href="{{ route('blog') }}">Blog</a>
+                        <a href="{{ route('blog.index') }}">Blog</a>
                         <span>Bài viết</span>
                     </div>
                 </div>
@@ -28,18 +28,18 @@
         <div class="row">
             <div class="col-lg-8 col-md-7">
                 <div class="blog__details__item">
-                    <img src="{{ asset($blog['image']) }}" alt="{{ $blog['title'] }}">
+                    <img src="{{ asset($blog->Image) }}" alt="{{ $blog->Title }}">
                     <div class="blog__details__item__title">
-                        <span class="blog__category">{{ $blog['category'] }}</span>
-                        <h3>{{ $blog['title'] }}</h3>
+                        <span class="blog__category">Tin tức</span>
+                        <h3>{{ $blog->Title }}</h3>
                         <ul>
-                            <li><i class="fa fa-calendar"></i> {{ $blog['date'] }}</li>
-                            <li><i class="fa fa-user"></i> {{ $blog['author'] }}</li>
-                            <li><i class="fa fa-clock"></i> {{ $blog['read_time'] }}</li>
+                            <li><i class="fa fa-calendar"></i> {{ $blog->created_at->format('d/m/Y') }}</li>
+                            <li><i class="fa fa-user"></i> {{ $blog->Author }}</li>
+                            <li><i class="fa fa-clock"></i> 5 phút đọc</li>
                         </ul>
                     </div>
                     <div class="blog__details__desc">
-                        {!! $blog['content'] !!}
+                        {!! $blog->Content !!}
                     </div>
                     <div class="blog__details__tags">
                         <a href="#">Nhựa PET</a>
@@ -50,16 +50,30 @@
                     <div class="blog__details__btns">
                         <div class="row">
                             <div class="col-lg-6 col-md-6 col-sm-6">
-                                <a href="#" class="blog__details__btn">
-                                    <span>Bài trước</span>
-                                    <h5>Lợi ích của nhựa PP trong công nghiệp hóa chất</h5>
-                                </a>
+                                @php
+                                $prevBlog = \App\Models\Blog::where('BlogID', '<', $blog->BlogID)
+                                    ->orderBy('BlogID', 'desc')
+                                    ->first();
+                                    @endphp
+                                    @if($prevBlog)
+                                    <a href="{{ route('blog.show', $prevBlog->BlogID) }}" class="blog__details__btn">
+                                        <span>Bài trước</span>
+                                        <h5>{{ $prevBlog->Title }}</h5>
+                                    </a>
+                                    @endif
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-6">
-                                <a href="#" class="blog__details__btn blog__details__btn--next">
+                                @php
+                                $nextBlog = \App\Models\Blog::where('BlogID', '>', $blog->BlogID)
+                                ->orderBy('BlogID', 'asc')
+                                ->first();
+                                @endphp
+                                @if($nextBlog)
+                                <a href="{{ route('blog.show', $nextBlog->BlogID) }}" class="blog__details__btn blog__details__btn--next">
                                     <span>Bài tiếp theo</span>
-                                    <h5>Bảo quản sản phẩm nhựa đúng cách</h5>
+                                    <h5>{{ $nextBlog->Title }}</h5>
                                 </a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -85,24 +99,22 @@
                     <div class="blog__sidebar__item">
                         <h4>Bài viết gần đây</h4>
                         <div class="blog__sidebar__recent">
-                            <a href="#" class="blog__sidebar__recent__item">
+                            @php
+                            $recentBlogs = \App\Models\Blog::orderBy('created_at', 'desc')
+                            ->limit(2)
+                            ->get();
+                            @endphp
+                            @foreach($recentBlogs as $recentBlog)
+                            <a href="{{ route('blog.show', $recentBlog->BlogID) }}" class="blog__sidebar__recent__item">
                                 <div class="blog__sidebar__recent__item__pic">
-                                    <img src="{{ asset('img/blog/blog-2.jpg') }}" alt="">
+                                    <img src="{{ asset($recentBlog->Image) }}" alt="{{ $recentBlog->Title }}">
                                 </div>
                                 <div class="blog__sidebar__recent__item__text">
-                                    <h6>Lợi ích của nhựa PP<br /> trong công nghiệp</h6>
-                                    <span>10/11/2024</span>
+                                    <h6>{{ Str::limit($recentBlog->Title, 40) }}</h6>
+                                    <span>{{ $recentBlog->created_at->format('d/m/Y') }}</span>
                                 </div>
                             </a>
-                            <a href="#" class="blog__sidebar__recent__item">
-                                <div class="blog__sidebar__recent__item__pic">
-                                    <img src="{{ asset('img/blog/blog-3.jpg') }}" alt="">
-                                </div>
-                                <div class="blog__sidebar__recent__item__text">
-                                    <h6>Bảo quản sản phẩm<br /> nhựa đúng cách</h6>
-                                    <span>05/11/2024</span>
-                                </div>
-                            </a>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -117,6 +129,8 @@
         width: 100%;
         border-radius: 10px;
         margin-bottom: 30px;
+        max-height: 400px;
+        object-fit: cover;
     }
 
     .blog__details__item__title {
@@ -146,8 +160,11 @@
     .blog__details__desc {
         line-height: 1.8;
         color: #6f6f6f;
+        font-size: 16px;
     }
 
+    .blog__details__desc h1,
+    .blog__details__desc h2,
     .blog__details__desc h3 {
         color: #1c1c1c;
         margin: 25px 0 15px;
@@ -168,11 +185,48 @@
         margin-right: 10px;
         margin-bottom: 10px;
         text-decoration: none;
+        font-size: 14px;
     }
 
     .blog__details__tags a:hover {
         background: #7fad39;
         color: white;
+    }
+
+    .blog__details__btns {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #ebebeb;
+    }
+
+    .blog__details__btn {
+        display: block;
+        padding: 15px;
+        background: #f5f5f5;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #6f6f6f;
+        transition: all 0.3s ease;
+    }
+
+    .blog__details__btn:hover {
+        background: #7fad39;
+        color: white;
+    }
+
+    .blog__details__btn span {
+        font-size: 12px;
+        color: #b2b2b2;
+    }
+
+    .blog__details__btn h5 {
+        margin: 5px 0 0;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .blog__details__btn--next {
+        text-align: right;
     }
 
     .blog__sidebar {
@@ -191,6 +245,7 @@
         border: 1px solid #ebebeb;
         padding: 0 20px;
         border-radius: 5px;
+        font-size: 14px;
     }
 
     .blog__sidebar__search button {
@@ -203,6 +258,7 @@
         color: white;
         border: none;
         border-radius: 0 5px 5px 0;
+        cursor: pointer;
     }
 
     .blog__sidebar__item {
@@ -213,6 +269,7 @@
         color: #1c1c1c;
         font-weight: 700;
         margin-bottom: 20px;
+        font-size: 18px;
     }
 
     .blog__sidebar__item ul {
@@ -229,7 +286,9 @@
         color: #6f6f6f;
         text-decoration: none;
         display: block;
-        padding: 5px 0;
+        padding: 8px 0;
+        transition: color 0.3s ease;
+        font-size: 14px;
     }
 
     .blog__sidebar__item ul li a:hover {
@@ -238,12 +297,18 @@
 
     .blog__sidebar__item ul li a span {
         float: right;
+        color: #b2b2b2;
     }
 
     .blog__sidebar__recent__item {
         display: flex;
         margin-bottom: 20px;
         text-decoration: none;
+        transition: transform 0.3s ease;
+    }
+
+    .blog__sidebar__recent__item:hover {
+        transform: translateX(5px);
     }
 
     .blog__sidebar__recent__item__pic {
@@ -252,6 +317,7 @@
         border-radius: 5px;
         overflow: hidden;
         margin-right: 15px;
+        flex-shrink: 0;
     }
 
     .blog__sidebar__recent__item__pic img {
@@ -264,6 +330,7 @@
         color: #1c1c1c;
         line-height: 1.4;
         margin-bottom: 5px;
+        font-size: 14px;
     }
 
     .blog__sidebar__recent__item__text span {

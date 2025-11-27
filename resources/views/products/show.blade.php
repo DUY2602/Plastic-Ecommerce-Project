@@ -11,7 +11,7 @@
                     <h2>Chi tiết sản phẩm</h2>
                     <div class="breadcrumb__option">
                         <a href="{{ route('home') }}">Trang chủ</a>
-                        <a href="{{ route('products') }}">Sản phẩm</a>
+                        <a href="{{ route('products.index') }}">Sản phẩm</a>
                         <span>Chi tiết sản phẩm</span>
                     </div>
                 </div>

@@ -29,15 +29,15 @@
             <div class="col-lg-4 col-md-6 col-sm-6">
                 <div class="blog__item">
                     <div class="blog__item__pic">
-                        <img src="{{ asset($blog['image']) }}" alt="{{ $blog['title'] }}">
+                        <img src="{{ asset($blog->Image) }}" alt="{{ $blog->Title }}">
                     </div>
                     <div class="blog__item__text">
-                        <span class="blog__category">{{ $blog['category'] }}</span>
-                        <h5><a href="{{ route('blog.show', $blog['id']) }}">{{ $blog['title'] }}</a></h5>
-                        <p>{{ $blog['excerpt'] }}</p>
+                        <span class="blog__category">Tin tức</span>
+                        <h5><a href="{{ route('blog.show', $blog->BlogID) }}">{{ $blog->Title }}</a></h5>
+                        <p>{{ Str::limit(strip_tags($blog->Content), 100) }}</p>
                         <div class="blog__item__info">
-                            <span><i class="fa fa-calendar"></i> {{ $blog['date'] }}</span>
-                            <a href="{{ route('blog.show', $blog['id']) }}" class="read-more">Đọc tiếp <i class="fa fa-arrow-right"></i></a>
+                            <span><i class="fa fa-calendar"></i> {{ $blog->created_at->format('d/m/Y') }}</span>
+                            <a href="{{ route('blog.show', $blog->BlogID) }}" class="read-more">Đọc tiếp <i class="fa fa-arrow-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -45,13 +45,10 @@
             @endforeach
         </div>
 
-        <!-- Pagination (nếu cần) -->
+        <!-- Pagination -->
         <div class="col-lg-12">
             <div class="product__pagination blog__pagination text-center">
-                <a href="#">1</a>
-                <a href="#">2</a>
-                <a href="#">3</a>
-                <a href="#"><i class="fa fa-long-arrow-right"></i></a>
+                {{ $blogs->links() }}
             </div>
         </div>
     </div>
@@ -123,7 +120,7 @@
 
     .blog__item__info {
         display: flex;
-        justify-content: between;
+        justify-content: space-between;
         align-items: center;
         font-size: 14px;
         color: #b2b2b2;

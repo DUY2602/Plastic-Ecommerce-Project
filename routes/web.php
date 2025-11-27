@@ -15,13 +15,13 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
-// Product routes
-Route::get('/products', [ProductController::class, 'index'])->name('products');
-Route::get('/category/{slug}', [ProductController::class, 'category'])->name('category');
-Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.detail');
+// Product routes - PUBLIC
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/category/{slug}', [ProductController::class, 'category'])->name('category'); // GIỮ NGUYÊN 'category'
+Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.detail'); // GIỮ NGUYÊN 'product.detail'
 
 // Blog routes
-Route::get('/blog', [BlogController::class, 'index'])->name('blog');
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{id}', [BlogController::class, 'show'])->name('blog.show');
 
 // Auth routes
@@ -52,32 +52,43 @@ Route::middleware(['auth.check'])->group(function () {
     Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
 });
 
-// Admin routes - GỘP TẤT CẢ VÀO ĐÂY
-Route::prefix('admin')->middleware(['admin'])->group(function () {
-    // Dashboard & Management
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+// Admin Routes
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-    // User Management Routes
-    Route::get('/users', [AdminController::class, 'users'])->name('admin.users');
-    Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
-    Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
-    Route::delete('/users/{id}', [AdminController::class, 'destroyUser'])->name('admin.users.destroy');
+    // Product routes
+    Route::get('/products', [AdminController::class, 'products'])->name('products');
+    Route::get('/products/create', [AdminController::class, 'create'])->name('products.create');
+    Route::post('/products', [AdminController::class, 'store'])->name('products.store');
+    Route::get('/products/{id}', [AdminController::class, 'show'])->name('products.show');
+    Route::get('/products/{id}/edit', [AdminController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{id}', [AdminController::class, 'update'])->name('products.update');
+    Route::delete('/products/{id}', [AdminController::class, 'destroy'])->name('products.destroy');
 
-    // Product Management
-    Route::get('/products', [AdminController::class, 'products'])->name('admin.products');
-    Route::get('/products/create', [AdminController::class, 'create'])->name('admin.products.create');
-    Route::post('/products', [AdminController::class, 'store'])->name('admin.products.store');
-    Route::get('/products/{id}', [AdminController::class, 'show'])->name('admin.products.show');
-    Route::get('/products/{id}/edit', [AdminController::class, 'edit'])->name('admin.products.edit');
-    Route::put('/products/{id}', [AdminController::class, 'update'])->name('admin.products.update');
-    Route::delete('/products/{id}', [AdminController::class, 'destroy'])->name('admin.products.destroy');
+    // Category routes
+    Route::get('/categories', [AdminController::class, 'categories'])->name('categories');
+    Route::get('/categories/create', [AdminController::class, 'createCategory'])->name('categories.create');
+    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('categories.store');
+    Route::get('/categories/{id}', [AdminController::class, 'showCategory'])->name('categories.show');
+    Route::get('/categories/{id}/edit', [AdminController::class, 'editCategory'])->name('categories.edit');
+    Route::put('/categories/{id}', [AdminController::class, 'updateCategory'])->name('categories.update');
+    Route::delete('/categories/{id}', [AdminController::class, 'destroyCategory'])->name('categories.destroy');
 
-    // Category Management
-    Route::get('/categories', [AdminController::class, 'categories'])->name('admin.categories');
-    Route::get('/categories/create', [AdminController::class, 'createCategory'])->name('admin.categories.create');
-    Route::post('/categories', [AdminController::class, 'storeCategory'])->name('admin.categories.store');
-    Route::get('/categories/{id}', [AdminController::class, 'showCategory'])->name('admin.categories.show');
-    Route::get('/categories/{id}/edit', [AdminController::class, 'editCategory'])->name('admin.categories.edit');
-    Route::put('/categories/{id}', [AdminController::class, 'updateCategory'])->name('admin.categories.update');
-    Route::delete('/categories/{id}', [AdminController::class, 'destroyCategory'])->name('admin.categories.destroy');
+    // User routes
+    Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+    Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{id}', [AdminController::class, 'destroyUser'])->name('users.destroy');
+
+    // Variant routes
+    Route::get('/variants', [AdminController::class, 'variants'])->name('variants');
+
+    // 🔥 THÊM BLOG ROUTES - QUAN TRỌNG!
+    Route::get('/blog', [AdminController::class, 'blogIndex'])->name('blog.index');
+    Route::get('/blog/create', [AdminController::class, 'blogCreate'])->name('blog.create');
+    Route::post('/blog', [AdminController::class, 'blogStore'])->name('blog.store');
+    Route::get('/blog/{id}', [AdminController::class, 'blogShow'])->name('blog.show');
+    Route::get('/blog/{id}/edit', [AdminController::class, 'blogEdit'])->name('blog.edit');
+    Route::put('/blog/{id}', [AdminController::class, 'blogUpdate'])->name('blog.update');
+    Route::delete('/blog/{id}', [AdminController::class, 'blogDestroy'])->name('blog.destroy');
 });

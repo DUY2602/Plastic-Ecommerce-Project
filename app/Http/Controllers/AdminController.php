@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Account;
+use App\Models\Blog;
 use App\Models\ProductVariant;
 use App\Models\Feedback;
 use App\Models\VisitorCount;
@@ -23,6 +24,7 @@ class AdminController extends Controller
             'low_stock_variants' => ProductVariant::where('StockQuantity', '<', 10)->count(),
             'today_visitors' => VisitorCount::where('date', today())->value('count') ?? 0,
             'total_visitors' => VisitorCount::sum('count'),
+            'total_blogs' => Blog::count(), // THÊM DÒNG NÀY
         ];
 
         // Recent products
@@ -37,7 +39,12 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
-        return view('admin.dashboard', compact('stats', 'recentProducts', 'recentFeedbacks'));
+        // Recent blogs - THÊM PHẦN NÀY
+        $recentBlogs = Blog::orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard', compact('stats', 'recentProducts', 'recentFeedbacks', 'recentBlogs'));
     }
 
     public function products(Request $request)
@@ -60,7 +67,7 @@ class AdminController extends Controller
         $products = $query->orderBy('ProductID', 'desc')->get();
         $categories = Category::where('Status', 1)->get();
 
-        return view('admin.products', compact('products', 'categories', 'search'));
+        return view('admin.products.index', compact('products', 'categories', 'search'));
     }
 
     public function variants()
@@ -190,7 +197,7 @@ class AdminController extends Controller
             $category->products_count = Product::where('CategoryID', $category->CategoryID)->count();
         }
 
-        return view('admin.categories', compact('categories', 'search'));
+        return view('admin.categories.index', compact('categories', 'search'));
     }
 
     // Hiển thị form thêm danh mục mới
@@ -291,7 +298,7 @@ class AdminController extends Controller
     public function users()
     {
         $users = Account::where('Role', 0)->orderBy('AccountID', 'desc')->get();
-        return view('admin.users', compact('users'));
+        return view('admin.users.index', compact('users'));
     }
 
     // Hiển thị form chỉnh sửa user
@@ -358,6 +365,99 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('admin.users')->with('error', 'Có lỗi xảy ra khi xóa người dùng: ' . $e->getMessage());
+        }
+    }
+
+    public function blogIndex()
+    {
+        $blogs = Blog::orderBy('created_at', 'desc')->get();
+        return view('admin.blog.index', compact('blogs'));
+    }
+
+    /**
+     * Hiển thị form tạo blog mới
+     */
+    public function blogCreate()
+    {
+        return view('admin.blog.create');
+    }
+
+    /**
+     * Lưu blog mới
+     */
+    public function blogStore(Request $request)
+    {
+        $request->validate([
+            'Title' => 'required|string|max:255',
+            'Content' => 'required|string',
+            'Image' => 'nullable|string|max:500',
+            'Author' => 'required|string|max:100',
+        ]);
+
+        try {
+            Blog::create($request->all());
+            return redirect()->route('admin.blog.index')->with('success', 'Bài viết đã được thêm thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Có lỗi xảy ra khi thêm bài viết: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Hiển thị chi tiết blog (admin view)
+     */
+    public function blogShow($id)
+    {
+        $blog = Blog::findOrFail($id);
+        return view('admin.blog.show', compact('blog'));
+    }
+
+    /**
+     * Hiển thị form chỉnh sửa blog
+     */
+    public function blogEdit($id)
+    {
+        $blog = Blog::findOrFail($id);
+        return view('admin.blog.edit', compact('blog'));
+    }
+
+    /**
+     * Cập nhật blog
+     */
+    public function blogUpdate(Request $request, $id)
+    {
+        $blog = Blog::findOrFail($id);
+
+        $request->validate([
+            'Title' => 'required|string|max:255',
+            'Content' => 'required|string',
+            'Image' => 'nullable|string|max:500',
+            'Author' => 'required|string|max:100',
+        ]);
+
+        try {
+            $blog->update($request->all());
+            return redirect()->route('admin.blog.index')->with('success', 'Bài viết đã được cập nhật thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Có lỗi xảy ra khi cập nhật bài viết: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Xóa blog
+     */
+    public function blogDestroy($id)
+    {
+        try {
+            $blog = Blog::findOrFail($id);
+            $blog->delete();
+
+            return redirect()->route('admin.blog.index')->with('success', 'Bài viết đã được xóa thành công!');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.blog.index')->with('error', 'Có lỗi xảy ra khi xóa bài viết: ' . $e->getMessage());
         }
     }
 }

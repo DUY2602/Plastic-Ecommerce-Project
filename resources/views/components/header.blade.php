@@ -48,11 +48,11 @@
                         <li class="{{ request()->routeIs('home') ? 'active' : '' }}">
                             <a href="{{ route('home') }}">Trang chủ</a>
                         </li>
-                        <li class="{{ request()->routeIs('products') ? 'active' : '' }}">
-                            <a href="{{ route('products') }}">Sản phẩm</a>
+                        <li class="{{ request()->routeIs('products.index') ? 'active' : '' }}">
+                            <a href="{{ route('products.index') }}">Sản phẩm</a>
                         </li>
-                        <li class="{{ request()->routeIs('blog') ? 'active' : '' }}">
-                            <a href="{{ route('blog') }}">Blog</a>
+                        <li class="{{ request()->routeIs('blog.index') ? 'active' : '' }}">
+                            <a href="{{ route('blog.index') }}">Blog</a>
                         </li>
                         <li class="{{ request()->routeIs('about') ? 'active' : '' }}">
                             <a href="{{ route('about') }}">Giới thiệu</a>

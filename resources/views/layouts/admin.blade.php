@@ -16,6 +16,11 @@
         .sidebar-dark-primary {
             background-color: #7E7E7E !important;
         }
+
+        .nav-sidebar>.nav-item>.nav-link.active {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
     </style>
 </head>
 
@@ -70,19 +75,25 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.products') }}" class="nav-link {{ request()->routeIs('admin.products') ? 'active' : '' }}">
+                            <a href="{{ route('admin.products') }}" class="nav-link {{ request()->routeIs('admin.products*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-box"></i>
                                 <p>Sản phẩm</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.categories') }}" class="nav-link {{ request()->routeIs('admin.categories') ? 'active' : '' }}">
+                            <a href="{{ route('admin.categories') }}" class="nav-link {{ request()->routeIs('admin.categories*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-list"></i>
                                 <p>Danh mục</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                            <a href="{{ route('admin.blog.index') }}" class="nav-link {{ request()->routeIs('admin.blog*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-blog"></i>
+                                <p>Quản lý Blog</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-users"></i>
                                 <p>Người dùng</p>
                             </a>
@@ -97,14 +108,26 @@
             <section class="content">
                 <div class="container-fluid">
                     @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
+                    <div class="alert alert-success alert-dismissible fade show">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        {{ session('success') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                     @endif
 
                     @if(session('error'))
-                    <div class="alert alert-danger">{{ session('error') }}</div>
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        {{ session('error') }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
                     @endif
 
-                    <!-- THÊM VISITOR COUNT STATS VÀO ĐÂY -->
+                    <!-- VISITOR COUNT STATS -->
                     @if(request()->routeIs('admin.dashboard'))
                     <div class="row mb-4">
                         <div class="col-lg-3 col-6">
@@ -129,6 +152,30 @@
                                     <i class="fas fa-chart-line"></i>
                                 </div>
                                 <a href="#" class="small-box-footer">Xem chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-warning">
+                                <div class="inner">
+                                    <h3>{{ $stats['total_blogs'] ?? 0 }}</h3>
+                                    <p>Bài viết Blog</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-blog"></i>
+                                </div>
+                                <a href="{{ route('admin.blog.index') }}" class="small-box-footer">Xem chi tiết <i class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-danger">
+                                <div class="inner">
+                                    <h3>{{ $stats['total_products'] ?? 0 }}</h3>
+                                    <p>Tổng sản phẩm</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <a href="{{ route('admin.products') }}" class="small-box-footer">Xem chi tiết <i class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
                     </div>

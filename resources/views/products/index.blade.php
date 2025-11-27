@@ -43,26 +43,26 @@
                     <div class="row">
                         <div class="col-lg-4 col-md-4">
                             <span>Sắp xếp theo</span>
-                            <!-- có 3 thay đổi: 
-                             1 là ở đây, 
-                             2 là thêm javascript ở cuối trang này để tự submit form khi chọn thay đổi, 
-                             3 là sửa ProductController cụ thể là function index để nhận tham số sort_by -->
                             <form id="sort-form" method="GET" action="{{ url()->current() }}">
-                                @foreach(request()->except(['sort_by', 'page']) as $key => $value)
-                                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                                @endforeach
+                                {{-- Giữ lại các parameters --}}
+                                @if(request('search'))
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                                @endif
+                                @if(request('category'))
+                                <input type="hidden" name="category" value="{{ request('category') }}">
+                                @endif
 
-                                <select name="sort_by" id="sort-select">
+                                {{-- THÊM onchange VÀO ĐÂY --}}
+                                <select name="sort_by" id="sort-select" onchange="this.form.submit()">
                                     <option value="default" {{ request('sort_by', 'default') == 'default' ? 'selected' : '' }}>Mặc định</option>
                                     <option value="price_asc" {{ request('sort_by') == 'price_asc' ? 'selected' : '' }}>Giá thấp đến cao</option>
                                     <option value="price_desc" {{ request('sort_by') == 'price_desc' ? 'selected' : '' }}>Giá cao đến thấp</option>
                                 </select>
                             </form>
                         </div>
-
                         <div class="col-lg-4 col-md-4">
                             <div class="filter__found">
-                                <h6><span>{{ $products->total() }}</span> sản phẩm được tìm thấy</h6>
+                                <h6><span>{{ $products->count() }}</span> sản phẩm được tìm thấy</h6>
                             </div>
                         </div>
                     </div>
@@ -75,9 +75,12 @@
                                 <ul class="product__item__pic__hover">
                                     <li>
                                         <a href="#" class="favorite-btn" data-product-id="{{ $product->ProductID }}">
-                                            <!-- LUÔN HIỂN THỊ TRÁI TIM -->
-                                            <i class="fa fa-heart {{ in_array($product->ProductID, $favoriteProductIds) ? 'text-red' : 'text-black' }}"></i>
-
+                                            <!-- KIỂM TRA NẾU BIẾN TỒN TẠI -->
+                                            @if(isset($favoriteProductIds) && in_array($product->ProductID, $favoriteProductIds))
+                                            <i class="fa fa-heart text-red"></i>
+                                            @else
+                                            <i class="fa fa-heart text-black"></i>
+                                            @endif
                                         </a>
                                     </li>
                                     <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
@@ -91,9 +94,6 @@
                     </div>
                     @endforeach
                 </div>
-                <div class="product__pagination">
-                    {{ $products->links() }}
-                </div>
             </div>
         </div>
     </div>
@@ -103,15 +103,26 @@
 
 @section('scripts')
 <script>
+    console.log('Script section loaded');
+
+    // Kiểm tra xem jQuery có sẵn sàng không
+    if (typeof jQuery === 'undefined') {
+        console.error('jQuery is not loaded!');
+    } else {
+        console.log('jQuery version:', jQuery.fn.jquery);
+    }
+
     $(document).ready(function() {
+        console.log('Document ready executed');
+        console.log('Sort select found:', $('#sort-select').length);
+        console.log('Sort form found:', $('#sort-form').length);
 
         // Xử lý thay đổi sắp xếp
-        // Thêm vào trong $(document).ready(function() { ... });
         $('#sort-select').on('change', function() {
-            // Khi giá trị của select thay đổi, submit form chứa nó
+            console.log('SELECT CHANGED TO:', $(this).val());
+            console.log('Submitting form...');
             $('#sort-form').submit();
         });
-
 
         // Dropdown danh mục - hover effect
         $('.hero__categories').hover(
@@ -128,6 +139,7 @@
         // Xử lý click nút yêu thích
         $('.favorite-btn').click(function(e) {
             e.preventDefault();
+            console.log('Favorite button clicked');
 
             var productId = $(this).data('product-id');
             var heartIcon = $(this).find('i');
@@ -141,11 +153,9 @@
                 },
                 success: function(response) {
                     if (response.status === 'added') {
-                        // Thêm vào yêu thích - chuyển sang màu đỏ
                         heartIcon.css('color', '#ff0000');
                         alert('Đã thêm vào danh sách yêu thích');
                     } else {
-                        // Xóa khỏi yêu thích - chuyển sang màu đen
                         heartIcon.css('color', '#000000');
                         alert('Đã xóa khỏi danh sách yêu thích');
                     }

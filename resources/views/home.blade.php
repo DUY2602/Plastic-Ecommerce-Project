@@ -23,7 +23,7 @@
             <div class="col-lg-9">
                 <div class="hero__search">
                     <div class="hero__search__form">
-                        <form action="{{ route('products') }}">
+                        <form action="{{ route('products.index') }}">
                             <input type="text" name="search" placeholder="Tìm kiếm sản phẩm...">
                             <button type="submit" class="site-btn">TÌM KIẾM</button>
                         </form>

@@ -5,31 +5,91 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
     /**
-     * Hiển thị danh sách sản phẩm
+     * Hiển thị danh sách sản phẩm (PUBLIC)
      */
     public function index(Request $request)
     {
-        $search = $request->get('search');
+        $search = $request->input('search');
+        $category = $request->input('category');
+        $sortBy = $request->input('sort_by', 'default');
 
-        $products = Product::with('category')
-            ->when($search, function ($query) use ($search) {
-                return $query->where('ProductName', 'like', "%{$search}%")
-                    ->orWhere('Description', 'like', "%{$search}%");
+        $query = Product::with(['category', 'variants'])
+            ->when($search, function ($query, $search) {
+                return $query->where('ProductName', 'like', '%' . $search . '%');
             })
-            ->orderBy('ProductID', 'desc')
-            ->get();
+            ->when($category, function ($query, $category) {
+                return $query->where('CategoryID', $category);
+            });
 
-        return view('admin.products.index', compact('products', 'search'));
+        // SORT THEO GIÁ TỪ PRODUCT VARIANT - RAW QUERY
+        if ($sortBy === 'price_asc') {
+            $query->orderByRaw('(SELECT MIN(Price) FROM productvariant WHERE productvariant.ProductID = product.ProductID) ASC');
+        } elseif ($sortBy === 'price_desc') {
+            $query->orderByRaw('(SELECT MAX(Price) FROM productvariant WHERE productvariant.ProductID = product.ProductID) DESC');
+        } else {
+            $query->orderBy('ProductID', 'desc');
+        }
+
+        $products = $query->paginate(12);
+        $categories = Category::where('Status', 1)->get();
+
+        return view('products.index', compact('products', 'categories', 'search', 'sortBy'));
     }
 
     /**
-     * Hiển thị form tạo sản phẩm mới
+     * Hiển thị sản phẩm theo danh mục (PUBLIC)
+     */
+    public function category($slug, Request $request)
+    {
+        $sortBy = $request->input('sort_by', 'default');
+
+        $categoryName = strtoupper($slug);
+        $category = Category::where('CategoryName', $categoryName)->first();
+
+        if (!$category) {
+            $category = Category::where('CategoryName', 'like', '%' . $slug . '%')->first();
+        }
+
+        if (!$category) {
+            abort(404, 'Danh mục không tồn tại');
+        }
+
+        $query = Product::with(['category', 'variants'])
+            ->where('CategoryID', $category->CategoryID);
+
+        // SORT THEO GIÁ TỪ PRODUCT VARIANT - RAW QUERY (GIỐNG NHƯ PHƯƠNG THỨC INDEX)
+        if ($sortBy === 'price_asc') {
+            $query->orderByRaw('(SELECT MIN(Price) FROM productvariant WHERE productvariant.ProductID = product.ProductID) ASC');
+        } elseif ($sortBy === 'price_desc') {
+            $query->orderByRaw('(SELECT MAX(Price) FROM productvariant WHERE productvariant.ProductID = product.ProductID) DESC');
+        } else {
+            $query->orderBy('ProductID', 'desc');
+        }
+
+        $products = $query->paginate(12);
+        $categories = Category::where('Status', 1)->get();
+
+        return view('products.index', compact('products', 'categories', 'category', 'sortBy'));
+    }
+
+    /**
+     * Hiển thị chi tiết sản phẩm (PUBLIC)
+     */
+    public function show($id)
+    {
+        $product = Product::with(['category', 'variants'])->findOrFail($id);
+        return view('products.show', compact('product'));
+    }
+
+    /**
+     * Hiển thị form tạo sản phẩm mới (ADMIN)
      */
     public function create()
     {
@@ -38,16 +98,16 @@ class ProductController extends Controller
     }
 
     /**
-     * Lưu sản phẩm mới
+     * Lưu sản phẩm mới (ADMIN)
      */
     public function store(Request $request)
     {
         $request->validate([
             'ProductName' => 'required|string|max:255',
             'Description' => 'nullable|string',
-            'CategoryID' => 'required|exists:category,CategoryID', // SỬA: categories -> category
+            'CategoryID' => 'required|exists:category,CategoryID',
             'Status' => 'required|boolean',
-            'Photo' => 'nullable|string|max:500', // THÊM: Photo field
+            'Photo' => 'nullable|string|max:500',
         ]);
 
         try {
@@ -55,9 +115,8 @@ class ProductController extends Controller
                 'ProductName' => $request->ProductName,
                 'Description' => $request->Description,
                 'CategoryID' => $request->CategoryID,
-                'Photo' => $request->Photo, // THÊM: Photo
+                'Photo' => $request->Photo,
                 'Status' => $request->Status,
-                // XÓA: CreatedAt vì đã có DEFAULT current_timestamp()
             ]);
 
             return redirect()->route('admin.products')
@@ -70,16 +129,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Hiển thị chi tiết sản phẩm
-     */
-    public function show($id)
-    {
-        $product = Product::with(['category', 'variants'])->findOrFail($id);
-        return view('admin.products.show', compact('product'));
-    }
-
-    /**
-     * Hiển thị form chỉnh sửa sản phẩm
+     * Hiển thị form chỉnh sửa sản phẩm (ADMIN)
      */
     public function edit($id)
     {
@@ -89,7 +139,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Cập nhật sản phẩm
+     * Cập nhật sản phẩm (ADMIN)
      */
     public function update(Request $request, $id)
     {
@@ -98,9 +148,9 @@ class ProductController extends Controller
         $request->validate([
             'ProductName' => 'required|string|max:255',
             'Description' => 'nullable|string',
-            'CategoryID' => 'required|exists:category,CategoryID', // SỬA: categories -> category
+            'CategoryID' => 'required|exists:category,CategoryID',
             'Status' => 'required|boolean',
-            'Photo' => 'nullable|string|max:500', // THÊM: Photo field
+            'Photo' => 'nullable|string|max:500',
         ]);
 
         try {
@@ -108,9 +158,8 @@ class ProductController extends Controller
                 'ProductName' => $request->ProductName,
                 'Description' => $request->Description,
                 'CategoryID' => $request->CategoryID,
-                'Photo' => $request->Photo, // THÊM: Photo
+                'Photo' => $request->Photo,
                 'Status' => $request->Status,
-                // XÓA: UpdatedAt vì không có trường này
             ]);
 
             return redirect()->route('admin.products')
@@ -123,7 +172,7 @@ class ProductController extends Controller
     }
 
     /**
-     * Xóa sản phẩm
+     * Xóa sản phẩm (ADMIN)
      */
     public function destroy($id)
     {
@@ -150,29 +199,6 @@ class ProductController extends Controller
 
             return redirect()->route('admin.products')
                 ->with('error', 'Có lỗi xảy ra khi xóa sản phẩm: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Cập nhật trạng thái sản phẩm (AJAX)
-     */
-    public function updateStatus(Request $request, $id)
-    {
-        try {
-            $product = Product::findOrFail($id);
-            $product->update([
-                'Status' => $request->status
-            ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Trạng thái sản phẩm đã được cập nhật!'
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
-            ], 500);
         }
     }
 }
