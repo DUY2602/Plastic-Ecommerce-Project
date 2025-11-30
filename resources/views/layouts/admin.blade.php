@@ -98,6 +98,13 @@
                                 <p>Người dùng</p>
                             </a>
                         </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('admin.messages') }}" class="nav-link {{ request()->routeIs('admin.messages*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-envelope"></i>
+                                <p>Tin nhắn</p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>

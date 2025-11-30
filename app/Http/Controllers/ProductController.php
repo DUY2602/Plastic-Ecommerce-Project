@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Favorite;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class ProductController extends Controller
 {
@@ -16,31 +19,54 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->input('search');
-        $category = $request->input('category');
-        $sortBy = $request->input('sort_by', 'default');
+        $query = Product::with(['variants', 'category'])
+            ->where('Status', 1);
 
-        $query = Product::with(['category', 'variants'])
-            ->when($search, function ($query, $search) {
-                return $query->where('ProductName', 'like', '%' . $search . '%');
-            })
-            ->when($category, function ($query, $category) {
-                return $query->where('CategoryID', $category);
-            });
-
-        // SORT THEO GIÁ TỪ PRODUCT VARIANT - RAW QUERY
-        if ($sortBy === 'price_asc') {
-            $query->orderByRaw('(SELECT MIN(Price) FROM productvariant WHERE productvariant.ProductID = product.ProductID) ASC');
-        } elseif ($sortBy === 'price_desc') {
-            $query->orderByRaw('(SELECT MAX(Price) FROM productvariant WHERE productvariant.ProductID = product.ProductID) DESC');
-        } else {
-            $query->orderBy('ProductID', 'desc');
+        // Xử lý tìm kiếm
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where('ProductName', 'like', "%{$search}%");
         }
 
-        $products = $query->paginate(12);
+        // Xử lý danh mục
+        if ($request->has('category') && $request->category != '') {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('CategoryName', 'like', "%{$request->category}%");
+            });
+        }
+
+        // Xử lý sắp xếp
+        $sortBy = $request->get('sort_by', 'default');
+        switch ($sortBy) {
+            case 'price_asc':
+                $query->join('productvariant', 'product.ProductID', '=', 'productvariant.ProductID')
+                    ->select('product.*')
+                    ->groupBy('product.ProductID')
+                    ->orderByRaw('MIN(productvariant.Price) ASC');
+                break;
+            case 'price_desc':
+                $query->join('productvariant', 'product.ProductID', '=', 'productvariant.ProductID')
+                    ->select('product.*')
+                    ->groupBy('product.ProductID')
+                    ->orderByRaw('MIN(productvariant.Price) DESC');
+                break;
+            default:
+                $query->orderBy('ProductID', 'desc');
+                break;
+        }
+
+        $products = $query->get();
         $categories = Category::where('Status', 1)->get();
 
-        return view('products.index', compact('products', 'categories', 'search', 'sortBy'));
+        // Xử lý favorite products - chỉ khi user đã đăng nhập
+        $favoriteProductIds = [];
+        if (Auth::check()) {
+            $favoriteProductIds = Favorite::where('AccountID', Auth::id())
+                ->pluck('ProductID')
+                ->toArray();
+        }
+
+        return view('products.index', compact('products', 'categories', 'favoriteProductIds'));
     }
 
     /**
@@ -200,5 +226,41 @@ class ProductController extends Controller
             return redirect()->route('admin.products')
                 ->with('error', 'Có lỗi xảy ra khi xóa sản phẩm: ' . $e->getMessage());
         }
+    }
+
+    //download file
+    public function downloadFile($id)
+    {
+        // 1. Tìm sản phẩm và kiểm tra đường dẫn
+        $product = Product::select('ProductID', 'ProductName', 'DocumentURL')
+            ->where('ProductID', $id)
+            ->firstOrFail();
+
+
+        $documentUrl = $product->DocumentURL;
+
+
+        if (!$documentUrl) {
+            // Không có đường dẫn nào được lưu
+            abort(404, 'Sản phẩm này không có tài liệu để tải xuống.');
+        }
+
+
+        // 2. Xây dựng đường dẫn vật lý (dựa trên vị trí lưu file trong storage/app)
+        $filePath = storage_path('app/' . $documentUrl);
+
+
+        // Đặt tên file tải xuống
+        $fileName = $product->ProductName . '_TaiLieuKyThuat.pdf';
+
+
+        // 3. Kiểm tra file có tồn tại
+        if (!File::exists($filePath)) {
+            abort(404, 'File tài liệu không tìm thấy trên server.');
+        }
+
+
+        // 4. Trả về Response download
+        return response()->download($filePath, $fileName);
     }
 }

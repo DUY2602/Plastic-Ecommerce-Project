@@ -16,6 +16,12 @@ class AuthController extends Controller
         return view('auth.login', compact('categories'));
     }
 
+    // 🔥 THÊM PHƯƠNG THỨC HIỂN THỊ FORM ĐĂNG NHẬP ADMIN
+    public function showAdminLogin()
+    {
+        return view('auth.admin-login');
+    }
+
     public function showRegister()
     {
         $categories = Category::active()->get();
@@ -38,8 +44,12 @@ class AuthController extends Controller
                 Auth::login($user);
                 $request->session()->regenerate();
 
+                // 🔥 CHỈ CHO PHÉP USER THƯỜNG ĐĂNG NHẬP Ở TRANG NÀY
                 if ($user->Role == 1) {
-                    return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập admin thành công!');
+                    Auth::logout();
+                    return back()->withErrors([
+                        'email' => 'Tài khoản admin vui lòng đăng nhập tại trang admin.',
+                    ])->withInput($request->except('password'));
                 }
 
                 return redirect()->route('home')->with('success', 'Đăng nhập thành công!');
@@ -54,6 +64,44 @@ class AuthController extends Controller
             ])->withInput($request->except('password'));
         }
     }
+
+    // 🔥 THÊM PHƯƠNG THỨC ĐĂNG NHẬP ADMIN
+    public function adminLogin(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        try {
+            $user = Account::where('Email', $credentials['email'])
+                ->where('Status', 1)
+                ->first();
+
+            if ($user && Hash::check($credentials['password'], $user->Password)) {
+                // 🔥 CHỈ CHO PHÉP ADMIN ĐĂNG NHẬP Ở TRANG NÀY
+                if ($user->Role != 1) {
+                    return back()->withErrors([
+                        'email' => 'Tài khoản không có quyền truy cập admin.',
+                    ])->withInput($request->except('password'));
+                }
+
+                Auth::login($user);
+                $request->session()->regenerate();
+
+                return redirect()->route('admin.dashboard')->with('success', 'Đăng nhập admin thành công!');
+            }
+
+            return back()->withErrors([
+                'email' => 'Email hoặc mật khẩu không chính xác.',
+            ])->withInput($request->except('password'));
+        } catch (\Exception $e) {
+            return back()->withErrors([
+                'email' => 'Lỗi hệ thống: ' . $e->getMessage(),
+            ])->withInput($request->except('password'));
+        }
+    }
+
     public function register(Request $request)
     {
         $data = $request->validate([
@@ -71,7 +119,7 @@ class AuthController extends Controller
                 'Username' => $data['username'],
                 'Email' => $data['email'],
                 'Password' => $data['password'],
-                'Role' => 0,
+                'Role' => 0, // 🔥 LUÔN LÀ USER THƯỜNG
                 'Status' => 1,
             ]);
 

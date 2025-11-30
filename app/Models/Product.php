@@ -16,7 +16,8 @@ class Product extends Model
         'Description',
         'Photo',
         'Status',
-        'CreatedAt'
+        'CreatedAt',
+        'DocumentURL'
     ];
 
     public function category()

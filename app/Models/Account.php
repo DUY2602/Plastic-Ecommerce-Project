@@ -83,8 +83,11 @@ class Account extends Authenticatable
         return $this->Status == 1;
     }
 
+    /**
+     * Relationship với bảng favorites
+     */
     public function favorites()
     {
-        return $this->hasMany(Favorite::class, 'AccountID');
+        return $this->hasMany(Favorite::class, 'AccountID', 'AccountID');
     }
 }

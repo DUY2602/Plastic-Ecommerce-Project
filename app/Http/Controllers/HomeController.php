@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Blog;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
@@ -12,32 +13,25 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Sửa lại: thay ->active() bằng ->where('Status', 1)
         $categories = Category::where('Status', 1)->get();
-        $featuredProducts = Product::with(['category', 'variants'])
-            ->where('Status', 1) // Thay ->active() bằng where
-            ->withCount('variants')
-            ->orderBy('CreatedAt', 'desc')
-            ->take(12)
+        $featuredProducts = Product::with(['variants', 'category'])
+            ->where('Status', 1)
+            ->take(8)
             ->get();
 
-        $favoriteProductIds = [];
-        $favoriteProducts = collect();
+        $latestBlogs = Blog::orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
 
+        // Xử lý favorite products - chỉ khi user đã đăng nhập
+        $favoriteProductIds = [];
         if (Auth::check()) {
             $favoriteProductIds = Favorite::where('AccountID', Auth::id())
                 ->pluck('ProductID')
                 ->toArray();
-
-            $favoriteProducts = Product::whereIn('ProductID', $favoriteProductIds)
-                ->with(['category', 'variants'])
-                ->get();
         }
 
-        // Share categories with all views that use components.header
-        view()->share('categories', $categories);
-
-        return view('home', compact('categories', 'featuredProducts', 'favoriteProductIds', 'favoriteProducts'));
+        return view('home', compact('categories', 'featuredProducts', 'favoriteProductIds', 'latestBlogs'));
     }
 
     public function profile()

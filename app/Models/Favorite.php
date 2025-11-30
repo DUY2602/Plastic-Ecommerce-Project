@@ -11,15 +11,15 @@ class Favorite extends Model
 
     protected $fillable = ['AccountID', 'ProductID'];
 
-    const UPDATED_AT = null;
+    public $timestamps = false;
 
     public function user()
     {
-        return $this->belongsTo(Account::class, 'AccountID');
+        return $this->belongsTo(Account::class, 'AccountID', 'AccountID');
     }
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'ProductID');
+        return $this->belongsTo(Product::class, 'ProductID', 'ProductID');
     }
 }

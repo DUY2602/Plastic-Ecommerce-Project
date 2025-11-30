@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Account;
 use App\Models\Blog;
+use App\Models\Contact;
 use App\Models\ProductVariant;
 use App\Models\Feedback;
 use App\Models\VisitorCount;
@@ -459,5 +460,27 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('admin.blog.index')->with('error', 'Có lỗi xảy ra khi xóa bài viết: ' . $e->getMessage());
         }
+    }
+
+    // 2 hàm xử lý tin nhắn liên hệ: toggleMessageHandled và messages
+    public function toggleMessageHandled($id)
+    {
+        $message = Contact::findOrFail($id);
+
+        // Đảo ngược trạng thái xử lý
+        $message->is_handled = !$message->is_handled;
+        $message->save();
+
+        // Chuyển hướng về trang danh sách tin nhắn với thông báo
+        return redirect()->route('admin.messages')->with('success', 'Trạng thái xử lý đã được cập nhật.');
+    }
+
+    public function messages()
+    {
+        $messages = Contact::orderBy('created_at', 'desc')->paginate(10);
+        $unreadCount = Contact::where('is_read', 0)->count();
+        $unhandledCount = Contact::where('is_handled', 0)->count();
+
+        return view('admin.messages.contact_messages', compact('messages', 'unreadCount', 'unhandledCount'));
     }
 }

@@ -60,9 +60,8 @@
 
 <!-- Map Begin -->
 <div class="map">
-    <iframe src=
-    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d979.7508432775554!2d106.67873885340514!3d10.811052920435428!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317528de3382d17f%3A0x582dc1748f73b693!2zNzc4LzEwIE5ndXnhu4VuIEtp4buHbSwgUGjGsOG7nW5nIDMsIFBow7ogTmh14bqtbiwgVGjDoG5oIHBo4buRIEjhu5MgQ2jDrSBNaW5oLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1763799934400!5m2!1svi!2s" 
-    width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d979.7508432775554!2d106.67873885340514!3d10.811052920435428!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317528de3382d17f%3A0x582dc1748f73b693!2zNzc4LzEwIE5ndXnhu4VuIEtp4buHbSwgUGjGsOG7nW5nIDMsIFBow7ogTmh14bqtbiwgVGjDoG5oIHBo4buRIEjhu5MgQ2jDrSBNaW5oLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1763799934400!5m2!1svi!2s"
+        width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
     </iframe>
 </div>
 <!-- Map End -->
@@ -70,6 +69,7 @@
 <!-- Contact Form Begin -->
 <div class="contact-form spad">
     <div class="container">
+
         <div class="row">
             <div class="col-lg-12">
                 <div class="contact__form__title">
@@ -77,20 +77,39 @@
                 </div>
             </div>
         </div>
-        <form action="#">
+        <form action="{{ route('contact.submit') }}" method="POST">
+            @csrf
             <div class="row">
                 <div class="col-lg-6 col-md-6">
-                    <input type="text" placeholder="Your name">
+                    <input type="text" name="name" placeholder="Your name" value="{{ old('name') }}">
                 </div>
                 <div class="col-lg-6 col-md-6">
-                    <input type="text" placeholder="Your Email">
+                    <input type="email" name="email" placeholder="Your Email" value="{{ old('email') }}">
                 </div>
+
                 <div class="col-lg-12 text-center">
-                    <textarea placeholder="Your message"></textarea>
+                    <textarea name="message" placeholder="Your message">{{ old('message') }}</textarea>
                     <button type="submit" class="site-btn">SEND MESSAGE</button>
                 </div>
             </div>
         </form>
+        <br>
+        @if(session('success'))
+        <div class="alert alert-success text-center">
+            {{ session('success') }}
+        </div>
+        @endif
+
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
     </div>
 </div>
 <!-- Contact Form End -->

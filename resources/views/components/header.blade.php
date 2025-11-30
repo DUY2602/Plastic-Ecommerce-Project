@@ -1,48 +1,13 @@
 <!-- Header Section Begin -->
 <header class="header">
-    <div class="header__top">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 col-md-6">
-                    <div class="header__top__left">
-                        <ul>
-                            <li><i class="fa fa-envelope"></i> hello@plastic.com</li>
-                            <li>Miễn phí vận chuyển cho đơn hàng từ 500.000đ</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-6">
-                    <div class="header__top__right">
-                        <div class="header__top__right__auth">
-                            @auth
-                            @if(Auth::user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}"><i class="fa fa-user"></i> Admin</a>
-                            @else
-                            <a href="{{ route('profile') }}"><i class="fa fa-user"></i> {{ Auth::user()->Username }}</a>
-                            @endif
-                            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                                @csrf
-                                <a href="#" onclick="this.closest('form').submit(); return false;">
-                                    <i class="fa fa-sign-out-alt"></i> Đăng xuất
-                                </a>
-                            </form>
-                            @else
-                            <a href="{{ route('login') }}"><i class="fa fa-user"></i> Đăng nhập</a>
-                            @endauth
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <div class="container">
-        <div class="row">
+        <div class="row align-items-center">
             <div class="col-lg-2">
                 <div class="header__logo">
                     <a href="{{ route('home') }}"><img src="{{ asset('img/logo.png') }}" alt="Plastic Store"></a>
                 </div>
             </div>
-            <div class="col-lg-7">
+            <div class="col-lg-8">
                 <nav class="header__menu">
                     <ul>
                         <li class="{{ request()->routeIs('home') ? 'active' : '' }}">
@@ -60,29 +25,43 @@
                         <li class="{{ request()->routeIs('contact') ? 'active' : '' }}">
                             <a href="{{ route('contact') }}">Liên hệ</a>
                         </li>
-                        <!-- THÊM AI ASSISTANT VÀO ĐÂY -->
                         <li class="{{ request()->routeIs('chat.index') ? 'active' : '' }}">
-                            <a href="{{ route('chat.index') }}">
-                                <i class="fa fa-robot" style="margin-right: 5px;"></i>AI Assistant
+                            <a href="{{ route('chat.index') }}" title="AI Assistant">
+                                <i class="fa fa-robot"></i>
                             </a>
+                        </li>
+                        <li class="{{ request()->routeIs('login') || request()->routeIs('profile') ? 'active' : '' }}">
+                            @auth
+                            @if(Auth::user()->isAdmin())
+                            <a href="{{ route('admin.dashboard') }}" title="Admin">
+                                <i class="fa fa-user-shield"></i>
+                            </a>
+                            @else
+                            <a href="{{ route('profile') }}" title="Tài khoản">
+                                <i class="fa fa-user"></i>
+                            </a>
+                            @endif
+                            @else
+                            <a href="{{ route('login') }}" title="Đăng nhập">
+                                <i class="fa fa-user"></i>
+                            </a>
+                            @endauth
                         </li>
                     </ul>
                 </nav>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-2">
                 <div class="header__cart">
                     <ul>
                         <li>
-                            <a href="{{ route('favorites.index') }}">
+                            <a href="{{ route('favorites.index') }}" title="Yêu thích">
                                 <i class="fa fa-heart"></i>
                                 <span class="favorite-count">
                                     {{ Auth::check() ? Auth::user()->favorites()->count() : 0 }}
                                 </span>
                             </a>
                         </li>
-                        <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
                     </ul>
-                    <div class="header__cart__price">Tổng: <span>150.000đ</span></div>
                 </div>
             </div>
         </div>

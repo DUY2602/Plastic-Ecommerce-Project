@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
@@ -14,17 +15,23 @@ use App\Http\Controllers\VisitorCountController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+// Route xử lý form (POST)
+Route::post('/contact', [ContactController::class, 'submitContactForm'])->name('contact.submit');
 
 // Product routes - PUBLIC
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-Route::get('/category/{slug}', [ProductController::class, 'category'])->name('category'); // GIỮ NGUYÊN 'category'
-Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.detail'); // GIỮ NGUYÊN 'product.detail'
+Route::get('/category/{slug}', [ProductController::class, 'category'])->name('category');
+Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.detail');
 
 // Blog routes
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{id}', [BlogController::class, 'show'])->name('blog.show');
 
-// Auth routes
+// 🔥 THÊM ROUTE ĐĂNG NHẬP ADMIN RIÊNG
+Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+
+// Auth routes cho user thường
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -52,9 +59,13 @@ Route::middleware(['auth.check'])->group(function () {
     Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
 });
 
-// Admin Routes
+// Admin Routes - CHỈ cho admin đã đăng nhập
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/messages', [AdminController::class, 'messages'])->name('messages');
+    Route::post('/messages/{id}/toggle-handled', [AdminController::class, 'toggleMessageHandled'])->name('messages.toggle.handled');
+
 
     // Product routes
     Route::get('/products', [AdminController::class, 'products'])->name('products');
@@ -83,7 +94,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Variant routes
     Route::get('/variants', [AdminController::class, 'variants'])->name('variants');
 
-    // 🔥 THÊM BLOG ROUTES - QUAN TRỌNG!
+    // Blog routes
     Route::get('/blog', [AdminController::class, 'blogIndex'])->name('blog.index');
     Route::get('/blog/create', [AdminController::class, 'blogCreate'])->name('blog.create');
     Route::post('/blog', [AdminController::class, 'blogStore'])->name('blog.store');
@@ -92,3 +103,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('/blog/{id}', [AdminController::class, 'blogUpdate'])->name('blog.update');
     Route::delete('/blog/{id}', [AdminController::class, 'blogDestroy'])->name('blog.destroy');
 });
+
+// Route download, nhận ProductID
+Route::get('/product/{id}/download', [ProductController::class, 'downloadFile'])->name('product.download');

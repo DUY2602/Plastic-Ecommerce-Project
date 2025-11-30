@@ -202,23 +202,21 @@
         z-index: 3;
     }
 
-    /* ĐÃ SỬA: Quy tắc CSS BỎ HIỆU ỨNG Transition */
     .admin-link {
         color: #3498db;
         text-decoration: none;
         font-weight: 600;
-        /* KHẮC PHỤC DỨT KHOÁT: Buộc không có transition */
-        transition: none !important;
+        transition: all 0.3s ease;
         font-size: 15px;
-        /* Đảm bảo không có hiệu ứng mờ */
+        /* ĐÃ BỎ HIỆU ỨNG MỜ - chỉ giữ màu thay đổi */
         opacity: 1 !important;
     }
 
     .admin-link:hover {
         color: #ecf0f1;
         text-decoration: none;
-        /* Đảm bảo không có hiệu ứng di chuyển */
-        transform: none !important;
+        /* BỎ HIỆU ỨNG DI CHUYỂN */
+        transform: none;
     }
 
     .input-icon {
@@ -344,6 +342,7 @@
 @endsection
 
 @section('content')
+<!-- Admin Login Section -->
 <section class="admin-login-section">
     <div class="particles-container">
         <div class="particle"></div>
@@ -475,13 +474,6 @@
             card.style.opacity = '1';
             card.style.transform = 'translateY(0) scale(1)';
         }, 100);
-
-        // *** ĐÃ THÊM: SỬ DỤNG JS GHI ĐÈ TRANSITION TUYỆT ĐỐI ***
-        const adminLink = document.querySelector('.admin-link');
-        if (adminLink) {
-            // Đặt style inline transition: none!
-            adminLink.style.transition = 'none';
-        }
     });
 </script>
 @endsection
