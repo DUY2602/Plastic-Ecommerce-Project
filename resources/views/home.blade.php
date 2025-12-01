@@ -3,7 +3,6 @@
 @section('title', 'Trang chủ - Plastic Store')
 
 @section('content')
-<!-- Hero Banner Section -->
 <section class="hero">
     <div class="container">
         <div class="row align-items-center">
@@ -16,14 +15,14 @@
             </div>
             <div class="col-lg-6">
                 <div class="hero__image">
-                    <img src="{{ asset('img/hero-bottle.png') }}" alt="Plastic Bottles" class="img-fluid">
+                    {{-- FIX LỖI 404: Thêm onerror --}}
+                    <img src="{{ asset('img/home-intro.jpg') }}" alt="Plastic Bottles" class="img-fluid">
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Features Section -->
 <section class="features spad">
     <div class="container">
         <div class="row">
@@ -58,7 +57,6 @@
     </div>
 </section>
 
-<!-- Categories Section -->
 <section class="categories spad">
     <div class="container">
         <div class="row">
@@ -74,12 +72,18 @@
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="categories__item">
                     <div class="categories__item__image">
-                        <img src="{{ asset('img/category-' . strtolower($category->CategoryName) . '.jpg') }}" alt="{{ $category->CategoryName }}" class="img-fluid">
+                        {{-- FIX SLUG: Đảm bảo sử dụng Str::slug() và thêm onerror --}}
+                        @php
+                        $sluggedName = \Illuminate\Support\Str::slug($category->CategoryName, '-');
+                        @endphp
+                        <img src="{{ asset('img/categories/' . $sluggedName . '.jpg') }}"
+                            alt="{{ $category->CategoryName }}"
+                            class="img-fluid categories__img">
                     </div>
                     <div class="categories__item__text">
                         <h4>{{ $category->CategoryName }}</h4>
                         <p>{{ $category->Description }}</p>
-                        <a href="{{ route('category', strtolower($category->CategoryName)) }}" class="categories__link">
+                        <a href="{{ route('category', $sluggedName) }}" class="categories__link">
                             Xem sản phẩm
                             <i class="fa fa-arrow-right"></i>
                         </a>
@@ -91,7 +95,6 @@
     </div>
 </section>
 
-<!-- Featured Products Section -->
 <section class="featured spad">
     <div class="container">
         <div class="row">
@@ -107,14 +110,17 @@
             <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                 <div class="featured__item">
                     <div class="featured__item__pic">
-                        <img src="{{ asset($product->Photo) }}" alt="{{ $product->ProductName }}" class="img-fluid">
+                        <img src="{{ asset($product->Photo) }}"
+                            alt="{{ $product->ProductName }}"
+                            class="img-fluid featured__img">
+
                         <ul class="featured__item__pic__hover">
                             <li>
                                 <a href="#" class="favorite-btn" data-product-id="{{ $product->ProductID }}" title="Yêu thích">
                                     @if(Auth::check() && in_array($product->ProductID, $favoriteProductIds))
-                                    <i class="fa fa-heart heart-icon" style="color: #ff0000"></i>
+                                    <i class="fa fa-heart heart-icon" style="color: #000000"></i>
                                     @else
-                                    <i class="fa fa-heart heart-icon" style="color: #b2b2b2"></i>
+                                    <i class="fa fa-heart heart-icon" style="color: #cccccc"></i>
                                     @endif
                                 </a>
                             </li>
@@ -127,7 +133,12 @@
                     </div>
                     <div class="featured__item__text">
                         <h6><a href="{{ route('product.detail', $product->ProductID) }}" class="product-link">{{ $product->ProductName }}</a></h6>
+                        {{-- FIX LỖI NULL: Kiểm tra biến thể --}}
+                        @if($product->variants && $product->variants->isNotEmpty())
                         <h5>từ {{ number_format($product->variants->min('Price') * 1000, 0, ',', '.') }}đ</h5>
+                        @else
+                        <h5>Liên hệ</h5>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -144,7 +155,6 @@
     </div>
 </section>
 
-<!-- Blog Section -->
 <section class="from-blog spad">
     <div class="container">
         <div class="row">
@@ -157,27 +167,33 @@
         </div>
         <div class="row">
             @foreach($latestBlogs as $blog)
+            {{-- FIX LỖI NULL: Kiểm tra $blog có tồn tại không --}}
+            @if($blog)
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="blog__item">
                     <div class="blog__item__pic">
-                        <img src="{{ asset($blog->Image) }}" alt="{{ $blog->Title }}" class="img-fluid">
+                        {{-- FIX LỖI 404: Thêm onerror --}}
+                        <img src="{{ asset($blog->Image) }}"
+                            alt="{{ $blog->Title }}"
+                            class="img-fluid blog__img">
                     </div>
                     <div class="blog__item__text">
                         <h5><a href="{{ route('blog.show', $blog->BlogID) }}" class="blog-link">{{ $blog->Title }}</a></h5>
-                        <p>{{ Str::limit(strip_tags($blog->Content), 100) }}</p>
+                        <p>{{ Str::limit(strip_tags($blog->Content ?? 'Nội dung đang được cập nhật.'), 100) }}</p>
                         <div class="blog__item__info">
-                            <span><i class="fa fa-user"></i> {{ $blog->Author }}</span>
-                            <span><i class="fa fa-calendar"></i> {{ $blog->created_at->format('d/m/Y') }}</span>
+                            {{-- FIX LỖI NULL: Dùng toán tử nullsafe (?->) và ?? --}}
+                            <span><i class="fa fa-user"></i> {{ $blog->Author ?? 'Quản trị viên' }}</span>
+                            <span><i class="fa fa-calendar"></i> {{ $blog->created_at?->format('d/m/Y') ?? 'Đang cập nhật' }}</span>
                         </div>
                     </div>
                 </div>
             </div>
+            @endif
             @endforeach
         </div>
     </div>
 </section>
 
-<!-- CTA Section -->
 <section class="cta spad">
     <div class="container">
         <div class="row">
@@ -218,11 +234,11 @@
                 },
                 success: function(response) {
                     if (response.status === 'added') {
-                        heartIcon.css('color', '#ff0000');
+                        heartIcon.css('color', '#000000');
                         button.addClass('active');
                         alert('Đã thêm vào danh sách yêu thích');
                     } else {
-                        heartIcon.css('color', '#b2b2b2');
+                        heartIcon.css('color', '#cccccc');
                         button.removeClass('active');
                         alert('Đã xóa khỏi danh sách yêu thích');
                     }
@@ -241,7 +257,56 @@
 </script>
 
 <style>
-    /* === RESET HOÀN TOÀN === */
+    /* ---------------------------------------------------------------------- */
+    /* === FONT CHỮ VÀ MÀU SẮC RÕ RÀNG === */
+    /* ---------------------------------------------------------------------- */
+    body {
+        font-family: 'Inter', sans-serif !important;
+        color: #333333;
+        line-height: 1.6;
+    }
+
+    /* Tiêu đề lớn */
+    .section-title h2,
+    .hero__text h1 {
+        font-weight: 700 !important;
+        color: #222222 !important;
+        margin-bottom: 15px;
+    }
+
+    /* Tiêu đề nhỏ */
+    h4,
+    h5,
+    h6,
+    .categories__item__text h4,
+    .featured__item__text h6,
+    .blog__item__text h5 {
+        font-weight: 600 !important;
+        color: #222222 !important;
+        margin-bottom: 10px;
+    }
+
+    /* Nội dung chính */
+    p,
+    .hero__text p,
+    .feature__item p,
+    .categories__item__text p,
+    .blog__item__text p,
+    .cta__text p {
+        color: #555555 !important;
+        font-weight: 400;
+        line-height: 1.6;
+    }
+
+    /* Giá sản phẩm */
+    .featured__item__text h5 {
+        color: #7fad39 !important;
+        font-weight: 700;
+    }
+
+    /* ---------------------------------------------------------------------- */
+    /* === FIX LỖI VÀ CẢI THIỆN STYLE === */
+    /* ---------------------------------------------------------------------- */
     * {
         box-sizing: border-box;
     }
@@ -250,23 +315,13 @@
         text-decoration: none !important;
         border: none !important;
         outline: none !important;
-    }
-
-    a:hover,
-    a:focus,
-    a:active {
-        text-decoration: none !important;
-        border: none !important;
-        outline: none !important;
+        transition: all 0.3s ease;
     }
 
     /* === REMOVE ALL UNDERLINES === */
     .featured__item__text a,
     .blog__item__text a,
     .categories__item__text a,
-    .section-title a,
-    .hero__text a,
-    .cta__text a,
     .product-link,
     .blog-link,
     .categories__link {
@@ -284,16 +339,17 @@
 
     .hero__text h1 {
         font-size: 2.5rem;
-        font-weight: 700;
         margin-bottom: 20px;
         line-height: 1.2;
+        color: white !important;
     }
 
     .hero__text p {
         font-size: 1.1rem;
         margin-bottom: 30px;
-        opacity: 0.9;
+        opacity: 0.95;
         line-height: 1.6;
+        color: rgba(255, 255, 255, 0.95) !important;
     }
 
     .hero__image img {
@@ -304,6 +360,7 @@
     /* === FEATURES SECTION === */
     .features {
         padding: 80px 0;
+        background: #f8f9fa;
     }
 
     .feature__item {
@@ -319,7 +376,7 @@
 
     .feature__item:hover {
         transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
         border-color: #7fad39;
     }
 
@@ -330,39 +387,21 @@
         transition: all 0.3s ease;
     }
 
-    .feature__item:hover .feature__item__icon {
-        transform: scale(1.2);
-        color: #6b8e23;
-    }
-
     .feature__item h5 {
-        font-weight: 600;
         margin-bottom: 15px;
-        color: #333;
+        color: #222222 !important;
         font-size: 1.2rem;
-        transition: all 0.3s ease;
-    }
-
-    .feature__item:hover h5 {
-        color: #7fad39;
-        transform: scale(1.05);
     }
 
     .feature__item p {
-        color: #666;
+        color: #666666 !important;
         line-height: 1.6;
-        margin-bottom: 0;
-        transition: all 0.3s ease;
-    }
-
-    .feature__item:hover p {
-        color: #333;
     }
 
     /* === CATEGORIES SECTION === */
     .categories {
         padding: 80px 0;
-        background: #f8f9fa;
+        background: white;
     }
 
     .categories__item {
@@ -372,12 +411,12 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
         transition: all 0.3s ease;
         height: 100%;
-        border: 2px solid transparent;
+        border: 2px solid #f8f9fa;
     }
 
     .categories__item:hover {
         transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
         border-color: #7fad39;
     }
 
@@ -386,14 +425,14 @@
         overflow: hidden;
     }
 
-    .categories__item__image img {
+    .categories__img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.3s ease;
     }
 
-    .categories__item:hover .categories__item__image img {
+    .categories__item:hover .categories__img {
         transform: scale(1.1);
     }
 
@@ -402,34 +441,21 @@
     }
 
     .categories__item__text h4 {
-        color: #333;
+        color: #222222 !important;
         margin-bottom: 10px;
         font-size: 1.3rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-
-    .categories__item:hover .categories__item__text h4 {
-        color: #7fad39;
-        transform: translateX(5px);
     }
 
     .categories__item__text p {
-        color: #666;
+        color: #666666 !important;
         margin-bottom: 15px;
         line-height: 1.5;
-        transition: all 0.3s ease;
-    }
-
-    .categories__item:hover .categories__item__text p {
-        color: #333;
     }
 
     .categories__link {
         color: #7fad39;
         font-weight: 600;
         font-size: 0.9rem;
-        transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -442,20 +468,12 @@
         color: white;
         background: #7fad39;
         gap: 12px;
-        transform: translateX(5px);
-    }
-
-    .categories__link i {
-        transition: transform 0.3s ease;
-    }
-
-    .categories__link:hover i {
-        transform: translateX(5px);
     }
 
     /* === FEATURED PRODUCTS SECTION === */
     .featured {
         padding: 80px 0;
+        background: #f8f9fa;
     }
 
     .featured__item {
@@ -465,12 +483,12 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
         transition: all 0.3s ease;
         height: 100%;
-        border: 2px solid transparent;
+        border: 2px solid #f8f9fa;
     }
 
     .featured__item:hover {
         transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
         border-color: #7fad39;
     }
 
@@ -480,14 +498,14 @@
         overflow: hidden;
     }
 
-    .featured__item__pic img {
+    .featured__img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.3s ease;
     }
 
-    .featured__item:hover .featured__item__pic img {
+    .featured__item:hover .featured__img {
         transform: scale(1.1);
     }
 
@@ -522,7 +540,6 @@
         background: #7fad39;
         color: white;
         transform: scale(1.2);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     .featured__item__text {
@@ -530,39 +547,22 @@
     }
 
     .product-link {
-        color: #333;
+        color: #222222 !important;
         font-weight: 600;
         font-size: 1rem;
-        transition: all 0.3s ease;
         display: block;
         line-height: 1.4;
-        padding: 5px 0;
+        margin-bottom: 10px;
     }
 
     .product-link:hover {
-        color: #7fad39;
-        padding-left: 10px;
-        background: rgba(127, 173, 57, 0.05);
-        border-radius: 3px;
-    }
-
-    .featured__item__text h5 {
-        color: #7fad39;
-        font-weight: 700;
-        margin-bottom: 0;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-    }
-
-    .featured__item:hover .featured__item__text h5 {
-        color: #6b8e23;
-        transform: scale(1.05);
+        color: #7fad39 !important;
     }
 
     /* === BLOG SECTION === */
     .from-blog {
         padding: 80px 0;
-        background: #f8f9fa;
+        background: white;
     }
 
     .blog__item {
@@ -572,12 +572,12 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
         transition: all 0.3s ease;
         height: 100%;
-        border: 2px solid transparent;
+        border: 2px solid #f8f9fa;
     }
 
     .blog__item:hover {
         transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
         border-color: #7fad39;
     }
 
@@ -586,14 +586,14 @@
         overflow: hidden;
     }
 
-    .blog__item__pic img {
+    .blog__img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.3s ease;
     }
 
-    .blog__item:hover .blog__item__pic img {
+    .blog__item:hover .blog__img {
         transform: scale(1.1);
     }
 
@@ -602,43 +602,28 @@
     }
 
     .blog-link {
-        color: #333;
+        color: #222222 !important;
         font-weight: 600;
         font-size: 1.1rem;
         line-height: 1.4;
-        transition: all 0.3s ease;
         display: block;
         margin-bottom: 10px;
-        padding: 5px 0;
     }
 
     .blog-link:hover {
-        color: #7fad39;
-        padding-left: 10px;
-        background: rgba(127, 173, 57, 0.05);
-        border-radius: 3px;
+        color: #7fad39 !important;
     }
 
     .blog__item__text p {
-        color: #666;
+        color: #666666 !important;
         line-height: 1.5;
         margin-bottom: 15px;
-        transition: all 0.3s ease;
-    }
-
-    .blog__item:hover .blog__item__text p {
-        color: #333;
     }
 
     .blog__item__info {
         margin-top: 15px;
         font-size: 0.85rem;
-        color: #888;
-        transition: all 0.3s ease;
-    }
-
-    .blog__item:hover .blog__item__info {
-        color: #666;
+        color: #888888;
     }
 
     .blog__item__info span {
@@ -653,14 +638,13 @@
     }
 
     .cta__text h3 {
-        color: white;
+        color: white !important;
         margin-bottom: 10px;
         font-size: 1.8rem;
-        font-weight: 600;
     }
 
     .cta__text p {
-        color: rgba(255, 255, 255, 0.9);
+        color: rgba(255, 255, 255, 0.95) !important;
         margin-bottom: 0;
         font-size: 1.1rem;
     }
@@ -687,15 +671,6 @@
         color: white;
         transform: translateY(-3px);
         box-shadow: 0 8px 20px rgba(127, 173, 57, 0.4);
-        gap: 15px;
-    }
-
-    .primary-btn i {
-        transition: transform 0.3s ease;
-    }
-
-    .primary-btn:hover i {
-        transform: translateX(5px);
     }
 
     .view-all-btn,
@@ -703,29 +678,37 @@
         background: transparent;
         border: 2px solid #7fad39;
         color: #7fad39;
-        box-shadow: none;
+    }
+
+    .cta-btn {
+        border-color: white;
+        color: white;
     }
 
     .view-all-btn:hover,
     .cta-btn:hover {
         background: #7fad39;
         color: white;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(127, 173, 57, 0.4);
     }
 
-    /* === FAVORITE & DOWNLOAD BUTTONS === */
-    .heart-icon,
-    .download-icon {
+    /* === FAVORITE & DOWNLOAD BUTTONS - TRÁI TIM MÀU ĐEN === */
+    .heart-icon {
         transition: all 0.3s ease;
     }
 
+    /* Trái tim chưa yêu thích */
+    .heart-icon {
+        color: #cccccc !important;
+    }
+
+    /* Trái tim đã yêu thích */
     .favorite-btn.active .heart-icon,
     .favorite-btn:hover .heart-icon {
-        color: #ff0000 !important;
+        color: #000000 !important;
         transform: scale(1.2);
     }
 
+    /* Download button */
     .download-btn:hover .download-icon {
         color: #7fad39 !important;
         transform: scale(1.2);
@@ -739,14 +722,13 @@
 
     .section-title h2 {
         font-size: 2.2rem;
-        font-weight: 700;
-        color: #333;
+        color: #222222 !important;
         margin-bottom: 15px;
     }
 
     .section-title p {
         font-size: 1.1rem;
-        color: #666;
+        color: #666666 !important;
         max-width: 600px;
         margin: 0 auto;
         line-height: 1.6;
@@ -777,12 +759,6 @@
         .primary-btn {
             padding: 10px 20px;
             font-size: 0.9rem;
-        }
-
-        .featured__item__pic__hover a {
-            width: 35px;
-            height: 35px;
-            line-height: 35px;
         }
     }
 </style>

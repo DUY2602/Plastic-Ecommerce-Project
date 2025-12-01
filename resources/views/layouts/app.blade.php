@@ -7,34 +7,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>@yield('title', 'Plastic Ecommerce')</title>
 
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
 
-    <!-- CSS Libraries -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
-    <!-- Template CSS -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    {{-- Cho phép các trang con thêm CSS riêng --}}
+    @yield('styles')
 </head>
 
 <body>
-    <!-- Header Component -->
     @include('components.header')
 
-    <!-- Main Content -->
     <main>
         @yield('content')
     </main>
 
-    <!-- Footer Component -->
     @include('components.footer')
 
-    <!-- JavaScript Libraries -->
+    {{-- JQuery BẮT BUỘC phải load đầu tiên --}}
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Visitor Count Script for Main Site -->
+    {{-- FIX LỖI SLICKNAV IS NOT A FUNCTION: Thêm thư viện slicknav.js --}}
+    {{-- Vui lòng đảm bảo file jquery.slicknav.js tồn tại trong public/js/ --}}
+    <script src="{{ asset('js/jquery.slicknav.js') }}"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Chỉ đếm khi không phải trang admin
@@ -57,8 +56,9 @@
         });
     </script>
 
-    <!-- Template Javascript -->
     <script src="{{ asset('js/main.js') }}"></script>
+
+    @yield('scripts')
 
 
 </body>

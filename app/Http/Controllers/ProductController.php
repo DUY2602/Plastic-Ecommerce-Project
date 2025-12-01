@@ -20,18 +20,18 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Product::with(['variants', 'category'])
-            ->where('Status', 1);
+            ->where('product.Status', 1);
 
         // Xử lý tìm kiếm
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where('ProductName', 'like', "%{$search}%");
+            $query->where('product.ProductName', 'like', "%{$search}%");
         }
 
         // Xử lý danh mục
         if ($request->has('category') && $request->category != '') {
             $query->whereHas('category', function ($q) use ($request) {
-                $q->where('CategoryName', 'like', "%{$request->category}%");
+                $q->where('CategoryName', '=', $request->category);
             });
         }
 
@@ -39,31 +39,82 @@ class ProductController extends Controller
         $sortBy = $request->get('sort_by', 'default');
         switch ($sortBy) {
             case 'price_asc':
-                $query->join('productvariant', 'product.ProductID', '=', 'productvariant.ProductID')
-                    ->select('product.*')
-                    ->groupBy('product.ProductID')
-                    ->orderByRaw('MIN(productvariant.Price) ASC');
+                $query->addSelect([
+                    'min_price' => ProductVariant::selectRaw('MIN(Price)')
+                        ->whereColumn('ProductID', 'product.ProductID')
+                ])->orderBy('min_price', 'ASC');
                 break;
+
             case 'price_desc':
-                $query->join('productvariant', 'product.ProductID', '=', 'productvariant.ProductID')
-                    ->select('product.*')
-                    ->groupBy('product.ProductID')
-                    ->orderByRaw('MIN(productvariant.Price) DESC');
+                $query->addSelect([
+                    'max_price' => ProductVariant::selectRaw('MAX(Price)')
+                        ->whereColumn('ProductID', 'product.ProductID')
+                ])->orderBy('max_price', 'DESC');
                 break;
+
             default:
-                $query->orderBy('ProductID', 'desc');
+                $query->orderBy('product.ProductID', 'desc');
                 break;
         }
 
         $products = $query->get();
         $categories = Category::where('Status', 1)->get();
 
-        // Xử lý favorite products - chỉ khi user đã đăng nhập
+        // Xử lý favorite products
         $favoriteProductIds = [];
         if (Auth::check()) {
             $favoriteProductIds = Favorite::where('AccountID', Auth::id())
                 ->pluck('ProductID')
                 ->toArray();
+        }
+
+        // Nếu là AJAX request, trả về HTML của product list
+        // Trong phần AJAX response của ProductController
+        if ($request->ajax()) {
+            $html = '';
+
+            if ($products->count() > 0) {
+                foreach ($products as $product) {
+                    $isFavorite = in_array($product->ProductID, $favoriteProductIds);
+                    $minPrice = $product->variants->min('Price') * 1000;
+
+                    $html .= '
+            <div class="col-lg-4 col-md-4 col-sm-6 mb-4">
+                <div class="product__item">
+                    <div class="product__item__pic">
+                        <img src="' . asset($product->Photo) . '" alt="' . $product->ProductName . '" class="img-fluid">
+                        <ul class="product__item__pic__hover">
+                            <li>
+                                <a href="#" class="favorite-btn" data-product-id="' . $product->ProductID . '" title="Yêu thích">
+                                    ' . ($isFavorite ?
+                        '<i class="fa fa-heart heart-icon" style="color: #ff0000"></i>' :
+                        '<i class="fa fa-heart heart-icon" style="color: #000000ff"></i>') . '
+                                </a>
+                            </li>
+                            <li>
+                                <a href="' . route('product.download', $product->ProductID) . '" class="download-btn" title="Tải tài liệu">
+                                    <i class="fa fa-download download-icon"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="product__item__text">
+                        <h6><a href="' . route('product.detail', $product->ProductID) . '" class="product-link">' . $product->ProductName . '</a></h6>
+                        <h5>từ ' . number_format($minPrice, 0, ',', '.') . 'đ</h5>
+                    </div>
+                </div>
+            </div>';
+                }
+            } else {
+                $html = '<div class="col-12 text-center py-5"><h4>Không tìm thấy sản phẩm nào</h4><p>Vui lòng thử lại với bộ lọc khác</p></div>';
+            }
+
+            return response()->json([
+                'success' => true,
+                'products' => $products,
+                'html' => $html,
+                'count' => $products->count()
+            ]);
         }
 
         return view('products.index', compact('products', 'categories', 'favoriteProductIds'));
