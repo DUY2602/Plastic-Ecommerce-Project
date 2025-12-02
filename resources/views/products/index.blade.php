@@ -119,7 +119,7 @@
                                 </div>
                                 <div class="product__item__text">
                                     <h6><a href="{{ route('product.detail', $product->ProductID) }}" class="product-link">{{ $product->ProductName }}</a></h6>
-                                    <h5>từ {{ number_format($product->variants->min('Price') * 1000, 0, ',', '.') }}đ</h5>
+                                    <h5 class="product-price">{{ number_format($product->variants->min('Price') * 1000, 0, ',', '.') }}đ</h5>
                                 </div>
                             </div>
                         </div>
@@ -445,6 +445,13 @@
 
     .hero__categories__all i {
         transition: transform 0.3s ease;
+    }
+
+    /* === PRODUCT PRICE STYLE === */
+    .product__item__text .product-price {
+        color: #ff0000 !important;
+        font-weight: 700;
+        font-size: 1.1rem;
     }
 
     /* === RESPONSIVE === */

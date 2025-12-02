@@ -72,18 +72,14 @@
                             <span>({{ $product->feedback->count() }} đánh giá)</span>
                     </div>
 
-                    {{-- Price Display --}}
-                    <div class="product__details__price">
+                    {{-- Price Display - CHỈ HIỂN THỊ 1 GIÁ MẶC ĐỊNH --}}
+                    <div class="product__details__price" id="mainProductPrice">
                         @if($product->variants->count() > 0)
                         @php
-                        $minPrice = $product->variants->min('Price');
-                        $maxPrice = $product->variants->max('Price');
+                        // Lấy giá mặc định từ variant đầu tiên hoặc giá thấp nhất
+                        $defaultPrice = $product->variants->first()->Price ?? $product->variants->min('Price');
                         @endphp
-                        @if($minPrice == $maxPrice)
-                        ${{ number_format($minPrice, 2) }}
-                        @else
-                        ${{ number_format($minPrice, 2) }} - ${{ number_format($maxPrice, 2) }}
-                        @endif
+                        {{ number_format($defaultPrice * 1000, 0, ',', '.') }}đ
                         @else
                         Liên hệ để biết giá
                         @endif
@@ -142,7 +138,7 @@
                     <div class="selected__variant__info">
                         <div class="variant__price">
                             <strong>Giá: </strong>
-                            <span id="variantPrice">${{ number_format($minPrice, 2) }}</span>
+                            <span id="variantPrice">{{ number_format($defaultPrice * 1000, 0, ',', '.') }}đ</span>
                         </div>
                         <div class="variant__stock">
                             <strong>Tồn kho: </strong>
@@ -237,7 +233,7 @@
                                                 <td>#{{ $variant->VariantID }}</td>
                                                 <td>{{ $variant->color->ColourName }}</td>
                                                 <td>{{ $variant->volume->VolumeValue }}</td>
-                                                <td>${{ number_format($variant->Price, 2) }}</td>
+                                                <td>{{ number_format($variant->Price * 1000, 0, ',', '.') }}đ</td>
                                                 <td>{{ $variant->StockQuantity }}</td>
                                             </tr>
                                             @endforeach
@@ -313,9 +309,9 @@
                     </div>
                     <div class="product__item__text">
                         <h6><a href="{{ route('product.detail', $relatedProduct->ProductID) }}">{{ $relatedProduct->ProductName }}</a></h6>
-                        <h5>
+                        <h5 class="product-price">
                             @if($relatedProduct->variants->count() > 0)
-                            ${{ number_format($relatedProduct->variants->min('Price'), 2) }}
+                            {{ number_format($relatedProduct->variants->first()->Price * 1000, 0, ',', '.') }}đ
                             @else
                             Liên hệ
                             @endif
@@ -337,7 +333,7 @@ $variantsData = [];
 $firstVariantID = null;
 $firstColorID = null;
 $firstVolumeID = null;
-$minPrice = $product->variants->count() > 0 ? $product->variants->min('Price') : 0;
+$defaultPrice = $product->variants->count() > 0 ? $product->variants->first()->Price : 0;
 
 if ($product->variants->count() > 0) {
 foreach ($product->variants as $variant) {
@@ -350,7 +346,7 @@ $firstVolumeID = $variant->VolumeID;
 $key = $variant->ColourID . '_' . $variant->VolumeID;
 $variantsData[$key] = [
 'id' => $variant->VariantID,
-'price' => number_format($variant->Price, 2),
+'price' => number_format($variant->Price * 1000, 0, ',', '.') . 'đ',
 'stock' => $variant->StockQuantity,
 'image' => asset($variant->MainImage ? str_replace('/images/', '/img/', $variant->MainImage) : 'img/product/default.jpg'),
 ];
@@ -363,7 +359,7 @@ $variantsData[$key] = [
         const styleValue = swatch.getAttribute('data-custom-style');
         swatch.style.cssText = styleValue;
     });
-    
+
     document.addEventListener('DOMContentLoaded', function() {
         const allVariants = JSON.parse('{!! json_encode($variantsData) !!}');
         let selectedColor = '{{ $firstColorID }}';
@@ -373,12 +369,14 @@ $variantsData[$key] = [
         const colorItems = document.querySelectorAll('.color__item');
         const sizeItems = document.querySelectorAll('.size__item');
         const variantPrice = document.getElementById('variantPrice');
+        const mainProductPrice = document.getElementById('mainProductPrice');
         const variantStock = document.getElementById('variantStock');
         const selectedVariantIdInput = document.getElementById('selectedVariantId');
         const productQuantityInput = document.getElementById('productQuantityInput');
         const addToCartButton = document.getElementById('addToCartButton');
 
         const hasVariants = Object.keys(allVariants).length > 0;
+        const defaultPrice = '{{ number_format($defaultPrice * 1000, 0, ",", ".") }}đ';
 
         function initializeVariant() {
             if (hasVariants) {
@@ -402,7 +400,8 @@ $variantsData[$key] = [
                 const variant = allVariants[variantKey];
 
                 if (variant) {
-                    variantPrice.textContent = '$' + variant.price;
+                    variantPrice.textContent = variant.price;
+                    mainProductPrice.textContent = variant.price;
                     variantStock.textContent = variant.stock > 0 ? 'Còn hàng (' + variant.stock + ' sản phẩm)' : 'Hết hàng';
                     selectedVariantIdInput.value = variant.id;
 
@@ -425,7 +424,8 @@ $variantsData[$key] = [
                         addToCartButton.style.opacity = '1';
                     }
                 } else {
-                    variantPrice.textContent = 'Biến thể không khả dụng';
+                    variantPrice.textContent = defaultPrice;
+                    mainProductPrice.textContent = defaultPrice;
                     variantStock.textContent = 'Hết hàng';
                     selectedVariantIdInput.value = '';
                     productQuantityInput.value = 0;
@@ -433,7 +433,8 @@ $variantsData[$key] = [
                     addToCartButton.style.opacity = '0.6';
                 }
             } else {
-                variantPrice.textContent = 'Vui lòng chọn màu và dung tích';
+                variantPrice.textContent = defaultPrice;
+                mainProductPrice.textContent = defaultPrice;
                 variantStock.textContent = '-';
                 selectedVariantIdInput.value = '';
             }
@@ -517,6 +518,26 @@ $variantsData[$key] = [
 </script>
 
 <style>
+    /* ĐỔI MÀU GIÁ SẢN PHẨM THÀNH ĐỎ */
+    .product__details__price {
+        color: #ff0000 !important;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 15px 0;
+    }
+
+    .variant__price {
+        color: #ff0000 !important;
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
+    .product-price {
+        color: #ff0000 !important;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
     .color__list,
     .size__list {
         display: flex;

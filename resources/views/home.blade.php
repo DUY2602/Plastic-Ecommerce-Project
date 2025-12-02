@@ -132,7 +132,7 @@
                     <div class="featured__item__text">
                         <h6><a href="{{ route('product.detail', $product->ProductID) }}" class="product-link">{{ $product->ProductName }}</a></h6>
                         @if($product->variants && $product->variants->isNotEmpty())
-                        <h5>từ {{ number_format($product->variants->min('Price') * 1000, 0, ',', '.') }}đ</h5>
+                        <h5 class="product-price">{{ number_format($product->variants->min('Price') * 1000, 0, ',', '.') }}đ</h5>
                         @else
                         <h5>Liên hệ</h5>
                         @endif
@@ -191,7 +191,7 @@
                     <div class="favorite__item__text">
                         <h6><a href="{{ route('product.detail', $product->ProductID) }}" class="product-link">{{ $product->ProductName }}</a></h6>
                         @if($product->variants && $product->variants->isNotEmpty())
-                        <h5>từ {{ number_format($product->variants->min('Price') * 1000, 0, ',', '.') }}đ</h5>
+                        <h5 class="product-price">{{ number_format($product->variants->min('Price') * 1000, 0, ',', '.') }}đ</h5>
                         @else
                         <h5>Liên hệ</h5>
                         @endif
@@ -487,9 +487,11 @@
         line-height: 1.6;
     }
 
-    .featured__item__text h5 {
-        color: #7fad39 !important;
+    /* ĐỔI MÀU GIÁ SẢN PHẨM THÀNH ĐỎ */
+    .product-price {
+        color: #ff0000 !important;
         font-weight: 700;
+        font-size: 1.1rem;
     }
 
     * {
