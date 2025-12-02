@@ -23,20 +23,27 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 Route::get('/category/{slug}', [ProductController::class, 'category'])->name('category');
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.detail');
 
-// Blog routes
+// Blog routes - PUBLIC (không cần đăng nhập)
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{id}', [BlogController::class, 'show'])->name('blog.show');
 
-// 🔥 THÊM ROUTE ĐĂNG NHẬP ADMIN RIÊNG
-Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
-Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+// =========================================================
+// 🔥 AUTH & LOGOUT ROUTES
+// =========================================================
 
-// Auth routes cho user thường
+// Route Đăng nhập/Đăng ký cho User thường
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout'); // Đăng xuất User thường
+
+// Route Đăng nhập/Đăng xuất cho Admin
+Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'adminLogin']);
+Route::post('/admin/logout', [AuthController::class, 'adminLogout'])->name('admin.logout'); // 🔥 ROUTE MỚI: Đăng xuất Admin
+
+// =========================================================
 
 // Favorite routes
 Route::post('/favorite/toggle', [FavoriteController::class, 'toggle'])->name('favorite.toggle');
@@ -94,7 +101,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Variant routes
     Route::get('/variants', [AdminController::class, 'variants'])->name('variants');
 
-    // Blog routes
+    // Blog routes - TRANG ADMIN QUẢN LÝ BLOG (yêu cầu đăng nhập admin)
     Route::get('/blog', [AdminController::class, 'blogIndex'])->name('blog.index');
     Route::get('/blog/create', [AdminController::class, 'blogCreate'])->name('blog.create');
     Route::post('/blog', [AdminController::class, 'blogStore'])->name('blog.store');

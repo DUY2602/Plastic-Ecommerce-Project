@@ -28,7 +28,7 @@
                         <img src="{{ asset($blog->Image) }}" alt="{{ $blog->Title }}">
                     </div>
                     <div class="blog__item__text">
-                        <span class="blog__category">{{ $blog->Category ?? 'Tin tức' }}</span>
+                        <span class="blog__category">Tin tức</span>
                         <h5><a href="{{ route('blog.show', $blog->BlogID) }}">{{ $blog->Title }}</a></h5>
                         <p>{{ Str::limit(strip_tags($blog->Content), 100) }}</p>
                         <div class="blog__item__info">

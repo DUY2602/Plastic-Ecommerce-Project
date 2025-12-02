@@ -12,6 +12,7 @@ use App\Models\ProductVariant;
 use App\Models\Feedback;
 use App\Models\VisitorCount;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -84,25 +85,45 @@ class AdminController extends Controller
         return view('admin.products.create', compact('categories'));
     }
 
-    // Lưu sản phẩm mới
     public function store(Request $request)
     {
         $request->validate([
             'ProductName' => 'required|string|max:255',
-            'CategoryID' => 'required|exists:category,CategoryID', // SỬA: categories -> category
+            'CategoryID' => 'required|exists:category,CategoryID',
             'Description' => 'nullable|string',
-            'Photo' => 'nullable|string|max:500', // SỬA: Không dùng upload file
+            'Photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'Status' => 'required|boolean',
         ]);
 
         try {
+            $photoPath = null;
+
+            // Xử lý upload ảnh nếu có
+            if ($request->hasFile('Photo')) {
+                $file = $request->file('Photo');
+
+                // Tạo tên file unique
+                $fileName = 'product_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+                // Tạo thư mục nếu chưa tồn tại
+                $directory = public_path('img/products');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
+                // Di chuyển file vào thư mục public/img/products
+                $file->move($directory, $fileName);
+
+                // Lưu đường dẫn (tương đối từ thư mục public)
+                $photoPath = '/img/products/' . $fileName;
+            }
+
             Product::create([
                 'ProductName' => $request->ProductName,
                 'Description' => $request->Description,
                 'CategoryID' => $request->CategoryID,
-                'Photo' => $request->Photo, // SỬA: Dùng string path
+                'Photo' => $photoPath, // Lưu đường dẫn tương đối
                 'Status' => $request->Status,
-                // XÓA: CreatedAt vì đã có DEFAULT
             ]);
 
             return redirect()->route('admin.products')->with('success', 'Sản phẩm đã được thêm thành công!');
@@ -113,6 +134,62 @@ class AdminController extends Controller
         }
     }
 
+    public function update(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+
+        $request->validate([
+            'ProductName' => 'required|string|max:255',
+            'CategoryID' => 'required|exists:category,CategoryID',
+            'Description' => 'nullable|string',
+            'Photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'Status' => 'required|boolean',
+        ]);
+
+        try {
+            $photoPath = $product->Photo;
+
+            // Xử lý upload ảnh nếu có ảnh mới
+            if ($request->hasFile('Photo')) {
+                // Xóa ảnh cũ nếu tồn tại
+                if ($photoPath && file_exists(public_path($photoPath))) {
+                    unlink(public_path($photoPath));
+                }
+
+                $file = $request->file('Photo');
+
+                // Tạo tên file unique
+                $fileName = 'product_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+                // Tạo thư mục nếu chưa tồn tại
+                $directory = public_path('img/products');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
+                // Di chuyển file vào thư mục public/img/products
+                $file->move($directory, $fileName);
+
+                // Lưu đường dẫn mới
+                $photoPath = '/img/products/' . $fileName;
+            }
+
+            $product->update([
+                'ProductName' => $request->ProductName,
+                'Description' => $request->Description,
+                'CategoryID' => $request->CategoryID,
+                'Photo' => $photoPath,
+                'Status' => $request->Status,
+            ]);
+
+            return redirect()->route('admin.products')->with('success', 'Sản phẩm đã được cập nhật thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Có lỗi xảy ra khi cập nhật sản phẩm: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+    
     // Hiển thị chi tiết sản phẩm
     public function show($id)
     {
@@ -126,37 +203,6 @@ class AdminController extends Controller
         $product = Product::findOrFail($id);
         $categories = Category::where('Status', 1)->get();
         return view('admin.products.edit', compact('product', 'categories'));
-    }
-
-    // Cập nhật sản phẩm
-    public function update(Request $request, $id)
-    {
-        $product = Product::findOrFail($id);
-
-        $request->validate([
-            'ProductName' => 'required|string|max:255',
-            'CategoryID' => 'required|exists:category,CategoryID', // SỬA: categories -> category
-            'Description' => 'nullable|string',
-            'Photo' => 'nullable|string|max:500', // SỬA: Không dùng upload file
-            'Status' => 'required|boolean',
-        ]);
-
-        try {
-            $product->update([
-                'ProductName' => $request->ProductName,
-                'Description' => $request->Description,
-                'CategoryID' => $request->CategoryID,
-                'Photo' => $request->Photo, // SỬA: Dùng string path
-                'Status' => $request->Status,
-                // XÓA: UpdatedAt vì không có trường này
-            ]);
-
-            return redirect()->route('admin.products')->with('success', 'Sản phẩm đã được cập nhật thành công!');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Có lỗi xảy ra khi cập nhật sản phẩm: ' . $e->getMessage())
-                ->withInput();
-        }
     }
 
     // Xóa sản phẩm

@@ -58,6 +58,6 @@ class FavoriteController extends Controller
             $query->where('AccountID', $userId);
         })->with(['variants', 'category'])->get();
 
-        return view('favorites.index', compact('favoriteProducts'));
+        return view('favorites', compact('favoriteProducts'));
     }
 }

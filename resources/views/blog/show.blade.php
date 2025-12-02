@@ -1,487 +1,373 @@
 @extends('layouts.app')
 
-@section('title', 'Đăng nhập Admin')
-
-@section('styles')
-<style>
-    .admin-login-section {
-        background: linear-gradient(-45deg, #667eea, #764ba2, #23a6d5, #23d5ab);
-        background-size: 400% 400%;
-        animation: gradient 15s ease infinite;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        padding: 50px 0;
-        position: relative;
-        overflow: hidden;
-    }
-
-    @keyframes gradient {
-        0% {
-            background-position: 0% 50%;
-        }
-
-        50% {
-            background-position: 100% 50%;
-        }
-
-        100% {
-            background-position: 0% 50%;
-        }
-    }
-
-    .admin-login-card {
-        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-        border-radius: 20px;
-        padding: 50px 40px;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        transform: translateY(0);
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        position: relative;
-        z-index: 2;
-        overflow: hidden;
-    }
-
-    .admin-login-card::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-        animation: rotate 20s linear infinite;
-    }
-
-    @keyframes rotate {
-        from {
-            transform: rotate(0deg);
-        }
-
-        to {
-            transform: rotate(360deg);
-        }
-    }
-
-    .admin-login-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 35px 70px rgba(0, 0, 0, 0.5);
-    }
-
-    .admin-header {
-        text-align: center;
-        margin-bottom: 40px;
-        position: relative;
-        z-index: 3;
-    }
-
-    .admin-icon {
-        font-size: 52px;
-        color: #3498db;
-        margin-bottom: 20px;
-        display: block;
-        text-shadow: 0 5px 15px rgba(52, 152, 219, 0.5);
-    }
-
-    .admin-title {
-        font-size: 32px;
-        font-weight: 800;
-        color: #ecf0f1;
-        margin-bottom: 10px;
-        letter-spacing: -0.5px;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    }
-
-    .admin-subtitle {
-        color: #bdc3c7;
-        font-size: 16px;
-        font-weight: 500;
-    }
-
-    .form-group {
-        position: relative;
-        margin-bottom: 30px;
-        z-index: 3;
-    }
-
-    .form-control {
-        border: 2px solid #34495e;
-        border-radius: 15px;
-        padding: 18px 25px 18px 50px;
-        font-size: 16px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        background: rgba(52, 73, 94, 0.8);
-        color: #ecf0f1;
-        backdrop-filter: blur(10px);
-    }
-
-    .form-control:focus {
-        border-color: #3498db;
-        box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.3);
-        transform: translateY(-3px);
-        background: rgba(44, 62, 80, 0.9);
-    }
-
-    .form-control::placeholder {
-        color: #95a5a6;
-    }
-
-    .form-label {
-        position: absolute;
-        left: 50px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-        padding: 0 10px;
-        color: #95a5a6;
-        transition: all 0.3s ease;
-        pointer-events: none;
-        font-weight: 500;
-    }
-
-    .form-control:focus+.form-label,
-    .form-control:not(:placeholder-shown)+.form-label {
-        top: 0;
-        font-size: 13px;
-        color: #3498db;
-        font-weight: 700;
-        transform: translateY(-50%) scale(0.9);
-    }
-
-    .btn-admin {
-        background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-        border: none;
-        border-radius: 15px;
-        padding: 18px 30px;
-        font-size: 17px;
-        font-weight: 700;
-        color: white;
-        width: 100%;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-        margin-top: 10px;
-        letter-spacing: 0.5px;
-        z-index: 3;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn-admin:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 30px rgba(52, 152, 219, 0.4);
-        background: linear-gradient(135deg, #2980b9 0%, #3498db 100%);
-    }
-
-    .btn-admin:active {
-        transform: translateY(-1px);
-    }
-
-    .btn-admin::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.6s;
-    }
-
-    .btn-admin:hover::before {
-        left: 100%;
-    }
-
-    .admin-links {
-        text-align: center;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        position: relative;
-        z-index: 3;
-    }
-
-    /* ĐÃ SỬA: Quy tắc CSS BỎ HIỆU ỨNG Transition */
-    .admin-link {
-        color: #3498db;
-        text-decoration: none;
-        font-weight: 600;
-        /* KHẮC PHỤC DỨT KHOÁT: Buộc không có transition */
-        transition: none !important;
-        font-size: 15px;
-        /* Đảm bảo không có hiệu ứng mờ */
-        opacity: 1 !important;
-    }
-
-    .admin-link:hover {
-        color: #ecf0f1;
-        text-decoration: none;
-        /* Đảm bảo không có hiệu ứng di chuyển */
-        transform: none !important;
-    }
-
-    .input-icon {
-        position: absolute;
-        left: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #95a5a6;
-        z-index: 2;
-        font-size: 18px;
-        transition: all 0.3s ease;
-    }
-
-    .form-control:focus~.input-icon {
-        color: #3498db;
-        transform: translateY(-50%) scale(1.1);
-    }
-
-    .alert {
-        border-radius: 15px;
-        border: none;
-        padding: 18px 25px;
-        margin-bottom: 25px;
-        animation: slideInDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        font-weight: 500;
-        position: relative;
-        z-index: 3;
-    }
-
-    .alert-danger {
-        background: rgba(231, 76, 60, 0.9);
-        color: #ecf0f1;
-    }
-
-    .alert-success {
-        background: rgba(46, 204, 113, 0.9);
-        color: #ecf0f1;
-    }
-
-    @keyframes slideInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-30px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    /* Hiệu ứng particles tinh tế */
-    .particles-container {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        z-index: 1;
-    }
-
-    .particle {
-        position: absolute;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        animation: float 8s ease-in-out infinite;
-    }
-
-    .particle:nth-child(1) {
-        width: 80px;
-        height: 80px;
-        top: 20%;
-        left: 10%;
-        animation-delay: 0s;
-    }
-
-    .particle:nth-child(2) {
-        width: 120px;
-        height: 120px;
-        top: 60%;
-        left: 80%;
-        animation-delay: 2s;
-    }
-
-    .particle:nth-child(3) {
-        width: 60px;
-        height: 60px;
-        top: 80%;
-        left: 20%;
-        animation-delay: 4s;
-    }
-
-    @keyframes float {
-
-        0%,
-        100% {
-            transform: translateY(0) rotate(0deg) scale(1);
-            opacity: 0.5;
-        }
-
-        50% {
-            transform: translateY(-15px) rotate(180deg) scale(1.1);
-            opacity: 0.8;
-        }
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .admin-login-card {
-            padding: 40px 25px;
-            margin: 20px;
-        }
-
-        .admin-title {
-            font-size: 28px;
-        }
-
-        .admin-icon {
-            font-size: 45px;
-        }
-    }
-</style>
-@endsection
+@section('title', $blog->Title . ' - Plastic Store')
 
 @section('content')
-<section class="admin-login-section">
-    <div class="particles-container">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-    </div>
-
+<section class="breadcrumb-section set-bg" data-setbg="{{ asset('img/breadcrumb.jpg') }}">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-5 col-md-7">
-                <div class="admin-login-card">
-                    <div class="admin-header">
-                        <i class="fas fa-user-shield admin-icon"></i>
-                        <h1 class="admin-title">Hệ Thống Quản Trị</h1>
-                        <p class="admin-subtitle">Đăng nhập để truy cập bảng điều khiển</p>
-                    </div>
-
-                    @if($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-
-                    @if(session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('admin.login') }}" id="adminLoginForm">
-                        @csrf
-
-                        <div class="form-group">
-                            <i class="fas fa-envelope input-icon"></i>
-                            <input type="email"
-                                name="email"
-                                value="{{ old('email') }}"
-                                class="form-control"
-                                placeholder=" "
-                                required
-                                autofocus>
-                            <label class="form-label">Email Admin</label>
-                            @error('email')
-                            <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <i class="fas fa-lock input-icon"></i>
-                            <input type="password"
-                                name="password"
-                                class="form-control"
-                                placeholder=" "
-                                required>
-                            <label class="form-label">Mật khẩu</label>
-                            @error('password')
-                            <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <button type="submit" class="btn-admin" id="loginBtn">
-                            <span class="btn-text">ĐĂNG NHẬP HỆ THỐNG</span>
-                        </button>
-                    </form>
-
-                    @if(session('error'))
-                    <div class="alert alert-danger mt-3">
-                        {{ session('error') }}
-                    </div>
-                    @endif
-
-                    <div class="admin-links">
-                        <p style="color: #bdc3c7;">Là người dùng thường?
-                            <a href="{{ route('login') }}" class="admin-link">
-                                <i class="fas fa-arrow-right"></i> Đăng nhập tại đây
-                            </a>
-                        </p>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="breadcrumb__text">
+                    <h2>{{ $blog->Title }}</h2>
+                    <div class="breadcrumb__option">
+                        <a href="{{ route('home') }}">Trang chủ</a>
+                        <a href="{{ route('blog.index') }}">Blog</a>
+                        <span>{{ Str::limit($blog->Title, 30) }}</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </section>
-@endsection
 
-@section('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('adminLoginForm');
-        const loginBtn = document.getElementById('loginBtn');
+<section class="blog-details spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="blog__details__content">
+                    <div class="blog__details__item">
+                        @if($blog->Image)
+                        <div class="blog__details__pic">
+                            <img src="{{ asset($blog->Image) }}" alt="{{ $blog->Title }}">
+                        </div>
+                        @endif
 
-        // Hiệu ứng cho input
-        const inputs = document.querySelectorAll('.form-control');
-        inputs.forEach(input => {
-            if (input.value) {
-                input.parentElement.classList.add('focused');
-            }
+                        <div class="blog__details__text">
+                            <h2>{{ $blog->Title }}</h2>
+                            <div class="blog__details__meta">
+                                <span><i class="fa fa-user"></i> {{ $blog->Author }}</span>
+                                <span><i class="fa fa-calendar"></i> {{ $blog->created_at->format('d/m/Y H:i') }}</span>
+                                <span><i class="fa fa-clock"></i> {{ $readTime }} phút đọc</span>
+                                <span><i class="fa fa-eye"></i> {{ $blog->Views ?? 0 }} lượt xem</span>
+                            </div>
+                            <div class="blog__details__content">
+                                {!! $blog->Content !!}
+                            </div>
+                        </div>
+                    </div>
 
-            input.addEventListener('focus', function() {
-                this.parentElement.classList.add('focused');
-            });
+                    <div class="blog__details__nav">
+                        @if($prevBlog)
+                        <div class="blog__details__nav__item prev__item">
+                            <h6><a href="{{ route('blog.show', $prevBlog->BlogID) }}"><i class="fa fa-angle-left"></i> Bài trước</a></h6>
+                            <div class="blog__details__nav__img">
+                                @if($prevBlog->Image)
+                                <img src="{{ asset($prevBlog->Image) }}" alt="{{ $prevBlog->Title }}" style="width: 80px; height: 60px; object-fit: cover;">
+                                @endif
+                            </div>
+                            <div class="blog__details__nav__text">
+                                <h6>{{ Str::limit($prevBlog->Title, 40) }}</h6>
+                                <span>{{ $prevBlog->created_at->format('d/m/Y') }}</span>
+                            </div>
+                        </div>
+                        @endif
 
-            input.addEventListener('blur', function() {
-                if (!this.value) {
-                    this.parentElement.classList.remove('focused');
-                }
-            });
-        });
+                        @if($nextBlog)
+                        <div class="blog__details__nav__item next__item">
+                            <h6><a href="{{ route('blog.show', $nextBlog->BlogID) }}">Bài sau <i class="fa fa-angle-right"></i></a></h6>
+                            <div class="blog__details__nav__img">
+                                @if($nextBlog->Image)
+                                <img src="{{ asset($nextBlog->Image) }}" alt="{{ $nextBlog->Title }}" style="width: 80px; height: 60px; object-fit: cover;">
+                                @endif
+                            </div>
+                            <div class="blog__details__nav__text">
+                                <h6>{{ Str::limit($nextBlog->Title, 40) }}</h6>
+                                <span>{{ $nextBlog->created_at->format('d/m/Y') }}</span>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
 
-        // Hiệu ứng khi submit form
-        form.addEventListener('submit', function(e) {
-            loginBtn.style.transform = 'scale(0.98)';
-            setTimeout(() => {
-                loginBtn.style.transform = '';
-            }, 150);
-        });
+            <div class="col-lg-4">
+                <div class="blog__sidebar">
+                    <div class="blog__sidebar__item">
+                        <h4>Bài viết gần đây</h4>
+                        <div class="blog__sidebar__recent">
+                            @foreach($recentBlogs as $recent)
+                            <div class="blog__sidebar__recent__item">
+                                <div class="blog__sidebar__recent__pic">
+                                    @if($recent->Image)
+                                    <img src="{{ asset($recent->Image) }}" alt="{{ $recent->Title }}" style="width: 70px; height: 70px; object-fit: cover;">
+                                    @else
+                                    <div class="no-image" style="width: 70px; height: 70px; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fa fa-image text-muted"></i>
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="blog__sidebar__recent__text">
+                                    <h6><a href="{{ route('blog.show', $recent->BlogID) }}">{{ Str::limit($recent->Title, 50) }}</a></h6>
+                                    <span>{{ $recent->created_at->format('d/m/Y') }}</span>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
 
-        // Hiệu ứng load trang cho card
-        const card = document.querySelector('.admin-login-card');
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(50px) scale(0.9)';
+                    <div class="blog__sidebar__item">
+                        <h4>Tìm kiếm</h4>
+                        <div class="blog__sidebar__search">
+                            <form action="{{ route('blog.index') }}" method="GET">
+                                <input type="text" name="search" placeholder="Tìm kiếm bài viết...">
+                                <button type="submit"><i class="fa fa-search"></i></button>
+                            </form>
+                        </div>
+                    </div>
 
-        setTimeout(() => {
-            card.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0) scale(1)';
-        }, 100);
+                    {{-- LOẠI BỎ PHẦN DANH MỤC GÂY LỖI --}}
+                    {{-- <div class="blog__sidebar__item">
+                        <h4>Danh mục</h4>
+                        <ul>
+                            <li><a href="{{ route('blog.index') }}">Tất cả bài viết</a></li>
+                    @php
+                    $categories = \App\Models\Blog::select('Category')->distinct()->whereNotNull('Category')->get();
+                    @endphp
+                    @foreach($categories as $category)
+                    <li><a href="{{ route('blog.index') }}?category={{ urlencode($category->Category) }}">{{ $category->Category }}</a></li>
+                    @endforeach
+                    </ul>
+                </div> --}}
 
-        // *** ĐÃ THÊM: SỬ DỤNG JS GHI ĐÈ TRANSITION TUYỆT ĐỐI ***
-        const adminLink = document.querySelector('.admin-link');
-        if (adminLink) {
-            // Đặt style inline transition: none!
-            adminLink.style.transition = 'none';
+                {{-- THAY THẾ BẰNG PHẦN THẺ PHỔ BIẾN --}}
+                <div class="blog__sidebar__item">
+                    <h4>Thẻ phổ biến</h4>
+                    <div class="blog__sidebar__tags">
+                        <a href="{{ route('blog.index') }}">Tin tức</a>
+                        <a href="{{ route('blog.index') }}">Sản phẩm</a>
+                        <a href="{{ route('blog.index') }}">Khuyến mãi</a>
+                        <a href="{{ route('blog.index') }}">Hướng dẫn</a>
+                        <a href="{{ route('blog.index') }}">Tư vấn</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+
+<style>
+    .blog-details {
+        padding: 50px 0;
+    }
+
+    .blog__details__pic {
+        margin-bottom: 30px;
+    }
+
+    .blog__details__pic img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .blog__details__text {
+        margin-bottom: 40px;
+    }
+
+    .blog__details__text h2 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #1c1c1c;
+    }
+
+    .blog__details__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ebebeb;
+    }
+
+    .blog__details__meta span {
+        color: #6f6f6f;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+    }
+
+    .blog__details__meta i {
+        margin-right: 5px;
+        color: #7fad39;
+    }
+
+    .blog__details__content {
+        font-size: 16px;
+        line-height: 1.8;
+        color: #444;
+    }
+
+    .blog__details__content p {
+        margin-bottom: 20px;
+    }
+
+    .blog__details__content img {
+        max-width: 100%;
+        height: auto;
+        margin: 20px 0;
+        border-radius: 5px;
+    }
+
+    .blog__details__nav {
+        display: flex;
+        justify-content: space-between;
+        padding: 30px 0;
+        border-top: 1px solid #ebebeb;
+        margin-top: 40px;
+    }
+
+    .blog__details__nav__item {
+        display: flex;
+        align-items: center;
+        width: 48%;
+    }
+
+    .prev__item {
+        text-align: left;
+    }
+
+    .next__item {
+        text-align: right;
+        flex-direction: row-reverse;
+    }
+
+    .blog__details__nav__img {
+        margin: 0 15px;
+    }
+
+    .blog__details__nav__text h6 {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .blog__details__nav__text span {
+        font-size: 12px;
+        color: #6f6f6f;
+    }
+
+    .blog__sidebar {
+        padding-left: 20px;
+    }
+
+    .blog__sidebar__item {
+        margin-bottom: 40px;
+    }
+
+    .blog__sidebar__item h4 {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: #1c1c1c;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #7fad39;
+    }
+
+    .blog__sidebar__recent__item {
+        display: flex;
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #ebebeb;
+    }
+
+    .blog__sidebar__recent__pic {
+        margin-right: 15px;
+    }
+
+    .blog__sidebar__recent__text h6 {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.4;
+        margin-bottom: 5px;
+    }
+
+    .blog__sidebar__recent__text h6 a {
+        color: #1c1c1c;
+    }
+
+    .blog__sidebar__recent__text h6 a:hover {
+        color: #7fad39;
+    }
+
+    .blog__sidebar__recent__text span {
+        font-size: 12px;
+        color: #6f6f6f;
+    }
+
+    .blog__sidebar__search {
+        position: relative;
+    }
+
+    .blog__sidebar__search input {
+        width: 100%;
+        height: 45px;
+        padding: 0 20px;
+        border: 1px solid #ebebeb;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .blog__sidebar__search button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        height: 45px;
+        width: 45px;
+        background: #7fad39;
+        color: white;
+        border: none;
+        border-radius: 0 5px 5px 0;
+        cursor: pointer;
+    }
+
+    .blog__sidebar__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .blog__sidebar__tags a {
+        display: inline-block;
+        padding: 5px 15px;
+        background: #f5f5f5;
+        color: #6f6f6f;
+        border-radius: 20px;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+
+    .blog__sidebar__tags a:hover {
+        background: #7fad39;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .blog__sidebar {
+            padding-left: 0;
+            margin-top: 40px;
         }
-    });
-</script>
+
+        .blog__details__text h2 {
+            font-size: 28px;
+        }
+
+        .blog__details__pic img {
+            height: 250px;
+        }
+
+        .blog__details__nav {
+            flex-direction: column;
+        }
+
+        .blog__details__nav__item {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+    }
+</style>
 @endsection

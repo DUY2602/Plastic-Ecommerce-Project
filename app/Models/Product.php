@@ -10,6 +10,9 @@ class Product extends Model
     protected $table = 'product';
     protected $primaryKey = 'ProductID';
 
+    const CREATED_AT = 'CreatedAt';
+    const UPDATED_AT = null;
+
     protected $fillable = [
         'CategoryID',
         'ProductName',

@@ -16,7 +16,7 @@ class AuthController extends Controller
         return view('auth.login', compact('categories'));
     }
 
-    // 🔥 THÊM PHƯƠNG THỨC HIỂN THỊ FORM ĐĂNG NHẬP ADMIN
+    // 🔥 PHƯƠNG THỨC HIỂN THỊ FORM ĐĂNG NHẬP ADMIN
     public function showAdminLogin()
     {
         return view('auth.admin-login');
@@ -65,7 +65,7 @@ class AuthController extends Controller
         }
     }
 
-    // 🔥 THÊM PHƯƠNG THỨC ĐĂNG NHẬP ADMIN
+    // 🔥 PHƯƠNG THỨC ĐĂNG NHẬP ADMIN
     public function adminLogin(Request $request)
     {
         $credentials = $request->validate([
@@ -140,6 +140,18 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // Điều hướng về trang chủ công khai cho user thường
         return redirect()->route('home')->with('success', 'Đăng xuất thành công!');
+    }
+
+    // 🔥 PHƯƠNG THỨC ĐĂNG XUẤT MỚI CHO ADMIN
+    public function adminLogout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        // Điều hướng về trang đăng nhập Admin
+        return redirect()->route('admin.login')->with('success', 'Đăng xuất admin thành công!');
     }
 }

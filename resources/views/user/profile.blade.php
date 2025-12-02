@@ -3,7 +3,6 @@
 @section('title', 'Thông tin tài khoản')
 
 @section('content')
-<!-- Breadcrumb Section Begin -->
 <section class="breadcrumb-section set-bg" data-setbg="{{ asset('img/breadcrumb.jpg') }}">
     <div class="container">
         <div class="row">
@@ -19,9 +18,6 @@
         </div>
     </div>
 </section>
-<!-- Breadcrumb Section End -->
-
-<!-- Profile Section Begin -->
 <section class="checkout spad">
     <div class="container">
         <div class="row">
@@ -33,7 +29,17 @@
                         </div>
                         <h5 class="card-title">{{ Auth::user()->Username }}</h5>
                         <p class="text-muted">{{ Auth::user()->Email }}</p>
-                        <p class="badge badge-success">Thành viên</p>
+                        <p class="badge badge-success mb-3">Thành viên</p>
+
+                        <div class="mt-4">
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="fa fa-sign-out"></i> Đăng xuất
+                                </button>
+                            </form>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -83,5 +89,4 @@
         </div>
     </div>
 </section>
-<!-- Profile Section End -->
 @endsection

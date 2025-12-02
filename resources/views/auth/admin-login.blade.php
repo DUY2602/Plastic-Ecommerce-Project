@@ -110,7 +110,8 @@
         border-radius: 15px;
         padding: 18px 25px 18px 50px;
         font-size: 16px;
-        font-weight: 500;
+        font-weight: 600;
+        color: #ffffff !important;
         transition: all 0.3s ease;
         background: rgba(52, 73, 94, 0.8);
         color: #ecf0f1;
