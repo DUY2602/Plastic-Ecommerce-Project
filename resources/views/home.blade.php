@@ -15,7 +15,6 @@
             </div>
             <div class="col-lg-6">
                 <div class="hero__image">
-                    {{-- FIX LỖI 404: Thêm onerror --}}
                     <img src="{{ asset('img/home-intro.jpg') }}" alt="Plastic Bottles" class="img-fluid">
                 </div>
             </div>
@@ -72,7 +71,6 @@
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="categories__item">
                     <div class="categories__item__image">
-                        {{-- FIX SLUG: Đảm bảo sử dụng Str::slug() và thêm onerror --}}
                         @php
                         $sluggedName = \Illuminate\Support\Str::slug($category->CategoryName, '-');
                         @endphp
@@ -133,7 +131,6 @@
                     </div>
                     <div class="featured__item__text">
                         <h6><a href="{{ route('product.detail', $product->ProductID) }}" class="product-link">{{ $product->ProductName }}</a></h6>
-                        {{-- FIX LỖI NULL: Kiểm tra biến thể --}}
                         @if($product->variants && $product->variants->isNotEmpty())
                         <h5>từ {{ number_format($product->variants->min('Price') * 1000, 0, ',', '.') }}đ</h5>
                         @else
@@ -155,6 +152,84 @@
     </div>
 </section>
 
+<!-- PHẦN THÊM VÀO: Sản phẩm yêu thích -->
+@auth
+<section class="favorite-products spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title">
+                    <h2>Sản phẩm yêu thích của bạn</h2>
+                    <p>Những sản phẩm bạn đã thêm vào danh sách yêu thích</p>
+                </div>
+            </div>
+        </div>
+
+        @if($favoriteProducts->count() > 0)
+        <div class="row">
+            @foreach($favoriteProducts as $product)
+            <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-4">
+                <div class="favorite__item">
+                    <div class="favorite__item__pic">
+                        <img src="{{ asset($product->Photo) }}"
+                            alt="{{ $product->ProductName }}"
+                            class="img-fluid favorite__img">
+
+                        <ul class="favorite__item__pic__hover">
+                            <li>
+                                <a href="#" class="favorite-btn active" data-product-id="{{ $product->ProductID }}" title="Bỏ yêu thích">
+                                    <i class="fa fa-heart heart-icon" style="color: #000000"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ asset($product->DocumentURL) }}" class="download-btn" target="_blank" title="Tải tài liệu">
+                                    <i class="fa fa-download download-icon"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="favorite__item__text">
+                        <h6><a href="{{ route('product.detail', $product->ProductID) }}" class="product-link">{{ $product->ProductName }}</a></h6>
+                        @if($product->variants && $product->variants->isNotEmpty())
+                        <h5>từ {{ number_format($product->variants->min('Price') * 1000, 0, ',', '.') }}đ</h5>
+                        @else
+                        <h5>Liên hệ</h5>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+        @else
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div class="empty-favorites">
+                    <i class="fa fa-heart" style="font-size: 60px; color: #ddd; margin-bottom: 20px;"></i>
+                    <h5>Bạn chưa có sản phẩm yêu thích nào</h5>
+                    <p>Hãy thêm sản phẩm vào danh sách yêu thích để xem tại đây!</p>
+                    <a href="{{ route('products.index') }}" class="primary-btn" style="margin-top: 15px;">
+                        <i class="fa fa-shopping-bag"></i> KHÁM PHÁ SẢN PHẨM
+                    </a>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        @if($favoriteProducts->count() > 6)
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <a href="{{ route('favorites.index') }}" class="primary-btn view-all-btn">
+                    XEM TẤT CẢ SẢN PHẨM YÊU THÍCH
+                    <i class="fa fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+        @endif
+    </div>
+</section>
+@endauth
+<!-- KẾT THÚC PHẦN THÊM VÀO -->
+
 <section class="from-blog spad">
     <div class="container">
         <div class="row">
@@ -167,12 +242,10 @@
         </div>
         <div class="row">
             @foreach($latestBlogs as $blog)
-            {{-- FIX LỖI NULL: Kiểm tra $blog có tồn tại không --}}
             @if($blog)
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="blog__item">
                     <div class="blog__item__pic">
-                        {{-- FIX LỖI 404: Thêm onerror --}}
                         <img src="{{ asset($blog->Image) }}"
                             alt="{{ $blog->Title }}"
                             class="img-fluid blog__img">
@@ -181,7 +254,6 @@
                         <h5><a href="{{ route('blog.show', $blog->BlogID) }}" class="blog-link">{{ $blog->Title }}</a></h5>
                         <p>{{ Str::limit(strip_tags($blog->Content ?? 'Nội dung đang được cập nhật.'), 100) }}</p>
                         <div class="blog__item__info">
-                            {{-- FIX LỖI NULL: Dùng toán tử nullsafe (?->) và ?? --}}
                             <span><i class="fa fa-user"></i> {{ $blog->Author ?? 'Quản trị viên' }}</span>
                             <span><i class="fa fa-calendar"></i> {{ $blog->created_at?->format('d/m/Y') ?? 'Đang cập nhật' }}</span>
                         </div>
@@ -224,6 +296,7 @@
             var productId = $(this).data('product-id');
             var heartIcon = $(this).find('.heart-icon');
             var button = $(this);
+            var itemContainer = button.closest('.featured__item, .favorite__item');
 
             $.ajax({
                 url: '{{ route("favorite.toggle") }}',
@@ -236,11 +309,15 @@
                     if (response.status === 'added') {
                         heartIcon.css('color', '#000000');
                         button.addClass('active');
-                        alert('Đã thêm vào danh sách yêu thích');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 500);
                     } else {
                         heartIcon.css('color', '#cccccc');
                         button.removeClass('active');
-                        alert('Đã xóa khỏi danh sách yêu thích');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 500);
                     }
                 },
                 error: function(xhr) {
@@ -257,16 +334,130 @@
 </script>
 
 <style>
-    /* ---------------------------------------------------------------------- */
-    /* === FONT CHỮ VÀ MÀU SẮC RÕ RÀNG === */
-    /* ---------------------------------------------------------------------- */
+    /* Thêm CSS cho phần sản phẩm yêu thích */
+    .favorite-products {
+        padding: 80px 0;
+        background: #fff8f8;
+    }
+
+    .favorite__item {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 2px solid #ffebee;
+        position: relative;
+    }
+
+    .favorite__item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(255, 107, 129, 0.15);
+        border-color: #ff6b81;
+    }
+
+    .favorite__item__pic {
+        position: relative;
+        height: 150px;
+        overflow: hidden;
+    }
+
+    .favorite__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .favorite__item:hover .favorite__img {
+        transform: scale(1.1);
+    }
+
+    .favorite__item__pic__hover {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .favorite__item:hover .favorite__item__pic__hover {
+        opacity: 1;
+    }
+
+    .favorite__item__pic__hover li {
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .favorite__item__pic__hover a {
+        display: block;
+        width: 35px;
+        height: 35px;
+        background: white;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 35px;
+        color: #666;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .favorite__item__pic__hover a:hover {
+        background: #ff6b81;
+        color: white;
+        transform: scale(1.2);
+    }
+
+    .favorite__item__text {
+        padding: 15px;
+        text-align: center;
+    }
+
+    .favorite__item__text h6 {
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+        color: #222222 !important;
+    }
+
+    .favorite__item__text h5 {
+        color: #ff6b81 !important;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .favorite-products .heart-icon {
+        color: #000000 !important;
+    }
+
+    .empty-favorites {
+        padding: 40px 20px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .empty-favorites h5 {
+        color: #666 !important;
+        margin-bottom: 10px;
+    }
+
+    .empty-favorites p {
+        color: #888 !important;
+        margin-bottom: 20px;
+    }
+
+    /* CSS hiện có (giữ nguyên) */
     body {
         font-family: 'Inter', sans-serif !important;
         color: #333333;
         line-height: 1.6;
     }
 
-    /* Tiêu đề lớn */
     .section-title h2,
     .hero__text h1 {
         font-weight: 700 !important;
@@ -274,7 +465,6 @@
         margin-bottom: 15px;
     }
 
-    /* Tiêu đề nhỏ */
     h4,
     h5,
     h6,
@@ -286,7 +476,6 @@
         margin-bottom: 10px;
     }
 
-    /* Nội dung chính */
     p,
     .hero__text p,
     .feature__item p,
@@ -298,15 +487,11 @@
         line-height: 1.6;
     }
 
-    /* Giá sản phẩm */
     .featured__item__text h5 {
         color: #7fad39 !important;
         font-weight: 700;
     }
 
-    /* ---------------------------------------------------------------------- */
-    /* === FIX LỖI VÀ CẢI THIỆN STYLE === */
-    /* ---------------------------------------------------------------------- */
     * {
         box-sizing: border-box;
     }
@@ -318,7 +503,6 @@
         transition: all 0.3s ease;
     }
 
-    /* === REMOVE ALL UNDERLINES === */
     .featured__item__text a,
     .blog__item__text a,
     .categories__item__text a,
@@ -330,7 +514,6 @@
         box-shadow: none !important;
     }
 
-    /* === HERO SECTION === */
     .hero {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 100px 0;
@@ -357,7 +540,6 @@
         object-fit: contain;
     }
 
-    /* === FEATURES SECTION === */
     .features {
         padding: 80px 0;
         background: #f8f9fa;
@@ -398,7 +580,6 @@
         line-height: 1.6;
     }
 
-    /* === CATEGORIES SECTION === */
     .categories {
         padding: 80px 0;
         background: white;
@@ -470,7 +651,6 @@
         gap: 12px;
     }
 
-    /* === FEATURED PRODUCTS SECTION === */
     .featured {
         padding: 80px 0;
         background: #f8f9fa;
@@ -559,7 +739,6 @@
         color: #7fad39 !important;
     }
 
-    /* === BLOG SECTION === */
     .from-blog {
         padding: 80px 0;
         background: white;
@@ -630,7 +809,6 @@
         margin-right: 15px;
     }
 
-    /* === CTA SECTION === */
     .cta {
         padding: 80px 0;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -649,7 +827,6 @@
         font-size: 1.1rem;
     }
 
-    /* === BUTTONS === */
     .primary-btn {
         display: inline-flex;
         align-items: center;
@@ -691,30 +868,25 @@
         color: white;
     }
 
-    /* === FAVORITE & DOWNLOAD BUTTONS - TRÁI TIM MÀU ĐEN === */
     .heart-icon {
         transition: all 0.3s ease;
     }
 
-    /* Trái tim chưa yêu thích */
     .heart-icon {
         color: #cccccc !important;
     }
 
-    /* Trái tim đã yêu thích */
     .favorite-btn.active .heart-icon,
     .favorite-btn:hover .heart-icon {
         color: #000000 !important;
         transform: scale(1.2);
     }
 
-    /* Download button */
     .download-btn:hover .download-icon {
         color: #7fad39 !important;
         transform: scale(1.2);
     }
 
-    /* === SECTION TITLE === */
     .section-title {
         text-align: center;
         margin-bottom: 50px;
@@ -734,7 +906,6 @@
         line-height: 1.6;
     }
 
-    /* === RESPONSIVE === */
     @media (max-width: 768px) {
         .hero {
             padding: 60px 0;
@@ -751,6 +922,7 @@
         .features,
         .categories,
         .featured,
+        .favorite-products,
         .from-blog,
         .cta {
             padding: 60px 0;
@@ -759,6 +931,14 @@
         .primary-btn {
             padding: 10px 20px;
             font-size: 0.9rem;
+        }
+
+        .favorite__item__pic {
+            height: 120px;
+        }
+
+        .empty-favorites {
+            padding: 30px 15px;
         }
     }
 </style>

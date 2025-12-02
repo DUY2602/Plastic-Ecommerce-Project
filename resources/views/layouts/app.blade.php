@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>@yield('title', 'Plastic Ecommerce')</title>
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
 
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
@@ -28,6 +30,15 @@
 
     {{-- JQuery BẮT BUỘC phải load đầu tiên --}}
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
+
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
 
     {{-- FIX LỖI SLICKNAV IS NOT A FUNCTION: Thêm thư viện slicknav.js --}}
@@ -35,8 +46,8 @@
     <script src="{{ asset('js/jquery.slicknav.js') }}"></script>
 
     <script>
+        // Logic đếm lượt truy cập (giữ nguyên)
         document.addEventListener('DOMContentLoaded', function() {
-            // Chỉ đếm khi không phải trang admin
             if (!window.location.pathname.startsWith('/admin')) {
                 fetch('{{ route("visitor.increment") }}', {
                         method: 'POST',
