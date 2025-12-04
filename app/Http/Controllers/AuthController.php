@@ -108,10 +108,13 @@ class AuthController extends Controller
             'username' => 'required|string|max:255|unique:account,Username',
             'email' => 'required|email|unique:account,Email',
             'password' => 'required|string|min:6',
+            'captcha' => 'required|captcha', // 🔥 THÊM RULE CAPTCHA
             'terms' => 'required|accepted',
         ], [
             'terms.required' => 'You must agree to the Terms and Conditions.',
             'terms.accepted' => 'You must agree to the Terms and Conditions.',
+            'captcha.required' => 'Vui lòng nhập mã xác nhận.',
+            'captcha.captcha' => 'Mã xác nhận không đúng.', // 🔥 THÊM THÔNG BÁO LỖI CHO CAPTCHA
         ]);
 
         try {

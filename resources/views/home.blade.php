@@ -115,15 +115,15 @@
                         <ul class="featured__item__pic__hover">
                             <li>
                                 <a href="#" class="favorite-btn" data-product-id="{{ $product->ProductID }}" title="Yêu thích">
-                                    @if(Auth::check() && in_array($product->ProductID, $favoriteProductIds))
-                                    <i class="fa fa-heart heart-icon" style="color: #000000"></i>
+                                    @if(isset($favoriteProductIds) && in_array($product->ProductID, $favoriteProductIds))
+                                    <i class="fa fa-heart heart-icon" style="color: #ff0000"></i>
                                     @else
-                                    <i class="fa fa-heart heart-icon" style="color: #cccccc"></i>
+                                    <i class="fa fa-heart heart-icon" style="color: #000000ff"></i>
                                     @endif
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ asset($product->DocumentURL) }}" class="download-btn" target="_blank" title="Tải tài liệu">
+                                <a href="{{ route('product.download', $product->ProductID) }}" class="download-btn" title="Tải tài liệu">
                                     <i class="fa fa-download download-icon"></i>
                                 </a>
                             </li>
@@ -875,17 +875,17 @@
     }
 
     .heart-icon {
-        color: #cccccc !important;
+        color: #000000ff !important;
     }
 
     .favorite-btn.active .heart-icon,
     .favorite-btn:hover .heart-icon {
-        color: #000000 !important;
+        color: #ff0000ff !important;
         transform: scale(1.2);
     }
 
     .download-btn:hover .download-icon {
-        color: #7fad39 !important;
+        color: #ffffffff !important;
         transform: scale(1.2);
     }
 

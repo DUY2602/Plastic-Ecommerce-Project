@@ -437,16 +437,101 @@ class AdminController extends Controller
         $request->validate([
             'Title' => 'required|string|max:255',
             'Content' => 'required|string',
-            'Image' => 'nullable|string|max:500',
+            'Image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // THÊM VALIDATION CHO IMAGE
             'Author' => 'required|string|max:100',
         ]);
 
         try {
-            Blog::create($request->all());
+            $imagePath = null;
+
+            // Xử lý upload ảnh nếu có
+            if ($request->hasFile('Image')) {
+                $file = $request->file('Image');
+
+                // Tạo tên file unique
+                $fileName = 'blog_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+                // Tạo thư mục nếu chưa tồn tại
+                $directory = public_path('img/blog');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
+                // Di chuyển file vào thư mục public/img/blog
+                $file->move($directory, $fileName);
+
+                // Lưu đường dẫn (tương đối từ thư mục public)
+                $imagePath = '/img/blog/' . $fileName;
+            }
+
+            Blog::create([
+                'Title' => $request->Title,
+                'Content' => $request->Content,
+                'Image' => $imagePath, // Lưu đường dẫn ảnh
+                'Author' => $request->Author,
+            ]);
+
             return redirect()->route('admin.blog.index')->with('success', 'Bài viết đã được thêm thành công!');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->with('error', 'Có lỗi xảy ra khi thêm bài viết: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Cập nhật blog
+     */
+    public function blogUpdate(Request $request, $id)
+    {
+        $blog = Blog::findOrFail($id);
+
+        $request->validate([
+            'Title' => 'required|string|max:255',
+            'Content' => 'required|string',
+            'Image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // THÊM VALIDATION CHO IMAGE
+            'Author' => 'required|string|max:100',
+        ]);
+
+        try {
+            $imagePath = $blog->Image;
+
+            // Xử lý upload ảnh nếu có ảnh mới
+            if ($request->hasFile('Image')) {
+                // Xóa ảnh cũ nếu tồn tại
+                if ($imagePath && file_exists(public_path($imagePath))) {
+                    unlink(public_path($imagePath));
+                }
+
+                $file = $request->file('Image');
+
+                // Tạo tên file unique
+                $fileName = 'blog_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+                // Tạo thư mục nếu chưa tồn tại
+                $directory = public_path('img/blog');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
+                // Di chuyển file vào thư mục public/img/blog
+                $file->move($directory, $fileName);
+
+                // Lưu đường dẫn mới
+                $imagePath = '/img/blog/' . $fileName;
+            }
+
+            $blog->update([
+                'Title' => $request->Title,
+                'Content' => $request->Content,
+                'Image' => $imagePath, // Cập nhật đường dẫn ảnh
+                'Author' => $request->Author,
+            ]);
+
+            return redirect()->route('admin.blog.index')->with('success', 'Bài viết đã được cập nhật thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Có lỗi xảy ra khi cập nhật bài viết: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -467,30 +552,6 @@ class AdminController extends Controller
     {
         $blog = Blog::findOrFail($id);
         return view('admin.blog.edit', compact('blog'));
-    }
-
-    /**
-     * Cập nhật blog
-     */
-    public function blogUpdate(Request $request, $id)
-    {
-        $blog = Blog::findOrFail($id);
-
-        $request->validate([
-            'Title' => 'required|string|max:255',
-            'Content' => 'required|string',
-            'Image' => 'nullable|string|max:500',
-            'Author' => 'required|string|max:100',
-        ]);
-
-        try {
-            $blog->update($request->all());
-            return redirect()->route('admin.blog.index')->with('success', 'Bài viết đã được cập nhật thành công!');
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Có lỗi xảy ra khi cập nhật bài viết: ' . $e->getMessage())
-                ->withInput();
-        }
     }
 
     /**

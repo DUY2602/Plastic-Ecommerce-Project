@@ -48,67 +48,87 @@
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
-                        <div class="checkout__input">
-                            <label for="username">Username<span>*</span></label>
-                            <input type="text" id="username" name="username"
-                                value="{{ old('username') }}"
-                                placeholder="Enter your username" required>
-                            @error('username')
-                            <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="checkout__input">
-                            <label for="email">Email Address<span>*</span></label>
-                            <input type="email" id="email" name="email"
-                                value="{{ old('email') }}"
-                                placeholder="Enter your email" required>
-                            @error('email')
-                            <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-
+                        {{-- 1. USERNAME VÀ EMAIL --}}
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="checkout__input">
-                                    <label for="password">Password<span>*</span></label>
-                                    <input type="password" id="password" name="password"
-                                        placeholder="Create password (min 6 characters)" required>
-                                    @error('password')
-                                    <span class="text-danger">{{ $message }}</span>
-                                    @enderror
+                                    <p>Username<span>*</span></p>
+                                    <input type="text" name="username" value="{{ old('username') }}" required>
+                                    @error('username')<span class="text-danger">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="checkout__input">
-                                    <label for="password_confirmation">Confirm Password<span>*</span></label>
-                                    <input type="password" id="password_confirmation"
-                                        name="password_confirmation"
-                                        placeholder="Confirm password" required>
+                                    <p>Email<span>*</span></p>
+                                    <input type="email" name="email" value="{{ old('email') }}" required>
+                                    @error('email')<span class="text-danger">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                         </div>
 
-                        <div class="checkout__input__checkbox mb-3" style="background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
-                            <div style="display: flex; align-items: center; gap: 12px; margin: 0 !important;">
-                                <input type="checkbox" id="terms" name="terms" required {{ old('terms') ? 'checked' : '' }}
-                                    style="width: 18px !important; height: 18px !important; margin: 0 !important; display: block !important;">
-                                <label for="terms" style="font-weight: 700 !important; color: #000 !important; margin: 0 !important; display: block !important; line-height: 1.4;">
-                                    I agree to the <a href="#" style="font-weight: 800 !important; color: #007bff !important; text-decoration: underline;">Terms and Conditions</a> and <a href="#" style="font-weight: 800 !important; color: #007bff !important; text-decoration: underline;">Privacy Policy</a>
-                                </label>
+                        {{-- 2. MẬT KHẨU VÀ XÁC NHẬN MẬT KHẨU --}}
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="checkout__input">
+                                    <p>Mật khẩu<span>*</span></p>
+                                    <input type="password" id="password" name="password" required>
+                                    @error('password')<span class="text-danger">{{ $message }}</span>@enderror
+                                </div>
                             </div>
+                            <div class="col-lg-6">
+                                <div class="checkout__input">
+                                    <p>Xác nhận Mật khẩu<span>*</span></p>
+                                    <input type="password" id="password_confirmation" name="password_confirmation" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- 🔥 3. TRƯỜNG CAPTCHA MỚI --}}
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="checkout__input">
+                                    <label for="captcha">Mã xác nhận (Captcha)<span>*</span></label>
+                                    <div class="row align-items-center">
+                                        <div class="col-6">
+                                            {{-- Hiển thị hình ảnh Captcha --}}
+                                            <div class="captcha-img-box" style="border: 1px solid #ddd; padding: 5px; border-radius: 5px;">
+                                                {{-- SỬA DÒNG NÀY: --}}
+                                                {!! captcha_img('flat') !!}
+                                                {{-- Thay Captcha::img('flat') bằng captcha_img('flat') --}}
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            {{-- Nút refresh Captcha --}}
+                                            <a href="javascript:void(0)" class="btn btn-sm btn-secondary refresh-captcha" style="background: #ccc; color: #333; border: none; font-weight: 600; padding: 10px 15px;">
+                                                <i class="fa fa-sync-alt"></i> Thay đổi
+                                            </a>
+                                        </div>
+                                    </div>
+                                    {{-- Trường nhập Captcha --}}
+                                    <input type="text" id="captcha" name="captcha"
+                                        placeholder="Nhập mã xác nhận" required style="margin-top: 15px;">
+                                    @error('captcha')
+                                    <span class="text-danger d-block mt-2">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        {{-- KẾT THÚC TRƯỜNG CAPTCHA MỚI --}}
+
+
+                        {{-- 4. TERMS AND CONDITIONS --}}
+                        <div class="checkout__input__checkbox mb-3" style="background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
+                            <label for="terms">
+                                Tôi đồng ý với các Điều khoản & Chính sách của cửa hàng
+                                <input type="checkbox" id="terms" name="terms" {{ old('terms') ? 'checked' : '' }}>
+                                <span class="checkmark"></span>
+                            </label>
                             @error('terms')
                             <span class="text-danger d-block mt-2">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <button type="submit" class="site-btn btn-block">CREATE ACCOUNT</button>
-
-                        <div class="text-center mt-3">
-                            <p>Already have an account?
-                                <a href="{{ route('login') }}" class="login-link">Login here</a>
-                            </p>
-                        </div>
                     </form>
                 </div>
             </div>
@@ -206,6 +226,18 @@
                 e.preventDefault();
             }
         });
+        // 🔥 CODE REFRESH CAPTCHA
+        document.querySelector('.refresh-captcha')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Cập nhật URL hình ảnh Captcha để tạo mới
+            const captchaImgBox = document.querySelector('.captcha-img-box');
+            const newUrl = '/captcha/flat?' + Math.random();
+            captchaImgBox.innerHTML = '<img src="' + newUrl + '" alt="captcha">';
+            document.getElementById('captcha').value = ''; // Xóa input Captcha cũ
+        });
+        // KẾT THÚC CODE REFRESH CAPTCHA
     });
 </script>
+
+
 @endsection
