@@ -199,6 +199,9 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.1.0/js/adminlte.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.3/tinymce.min.js"></script>
+    <script src="{{ asset('js/tinymce.js') }}"></script>
+
 
     <!-- Visitor Count Script for Admin Only -->
     @if(request()->routeIs('admin.dashboard'))
