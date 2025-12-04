@@ -20,8 +20,8 @@
                     <ul>
                         <li><a href="{{ route('about') }}">Về chúng tôi</a></li>
                         <li><a href="{{ route('contact') }}">Liên hệ</a></li>
-                        <li><a href="#">Chính sách bảo mật</a></li>
-                        <li><a href="#">Điều khoản sử dụng</a></li>
+                        <li><a href="{{ route('blog.index') }}">Blog</a></li>
+                        <li><a href="#"></a></li>
                     </ul>
                     <ul>
                         <li><a href="{{ route('category', 'pet') }}">Sản phẩm PET</a></li>
