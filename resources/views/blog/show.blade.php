@@ -9,11 +9,6 @@
             <div class="col-lg-12 text-center">
                 <div class="breadcrumb__text">
                     <h2>{{ $blog->Title }}</h2>
-                    <div class="breadcrumb__option">
-                        <a href="{{ route('home') }}">Home</a>
-                        <a href="{{ route('blog.index') }}">Blog</a>
-                        <span>{{ Str::limit($blog->Title, 30) }}</span>
-                    </div>
                 </div>
             </div>
         </div>

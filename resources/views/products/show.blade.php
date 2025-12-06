@@ -8,12 +8,7 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <div class="breadcrumb__text">
-                    <h2>Product Details</h2>
-                    <div class="breadcrumb__option">
-                        <a href="{{ route('home') }}">Home</a>
-                        <a href="{{ route('products.index') }}">Products</a>
-                        <span>Product Details</span>
-                    </div>
+                    <h2>{{ $product->ProductName }}</h2>
                 </div>
             </div>
         </div>
