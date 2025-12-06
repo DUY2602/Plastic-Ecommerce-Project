@@ -10,7 +10,7 @@
                 <div class="breadcrumb__text">
                     <h2>Blog</h2>
                     <div class="breadcrumb__option">
-                        <a href="{{ route('home') }}">Trang chủ</a>
+                        <a href="{{ route('home') }}">Home</a>
                         <span>Blog</span>
                     </div>
                 </div>
@@ -28,14 +28,14 @@
                         <img src="{{ asset($blog->Image) }}" alt="{{ $blog->Title }}">
                     </div>
                     <div class="blog__item__text">
-                        <span class="blog__category">Tin tức</span>
+                        <span class="blog__category">News</span>
                         <h5><a href="{{ route('blog.show', $blog->BlogID) }}">{{ $blog->Title }}</a></h5>
                         <p>{{ Str::limit(strip_tags($blog->Content), 100) }}</p>
                         <div class="blog__item__info">
                             <span><i class="fa fa-calendar"></i> {{ $blog->created_at->format('d/m/Y') }}</span>
                             <span><i class="fa fa-eye"></i> {{ $blog->Views ?? 0 }}</span>
                         </div>
-                        <a href="{{ route('blog.show', $blog->BlogID) }}" class="read-more">Đọc tiếp <i class="fa fa-arrow-right"></i></a>
+                        <a href="{{ route('blog.show', $blog->BlogID) }}" class="read-more">Read more <i class="fa fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -43,8 +43,8 @@
         </div>
 
         <div class="col-lg-12">
-            {{-- ĐÃ SỬA: Loại bỏ các class CSS bao bọc gây lỗi (product__pagination, blog__pagination) --}}
-            {{-- và chỉ giữ lại căn giữa (text-center) và sử dụng template Bootstrap 4. --}}
+            {{-- FIXED: Removed wrapper CSS classes causing errors (product__pagination, blog__pagination) --}}
+            {{-- and kept only center alignment (text-center) using Bootstrap 4 template. --}}
             <div class="blog__pagination text-center">
                 {{ $blogs->links('pagination::bootstrap-4') }}
             </div>
@@ -52,7 +52,7 @@
     </div>
 </section>
 <style>
-    /* ... (CSS cho blog__item giữ nguyên) ... */
+    /* ... (CSS for blog__item remains unchanged) ... */
     .blog__item {
         background: #fff;
         border-radius: 10px;
@@ -146,7 +146,7 @@
         color: #1c1c1c;
     }
 
-    /* CSS PHÂN TRANG (Giữ lại để đảm bảo kiểu dáng) */
+    /* PAGINATION CSS (Keep to ensure styling) */
     .blog__pagination {
         margin-top: 50px;
     }
@@ -183,7 +183,7 @@
         border-color: #7fad39;
     }
 
-    /* Ẩn các icon không mong muốn (phòng trường hợp) */
+    /* Hide unwanted icons (just in case) */
     .blog__pagination .pagination .page-link i,
     .blog__pagination .pagination .page-link svg {
         display: none;

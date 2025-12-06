@@ -48,7 +48,7 @@
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 
-                        {{-- 1. USERNAME VÀ EMAIL --}}
+                        {{-- 1. USERNAME AND EMAIL --}}
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="checkout__input">
@@ -66,60 +66,59 @@
                             </div>
                         </div>
 
-                        {{-- 2. MẬT KHẨU VÀ XÁC NHẬN MẬT KHẨU --}}
+                        {{-- 2. PASSWORD AND CONFIRM PASSWORD --}}
                         <div class="row">
                             <div class="col-lg-6">
                                 <div class="checkout__input">
-                                    <p>Mật khẩu<span>*</span></p>
+                                    <p>Password<span>*</span></p>
                                     <input type="password" id="password" name="password" required>
                                     @error('password')<span class="text-danger">{{ $message }}</span>@enderror
                                 </div>
                             </div>
                             <div class="col-lg-6">
                                 <div class="checkout__input">
-                                    <p>Xác nhận Mật khẩu<span>*</span></p>
+                                    <p>Confirm Password<span>*</span></p>
                                     <input type="password" id="password_confirmation" name="password_confirmation" required>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- 🔥 3. TRƯỜNG CAPTCHA MỚI --}}
+                        {{-- 🔥 3. NEW CAPTCHA FIELD --}}
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="checkout__input">
-                                    <label for="captcha">Mã xác nhận (Captcha)<span>*</span></label>
+                                    <label for="captcha">Verification Code (Captcha)<span>*</span></label>
                                     <div class="row align-items-center">
                                         <div class="col-6">
-                                            {{-- Hiển thị hình ảnh Captcha --}}
+                                            {{-- Display Captcha image --}}
                                             <div class="captcha-img-box" style="border: 1px solid #ddd; padding: 5px; border-radius: 5px;">
-                                                {{-- SỬA DÒNG NÀY: --}}
+                                                {{-- FIXED THIS LINE: --}}
                                                 {!! captcha_img('flat') !!}
-                                                {{-- Thay Captcha::img('flat') bằng captcha_img('flat') --}}
+                                                {{-- Replace Captcha::img('flat') with captcha_img('flat') --}}
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            {{-- Nút refresh Captcha --}}
+                                            {{-- Refresh Captcha button --}}
                                             <a href="javascript:void(0)" class="btn btn-sm btn-secondary refresh-captcha" style="background: #ccc; color: #333; border: none; font-weight: 600; padding: 10px 15px;">
-                                                <i class="fa fa-sync-alt"></i> Thay đổi
+                                                <i class="fa fa-sync-alt"></i> Change
                                             </a>
                                         </div>
                                     </div>
-                                    {{-- Trường nhập Captcha --}}
+                                    {{-- Captcha input field --}}
                                     <input type="text" id="captcha" name="captcha"
-                                        placeholder="Nhập mã xác nhận" required style="margin-top: 15px;">
+                                        placeholder="Enter verification code" required style="margin-top: 15px;">
                                     @error('captcha')
                                     <span class="text-danger d-block mt-2">{{ $message }}</span>
                                     @enderror
                                 </div>
                             </div>
                         </div>
-                        {{-- KẾT THÚC TRƯỜNG CAPTCHA MỚI --}}
-
+                        {{-- END NEW CAPTCHA FIELD --}}
 
                         {{-- 4. TERMS AND CONDITIONS --}}
                         <div class="checkout__input__checkbox mb-3" style="background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #ddd;">
                             <label for="terms">
-                                Tôi đồng ý với các Điều khoản & Chính sách của cửa hàng
+                                I agree to the store's Terms & Conditions
                                 <input type="checkbox" id="terms" name="terms" {{ old('terms') ? 'checked' : '' }}>
                                 <span class="checkmark"></span>
                             </label>
@@ -140,7 +139,7 @@
 
 @section('styles')
 <style>
-    /* Làm đậm chữ trong form register */
+    /* Make text bold in register form */
     .checkout__input label,
     .checkout__input p {
         font-weight: 700 !important;
@@ -148,26 +147,26 @@
         font-size: 15px;
     }
 
-    /* Làm đậm chữ terms đặc biệt */
+    /* Make terms text especially bold */
     .checkout__input__checkbox label {
         font-weight: 700 !important;
         color: #000 !important;
     }
 
-    /* Làm đậm links trong terms */
+    /* Make links in terms bold */
     .checkout__input__checkbox a {
         font-weight: 800 !important;
         color: #007bff !important;
         text-decoration: underline;
     }
 
-    /* Làm đậm chữ KHI ĐANG NHẬP trong input */
+    /* Make text bold WHEN TYPING in input */
     .checkout__input input {
         font-weight: 600 !important;
         color: #000 !important;
     }
 
-    /* Đảm bảo chữ đậm khi có giá trị */
+    /* Ensure text is bold when it has value */
     .checkout__input input,
     .checkout__input input:focus,
     .checkout__input input:not(:placeholder-shown) {
@@ -175,7 +174,7 @@
         color: #000 !important;
     }
 
-    /* Làm rõ placeholder */
+    /* Clarify placeholder */
     .checkout__input input::placeholder {
         font-weight: 500 !important;
         color: #666 !important;
@@ -226,18 +225,16 @@
                 e.preventDefault();
             }
         });
-        // 🔥 CODE REFRESH CAPTCHA
+        // 🔥 CAPTCHA REFRESH CODE
         document.querySelector('.refresh-captcha')?.addEventListener('click', function(e) {
             e.preventDefault();
-            // Cập nhật URL hình ảnh Captcha để tạo mới
+            // Update Captcha image URL to generate new one
             const captchaImgBox = document.querySelector('.captcha-img-box');
             const newUrl = '/captcha/flat?' + Math.random();
             captchaImgBox.innerHTML = '<img src="' + newUrl + '" alt="captcha">';
-            document.getElementById('captcha').value = ''; // Xóa input Captcha cũ
+            document.getElementById('captcha').value = ''; // Clear old Captcha input
         });
-        // KẾT THÚC CODE REFRESH CAPTCHA
+        // END CAPTCHA REFRESH CODE
     });
 </script>
-
-
 @endsection

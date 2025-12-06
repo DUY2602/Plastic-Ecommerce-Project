@@ -19,7 +19,7 @@ class HomeController extends Controller
         // 2. Lấy sản phẩm nổi bật (Featured Products)
         $featuredProducts = Product::with(['variants', 'category'])
             ->where('Status', 1)
-            ->take(8)
+            ->take(4)
             ->get();
 
         // 3. Lấy bài viết blog mới nhất

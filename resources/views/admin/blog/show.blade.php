@@ -1,19 +1,19 @@
 @extends('layouts.admin')
 
-@section('title', 'Chi tiết Blog')
+@section('title', 'Blog Details')
 
 @section('admin-content')
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Chi tiết Blog</h1>
+                <h1 class="m-0">Blog Details</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('admin.blog.index') }}">Blog</a></li>
-                    <li class="breadcrumb-item active">Chi tiết</li>
+                    <li class="breadcrumb-item active">Details</li>
                 </ol>
             </div>
         </div>
@@ -26,7 +26,7 @@
             <div class="col-md-8 mx-auto">
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Thông tin bài viết</h3>
+                        <h3 class="card-title">Post Information</h3>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -44,15 +44,15 @@
                             <div class="col-md-8">
                                 <table class="table table-bordered">
                                     <tr>
-                                        <th width="30%">ID bài viết</th>
+                                        <th width="30%">Post ID</th>
                                         <td>#{{ $blog->BlogID }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Tiêu đề</th>
+                                        <th>Title</th>
                                         <td><strong>{{ $blog->Title }}</strong></td>
                                     </tr>
                                     <tr>
-                                        <th>Tác giả</th>
+                                        <th>Author</th>
                                         <td>
                                             <span class="badge badge-info badge-pill px-3">
                                                 <i class="fas fa-user mr-1"></i>{{ $blog->Author }}
@@ -60,7 +60,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>Nội dung</th>
+                                        <th>Content</th>
                                         <td>
                                             <div style="max-height: 200px; overflow-y: auto; padding: 10px; background: #f8f9fa; border-radius: 5px;">
                                                 {{ $blog->Content }}
@@ -68,29 +68,29 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>Độ dài nội dung</th>
+                                        <th>Content Length</th>
                                         <td>
                                             <span class="badge badge-secondary badge-pill px-3">
                                                 <i class="fas fa-ruler mr-1"></i>
-                                                {{ strlen($blog->Content) }} ký tự
+                                                {{ strlen($blog->Content) }} characters
                                             </span>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>Thời gian đọc ước tính</th>
+                                        <th>Estimated Reading Time</th>
                                         <td>
                                             <span class="badge badge-primary badge-pill px-3">
                                                 <i class="fas fa-clock mr-1"></i>
-                                                {{ ceil(strlen($blog->Content) / 1000) }} phút
+                                                {{ ceil(strlen($blog->Content) / 1000) }} minutes
                                             </span>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>Ngày tạo</th>
+                                        <th>Created Date</th>
                                         <td>{{ $blog->created_at->format('d/m/Y H:i') }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Ngày cập nhật</th>
+                                        <th>Updated Date</th>
                                         <td>{{ $blog->updated_at->format('d/m/Y H:i') }}</td>
                                     </tr>
                                 </table>
@@ -100,18 +100,18 @@
                     <div class="card-footer">
                         <div class="btn-group">
                             <a href="{{ route('admin.blog.edit', $blog->BlogID) }}" class="btn btn-warning">
-                                <i class="fas fa-edit mr-2"></i>Chỉnh sửa
+                                <i class="fas fa-edit mr-2"></i>Edit
                             </a>
                             <form action="{{ route('admin.blog.destroy', $blog->BlogID) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger"
-                                    onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">
-                                    <i class="fas fa-trash mr-2"></i>Xóa
+                                    onclick="return confirm('Are you sure you want to delete this post?')">
+                                    <i class="fas fa-trash mr-2"></i>Delete
                                 </button>
                             </form>
                             <a href="{{ route('admin.blog.index') }}" class="btn btn-default">
-                                <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                                <i class="fas fa-arrow-left mr-2"></i>Back
                             </a>
                         </div>
                     </div>
@@ -120,7 +120,7 @@
                 <!-- Recent Blogs Section -->
                 <div class="card card-info mt-4">
                     <div class="card-header">
-                        <h3 class="card-title">Bài viết gần đây</h3>
+                        <h3 class="card-title">Recent Posts</h3>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -128,10 +128,10 @@
                                 <thead>
                                     <tr>
                                         <th width="80">ID</th>
-                                        <th>Tiêu đề</th>
-                                        <th width="120">Tác giả</th>
-                                        <th width="120">Ngày tạo</th>
-                                        <th width="100">Thao tác</th>
+                                        <th>Title</th>
+                                        <th width="120">Author</th>
+                                        <th width="120">Created Date</th>
+                                        <th width="100">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -153,7 +153,7 @@
                                         <td>{{ $recentBlog->created_at->format('d/m/Y') }}</td>
                                         <td>
                                             <a href="{{ route('admin.blog.show', $recentBlog->BlogID) }}"
-                                                class="btn btn-sm btn-info" title="Xem chi tiết">
+                                                class="btn btn-sm btn-info" title="View Details">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                         </td>
@@ -217,11 +217,11 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Xác nhận xóa bài viết
+        // Confirm post deletion
         const deleteForms = document.querySelectorAll('form[action*="destroy"]');
         deleteForms.forEach(form => {
             form.addEventListener('submit', function(e) {
-                if (!confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+                if (!confirm('Are you sure you want to delete this post?')) {
                     e.preventDefault();
                 }
             });

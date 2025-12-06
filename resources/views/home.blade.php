@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Trang chủ - Plastic Store')
+@section('title', 'Home - Plastic Store')
 
 @section('content')
 <section class="hero">
@@ -8,9 +8,9 @@
         <div class="row align-items-center">
             <div class="col-lg-6">
                 <div class="hero__text">
-                    <h1>Nhà sản xuất chai nhựa chất lượng cao</h1>
-                    <p>Chuyên cung cấp các loại chai nhựa PET, PP, PC với chất lượng vượt trội, giá cả cạnh tranh và dịch vụ tận tâm</p>
-                    <a href="{{ route('products.index') }}" class="primary-btn">KHÁM PHÁ SẢN PHẨM</a>
+                    <h1>High-Quality Plastic Bottle Manufacturer</h1>
+                    <p>Specializing in providing PET, PP, PC plastic bottles with superior quality, competitive prices, and dedicated service</p>
+                    <a href="{{ route('products.index') }}" class="primary-btn">EXPLORE PRODUCTS</a>
                 </div>
             </div>
             <div class="col-lg-6">
@@ -30,8 +30,8 @@
                     <div class="feature__item__icon">
                         <i class="fa fa-shield-alt"></i>
                     </div>
-                    <h5>Chất lượng đảm bảo</h5>
-                    <p>Sản phẩm đạt tiêu chuẩn chất lượng quốc tế, an toàn cho sức khỏe</p>
+                    <h5>Quality Guaranteed</h5>
+                    <p>Products meet international quality standards, safe for health</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
@@ -39,8 +39,8 @@
                     <div class="feature__item__icon">
                         <i class="fa fa-cube"></i>
                     </div>
-                    <h5>Đa dạng mẫu mã</h5>
-                    <p>Nhiều loại chai nhựa PET, PP, PC với kích thước và màu sắc đa dạng</p>
+                    <h5>Diverse Designs</h5>
+                    <p>Various PET, PP, PC plastic bottles with diverse sizes and colors</p>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
@@ -48,8 +48,8 @@
                     <div class="feature__item__icon">
                         <i class="fa fa-headset"></i>
                     </div>
-                    <h5>Tư vấn chuyên nghiệp</h5>
-                    <p>Đội ngũ tư vấn chuyên nghiệp sẵn sàng hỗ trợ khách hàng</p>
+                    <h5>Professional Consultation</h5>
+                    <p>Professional consulting team ready to support customers</p>
                 </div>
             </div>
         </div>
@@ -61,8 +61,8 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-title">
-                    <h2>Danh mục sản phẩm</h2>
-                    <p>Khám phá các dòng sản phẩm chai nhựa chất lượng cao</p>
+                    <h2>Product Categories</h2>
+                    <p>Discover our high-quality plastic bottle product lines</p>
                 </div>
             </div>
         </div>
@@ -82,7 +82,7 @@
                         <h4>{{ $category->CategoryName }}</h4>
                         <p>{{ $category->Description }}</p>
                         <a href="{{ route('category', $sluggedName) }}" class="categories__link">
-                            Xem sản phẩm
+                            View Products
                             <i class="fa fa-arrow-right"></i>
                         </a>
                     </div>
@@ -98,8 +98,8 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-title">
-                    <h2>Sản phẩm nổi bật</h2>
-                    <p>Những sản phẩm được ưa chuộng nhất</p>
+                    <h2>Featured Products</h2>
+                    <p>Most popular products</p>
                 </div>
             </div>
         </div>
@@ -114,7 +114,7 @@
 
                         <ul class="featured__item__pic__hover">
                             <li>
-                                <a href="#" class="favorite-btn" data-product-id="{{ $product->ProductID }}" title="Yêu thích">
+                                <a href="#" class="favorite-btn" data-product-id="{{ $product->ProductID }}" title="Add to Favorites">
                                     @if(isset($favoriteProductIds) && in_array($product->ProductID, $favoriteProductIds))
                                     <i class="fa fa-heart heart-icon" style="color: #ff0000"></i>
                                     @else
@@ -123,7 +123,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('product.download', $product->ProductID) }}" class="download-btn" title="Tải tài liệu">
+                                <a href="{{ route('product.download', $product->ProductID) }}" class="download-btn" title="Download Documents">
                                     <i class="fa fa-download download-icon"></i>
                                 </a>
                             </li>
@@ -134,7 +134,7 @@
                         @if($product->variants && $product->variants->isNotEmpty())
                         <h5 class="product-price">{{ number_format($product->variants->min('Price') * 1000, 0, ',', '.') }}đ</h5>
                         @else
-                        <h5>Liên hệ</h5>
+                        <h5>Contact for Price</h5>
                         @endif
                     </div>
                 </div>
@@ -144,7 +144,7 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <a href="{{ route('products.index') }}" class="primary-btn view-all-btn">
-                    XEM TẤT CẢ SẢN PHẨM
+                    VIEW ALL PRODUCTS
                     <i class="fa fa-arrow-right"></i>
                 </a>
             </div>
@@ -152,15 +152,15 @@
     </div>
 </section>
 
-<!-- PHẦN THÊM VÀO: Sản phẩm yêu thích -->
+<!-- ADDED SECTION: Favorite Products -->
 @auth
 <section class="favorite-products spad">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-title">
-                    <h2>Sản phẩm yêu thích của bạn</h2>
-                    <p>Những sản phẩm bạn đã thêm vào danh sách yêu thích</p>
+                    <h2>Your Favorite Products</h2>
+                    <p>Products you have added to your favorites list</p>
                 </div>
             </div>
         </div>
@@ -177,12 +177,12 @@
 
                         <ul class="favorite__item__pic__hover">
                             <li>
-                                <a href="#" class="favorite-btn active" data-product-id="{{ $product->ProductID }}" title="Bỏ yêu thích">
+                                <a href="#" class="favorite-btn active" data-product-id="{{ $product->ProductID }}" title="Remove from Favorites">
                                     <i class="fa fa-heart heart-icon" style="color: #000000"></i>
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ asset($product->DocumentURL) }}" class="download-btn" target="_blank" title="Tải tài liệu">
+                                <a href="{{ asset($product->DocumentURL) }}" class="download-btn" target="_blank" title="Download Documents">
                                     <i class="fa fa-download download-icon"></i>
                                 </a>
                             </li>
@@ -193,7 +193,7 @@
                         @if($product->variants && $product->variants->isNotEmpty())
                         <h5 class="product-price">{{ number_format($product->variants->min('Price') * 1000, 0, ',', '.') }}đ</h5>
                         @else
-                        <h5>Liên hệ</h5>
+                        <h5>Contact for Price</h5>
                         @endif
                     </div>
                 </div>
@@ -205,10 +205,10 @@
             <div class="col-lg-12 text-center">
                 <div class="empty-favorites">
                     <i class="fa fa-heart" style="font-size: 60px; color: #ddd; margin-bottom: 20px;"></i>
-                    <h5>Bạn chưa có sản phẩm yêu thích nào</h5>
-                    <p>Hãy thêm sản phẩm vào danh sách yêu thích để xem tại đây!</p>
+                    <h5>You don't have any favorite products yet</h5>
+                    <p>Add products to your favorites list to view them here!</p>
                     <a href="{{ route('products.index') }}" class="primary-btn" style="margin-top: 15px;">
-                        <i class="fa fa-shopping-bag"></i> KHÁM PHÁ SẢN PHẨM
+                        <i class="fa fa-shopping-bag"></i> EXPLORE PRODUCTS
                     </a>
                 </div>
             </div>
@@ -219,7 +219,7 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <a href="{{ route('favorites.index') }}" class="primary-btn view-all-btn">
-                    XEM TẤT CẢ SẢN PHẨM YÊU THÍCH
+                    VIEW ALL FAVORITE PRODUCTS
                     <i class="fa fa-arrow-right"></i>
                 </a>
             </div>
@@ -228,15 +228,15 @@
     </div>
 </section>
 @endauth
-<!-- KẾT THÚC PHẦN THÊM VÀO -->
+<!-- END OF ADDED SECTION -->
 
 <section class="from-blog spad">
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-title">
-                    <h2>Tin tức & Blog</h2>
-                    <p>Cập nhật những thông tin mới nhất về ngành nhựa</p>
+                    <h2>News & Blog</h2>
+                    <p>Latest updates from the plastics industry</p>
                 </div>
             </div>
         </div>
@@ -252,10 +252,10 @@
                     </div>
                     <div class="blog__item__text">
                         <h5><a href="{{ route('blog.show', $blog->BlogID) }}" class="blog-link">{{ $blog->Title }}</a></h5>
-                        <p>{{ Str::limit(strip_tags($blog->Content ?? 'Nội dung đang được cập nhật.'), 100) }}</p>
+                        <p>{{ Str::limit(strip_tags($blog->Content ?? 'Content is being updated.'), 100) }}</p>
                         <div class="blog__item__info">
-                            <span><i class="fa fa-user"></i> {{ $blog->Author ?? 'Quản trị viên' }}</span>
-                            <span><i class="fa fa-calendar"></i> {{ $blog->created_at?->format('d/m/Y') ?? 'Đang cập nhật' }}</span>
+                            <span><i class="fa fa-user"></i> {{ $blog->Author ?? 'Administrator' }}</span>
+                            <span><i class="fa fa-calendar"></i> {{ $blog->created_at?->format('m/d/Y') ?? 'Updating' }}</span>
                         </div>
                     </div>
                 </div>
@@ -271,13 +271,13 @@
         <div class="row">
             <div class="col-lg-8">
                 <div class="cta__text">
-                    <h3>Bạn cần tư vấn về sản phẩm?</h3>
-                    <p>Đội ngũ chuyên gia của chúng tôi sẵn sàng hỗ trợ bạn lựa chọn sản phẩm phù hợp</p>
+                    <h3>Need Product Consultation?</h3>
+                    <p>Our team of experts is ready to help you choose the right products</p>
                 </div>
             </div>
             <div class="col-lg-4 text-lg-end">
                 <a href="{{ route('contact') }}" class="primary-btn cta-btn">
-                    LIÊN HỆ TƯ VẤN
+                    CONTACT FOR CONSULTATION
                     <i class="fa fa-arrow-right"></i>
                 </a>
             </div>
@@ -289,7 +289,7 @@
 @section('scripts')
 <script>
     $(document).ready(function() {
-        // Xử lý click nút yêu thích
+        // Handle favorite button click
         $('.favorite-btn').click(function(e) {
             e.preventDefault();
 
@@ -322,10 +322,10 @@
                 },
                 error: function(xhr) {
                     if (xhr.status === 401) {
-                        alert('Vui lòng đăng nhập để thêm sản phẩm yêu thích');
+                        alert('Please login to add products to favorites');
                         window.location.href = '{{ route("login") }}';
                     } else {
-                        alert('Có lỗi xảy ra, vui lòng thử lại');
+                        alert('An error occurred, please try again');
                     }
                 }
             });
@@ -334,7 +334,7 @@
 </script>
 
 <style>
-    /* Thêm CSS cho phần sản phẩm yêu thích */
+    /* CSS for favorite products section */
     .favorite-products {
         padding: 80px 0;
         background: #fff8f8;
@@ -451,7 +451,7 @@
         margin-bottom: 20px;
     }
 
-    /* CSS hiện có (giữ nguyên) */
+    /* Existing CSS (kept unchanged) */
     body {
         font-family: 'Inter', sans-serif !important;
         color: #333333;
@@ -487,7 +487,7 @@
         line-height: 1.6;
     }
 
-    /* ĐỔI MÀU GIÁ SẢN PHẨM THÀNH ĐỎ */
+    /* CHANGE PRODUCT PRICE COLOR TO RED */
     .product-price {
         color: #ff0000 !important;
         font-weight: 700;

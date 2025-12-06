@@ -1,18 +1,18 @@
 @extends('layouts.admin')
 
-@section('title', 'Quản lý sản phẩm')
+@section('title', 'Manage Products')
 
 @section('admin-content')
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Quản lý sản phẩm</h1>
+                <h1 class="m-0">Manage Products</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Sản phẩm</li>
+                    <li class="breadcrumb-item active">Products</li>
                 </ol>
             </div>
         </div>
@@ -36,7 +36,7 @@
                                                 </span>
                                             </div>
                                             <input type="text" name="search" class="form-control"
-                                                placeholder="Tìm kiếm sản phẩm theo tên..."
+                                                placeholder="Search products by name..."
                                                 value="{{ request('search') }}"
                                                 id="searchInput">
                                         </div>
@@ -45,7 +45,7 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <select name="category" class="form-control" id="categorySelect">
-                                            <option value="">Tất cả danh mục</option>
+                                            <option value="">All categories</option>
                                             <option value="PET" {{ request('category') == 'PET' ? 'selected' : '' }}>PET</option>
                                             <option value="PP" {{ request('category') == 'PP' ? 'selected' : '' }}>PP</option>
                                             <option value="PC" {{ request('category') == 'PC' ? 'selected' : '' }}>PC</option>
@@ -63,11 +63,11 @@
             <div class="col-12">
                 <div class="card card-primary card-outline animated fadeInUp">
                     <div class="card-header">
-                        <h3 class="card-title">Danh sách sản phẩm</h3>
+                        <h3 class="card-title">Product List</h3>
                         <div class="card-tools">
                             <div class="btn-group">
                                 <a href="{{ route('admin.products.create') }}" class="btn btn-success waves-effect">
-                                    <i class="fas fa-plus mr-2"></i>Thêm sản phẩm mới
+                                    <i class="fas fa-plus mr-2"></i>Add New Product
                                 </a>
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                     <i class="fas fa-minus"></i>
@@ -76,8 +76,8 @@
                                     <i class="fas fa-expand"></i>
                                 </button>
                                 @if(request('search') || request('category'))
-                                <a href="{{ route('admin.products') }}" class="btn btn-danger waves-effect" title="Xóa bộ lọc">
-                                    <i class="fas fa-times mr-2"></i>Xóa lọc
+                                <a href="{{ route('admin.products') }}" class="btn btn-danger waves-effect" title="Clear filters">
+                                    <i class="fas fa-times mr-2"></i>Clear Filter
                                 </a>
                                 @endif
                             </div>
@@ -86,9 +86,9 @@
                     <div class="card-body">
                         @if(request('search') || request('category'))
                         <div class="alert alert-info alert-dismissible fade show mb-3" role="alert">
-                            <strong>Kết quả tìm kiếm:</strong>
-                            @if(request('search')) Từ khóa: "<strong>{{ request('search') }}</strong>" @endif
-                            @if(request('category')) | Danh mục: <strong>{{ request('category') }}</strong> @endif
+                            <strong>Search Results:</strong>
+                            @if(request('search')) Keyword: "<strong>{{ request('search') }}</strong>" @endif
+                            @if(request('category')) | Category: <strong>{{ request('category') }}</strong> @endif
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -97,7 +97,7 @@
 
                         @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
-                            <strong>Thành công!</strong> {{ session('success') }}
+                            <strong>Success!</strong> {{ session('success') }}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -110,13 +110,13 @@
                                 <thead class="thead-dark">
                                     <tr>
                                         <th width="50">ID</th>
-                                        <th width="80">Hình ảnh</th>
-                                        <th>Tên sản phẩm</th>
-                                        <th width="120">Danh mục</th>
-                                        <th width="100">Biến thể</th>
-                                        <th width="120">Trạng thái</th>
-                                        <th width="120">Ngày tạo</th>
-                                        <th width="160" class="text-center">Thao tác</th>
+                                        <th width="80">Image</th>
+                                        <th>Product Name</th>
+                                        <th width="120">Category</th>
+                                        <th width="100">Variants</th>
+                                        <th width="120">Status</th>
+                                        <th width="120">Created Date</th>
+                                        <th width="160" class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -145,7 +145,7 @@
                                             @if(isset($product->category))
                                             <span class="badge badge-info badge-pill px-3">{{ $product->category->CategoryName }}</span>
                                             @else
-                                            <span class="badge badge-secondary badge-pill px-3">Chưa phân loại</span>
+                                            <span class="badge badge-secondary badge-pill px-3">Uncategorized</span>
                                             @endif
                                         </td>
                                         <td>
@@ -157,30 +157,30 @@
                                         <td>
                                             @if($product->Status == 1)
                                             <span class="badge badge-success badge-pill">
-                                                <i class="fas fa-check mr-1"></i>Đang bán
+                                                <i class="fas fa-check mr-1"></i>Active
                                             </span>
                                             @else
                                             <span class="badge badge-danger badge-pill">
-                                                <i class="fas fa-times mr-1"></i>Ngừng bán
+                                                <i class="fas fa-times mr-1"></i>Inactive
                                             </span>
                                             @endif
                                         </td>
                                         <td>
                                             <small class="text-muted">
                                                 <i class="far fa-calendar mr-1"></i>
-                                                {{ date('d/m/Y', strtotime($product->CreatedAt)) }}
+                                                {{ date('m/d/Y', strtotime($product->CreatedAt)) }}
                                             </small>
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm w-100">
                                                 <a href="{{ route('admin.products.show', $product->ProductID) }}"
                                                     class="btn btn-info btn-flat waves-effect flex-fill"
-                                                    title="Xem chi tiết">
+                                                    title="View details">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 <a href="{{ route('admin.products.edit', $product->ProductID) }}"
                                                     class="btn btn-warning btn-flat waves-effect flex-fill"
-                                                    title="Chỉnh sửa">
+                                                    title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <form action="{{ route('admin.products.destroy', $product->ProductID) }}"
@@ -189,8 +189,8 @@
                                                     @method('DELETE')
                                                     <button type="submit"
                                                         class="btn btn-danger btn-flat waves-effect w-100"
-                                                        title="Xóa"
-                                                        onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
+                                                        title="Delete"
+                                                        onclick="return confirm('Are you sure you want to delete this product?')">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -205,15 +205,15 @@
                         <div class="text-center py-5">
                             <div class="empty-state">
                                 <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
-                                <h4 class="text-muted">Không tìm thấy sản phẩm nào</h4>
-                                <p class="text-muted mb-4">Không có sản phẩm nào phù hợp với tiêu chí tìm kiếm của bạn.</p>
+                                <h4 class="text-muted">No products found</h4>
+                                <p class="text-muted mb-4">No products match your search criteria.</p>
                                 @if(request('search') || request('category'))
                                 <a href="{{ route('admin.products') }}" class="btn btn-primary waves-effect">
-                                    <i class="fas fa-redo mr-2"></i>Xem tất cả sản phẩm
+                                    <i class="fas fa-redo mr-2"></i>View All Products
                                 </a>
                                 @else
                                 <a href="{{ route('admin.products.create') }}" class="btn btn-success waves-effect">
-                                    <i class="fas fa-plus mr-2"></i>Thêm sản phẩm đầu tiên
+                                    <i class="fas fa-plus mr-2"></i>Add First Product
                                 </a>
                                 @endif
                             </div>
@@ -223,11 +223,11 @@
                     <div class="card-footer clearfix">
                         <div class="float-left">
                             <span class="text-muted">
-                                Hiển thị <strong>{{ $products->count() }}</strong> sản phẩm
+                                Showing <strong>{{ $products->count() }}</strong> products
                             </span>
                         </div>
                         <div class="float-right">
-                            <span class="text-muted">Tổng cộng {{ $products->count() }} sản phẩm</span>
+                            <span class="text-muted">Total {{ $products->count() }} products</span>
                         </div>
                     </div>
                 </div>
@@ -431,7 +431,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Thêm hiệu ứng loading khi click các nút
+        // Add loading effect when clicking buttons
         const buttons = document.querySelectorAll('.waves-effect');
         buttons.forEach(button => {
             button.addEventListener('click', function(e) {
@@ -442,7 +442,7 @@
             });
         });
 
-        // Hiệu ứng hover cho card
+        // Hover effect for cards
         const cards = document.querySelectorAll('.card');
         cards.forEach(card => {
             card.addEventListener('mouseenter', function() {
@@ -454,7 +454,7 @@
             });
         });
 
-        // Tự động submit form khi thay đổi danh mục
+        // Auto-submit form when category changes
         const categorySelect = document.getElementById('categorySelect');
         const searchForm = document.getElementById('searchForm');
 
@@ -462,7 +462,7 @@
             searchForm.submit();
         });
 
-        // Tìm kiếm tự động sau 1 giây khi nhập
+        // Auto-search after 1 second when typing
         const searchInput = document.getElementById('searchInput');
         let searchTimeout;
 
@@ -473,17 +473,17 @@
             }, 1000);
         });
 
-        // Xác nhận xóa sản phẩm
+        // Confirm product deletion
         const deleteForms = document.querySelectorAll('.delete-form');
         deleteForms.forEach(form => {
             form.addEventListener('submit', function(e) {
-                if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+                if (!confirm('Are you sure you want to delete this product?')) {
                     e.preventDefault();
                 }
             });
         });
 
-        // Hiển thị thông báo thành công trong 5 giây
+        // Show success message for 5 seconds
         const successAlert = document.querySelector('.alert-success');
         if (successAlert) {
             setTimeout(() => {

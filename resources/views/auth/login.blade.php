@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Đăng nhập')
+@section('title', 'Login')
 
 @section('content')
 <!-- Breadcrumb Section Begin -->
@@ -9,10 +9,10 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <div class="breadcrumb__text">
-                    <h2>Đăng nhập</h2>
+                    <h2>Login</h2>
                     <div class="breadcrumb__option">
-                        <a href="{{ route('home') }}">Trang chủ</a>
-                        <span>Đăng nhập</span>
+                        <a href="{{ route('home') }}">Home</a>
+                        <span>Login</span>
                     </div>
                 </div>
             </div>
@@ -27,9 +27,9 @@
         <div class="row justify-content-center">
             <div class="col-lg-6">
                 <div class="checkout__form">
-                    <h4>Đăng nhập tài khoản</h4>
+                    <h4>Account Login</h4>
 
-                    {{-- Hiển thị lỗi chung --}}
+                    {{-- Display general errors --}}
                     @if($errors->any())
                     <div class="alert alert-danger">
                         <ul class="mb-0">
@@ -40,7 +40,7 @@
                     </div>
                     @endif
 
-                    {{-- Hiển thị thông báo thành công --}}
+                    {{-- Display success message --}}
                     @if(session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
@@ -62,7 +62,7 @@
                             </div>
                             <div class="col-lg-12">
                                 <div class="checkout__input">
-                                    <p>Mật khẩu<span>*</span></p>
+                                    <p>Password<span>*</span></p>
                                     <input type="password" name="password" required
                                         class="@error('password') is-invalid @enderror">
                                     @error('password')
@@ -71,10 +71,10 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="site-btn">ĐĂNG NHẬP</button>
+                        <button type="submit" class="site-btn">LOGIN</button>
                     </form>
                     <div class="text-center mt-3">
-                        <p>Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký ngay</a></p>
+                        <p>Don't have an account? <a href="{{ route('register') }}">Register now</a></p>
                     </div>
 
                     @if(session('error'))
@@ -91,7 +91,7 @@
 @endsection
 
 <script>
-    // Chạy ngay khi page load, không chờ DOMContentLoaded
+    // Run immediately when page loads, don't wait for DOMContentLoaded
     (function() {
         setTimeout(function() {
             const inputs = document.querySelectorAll('.checkout__input input');

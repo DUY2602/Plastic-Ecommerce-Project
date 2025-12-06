@@ -15,7 +15,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    {{-- Cho phép các trang con thêm CSS riêng --}}
     @yield('styles')
 </head>
 
@@ -28,7 +27,6 @@
 
     @include('components.footer')
 
-    {{-- JQuery BẮT BUỘC phải load đầu tiên --}}
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
     <script>
@@ -41,8 +39,6 @@
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
 
-    {{-- FIX LỖI SLICKNAV IS NOT A FUNCTION: Thêm thư viện slicknav.js --}}
-    {{-- Vui lòng đảm bảo file jquery.slicknav.js tồn tại trong public/js/ --}}
     <script src="{{ asset('js/jquery.slicknav.js') }}"></script>
 
     <script>

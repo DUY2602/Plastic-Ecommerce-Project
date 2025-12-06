@@ -1,19 +1,19 @@
 @extends('layouts.admin')
 
-@section('title', 'Chi tiết danh mục')
+@section('title', 'Category Details')
 
 @section('admin-content')
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Chi tiết danh mục</h1>
+                <h1 class="m-0">Category Details</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.categories') }}">Danh mục</a></li>
-                    <li class="breadcrumb-item active">Chi tiết</li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.categories') }}">Categories</a></li>
+                    <li class="breadcrumb-item active">Details</li>
                 </ol>
             </div>
         </div>
@@ -26,66 +26,66 @@
             <div class="col-md-8 mx-auto">
                 <div class="card card-success">
                     <div class="card-header">
-                        <h3 class="card-title">Thông tin danh mục</h3>
+                        <h3 class="card-title">Category Information</h3>
                     </div>
                     <div class="card-body">
                         <table class="table table-bordered">
                             <tr>
-                                <th width="30%">ID danh mục</th>
+                                <th width="30%">Category ID</th>
                                 <td>#{{ $category->CategoryID }}</td>
                             </tr>
                             <tr>
-                                <th>Tên danh mục</th>
+                                <th>Category Name</th>
                                 <td><strong>{{ $category->CategoryName }}</strong></td>
                             </tr>
                             <tr>
-                                <th>Mô tả</th>
-                                <td>{{ $category->Description ?: 'Chưa có mô tả' }}</td>
+                                <th>Description</th>
+                                <td>{{ $category->Description ?: 'No description available' }}</td>
                             </tr>
                             <tr>
-                                <th>Số sản phẩm</th>
+                                <th>Products Count</th>
                                 <td>
                                     <span class="badge badge-primary badge-pill px-3">
                                         <i class="fas fa-cube mr-1"></i>
-                                        {{ $category->products_count }} sản phẩm
+                                        {{ $category->products_count }} products
                                     </span>
                                 </td>
                             </tr>
                             <tr>
-                                <th>Trạng thái</th>
+                                <th>Status</th>
                                 <td>
                                     @if($category->Status == 1)
-                                        <span class="badge badge-success badge-pill">
-                                            <i class="fas fa-eye mr-1"></i>Hiển thị
-                                        </span>
+                                    <span class="badge badge-success badge-pill">
+                                        <i class="fas fa-eye mr-1"></i>Visible
+                                    </span>
                                     @else
-                                        <span class="badge badge-danger badge-pill">
-                                            <i class="fas fa-eye-slash mr-1"></i>Ẩn
-                                        </span>
+                                    <span class="badge badge-danger badge-pill">
+                                        <i class="fas fa-eye-slash mr-1"></i>Hidden
+                                    </span>
                                     @endif
                                 </td>
                             </tr>
                             <tr>
-                                <th>Ngày tạo</th>
-                                <td>{{ date('d/m/Y H:i', strtotime($category->CreatedAt)) }}</td>
+                                <th>Created Date</th>
+                                <td>{{ date('m/d/Y H:i', strtotime($category->CreatedAt)) }}</td>
                             </tr>
                             <tr>
-                                <th>Ngày cập nhật</th>
-                                <td>{{ date('d/m/Y H:i', strtotime($category->UpdatedAt)) }}</td>
+                                <th>Last Updated</th>
+                                <td>{{ date('m/d/Y H:i', strtotime($category->UpdatedAt)) }}</td>
                             </tr>
                         </table>
 
                         @if($products->count() > 0)
                         <div class="mt-4">
-                            <h5 class="mb-3">Sản phẩm thuộc danh mục này:</h5>
+                            <h5 class="mb-3">Products in this category:</h5>
                             <div class="table-responsive">
                                 <table class="table table-sm table-hover">
                                     <thead class="thead-light">
                                         <tr>
                                             <th>ID</th>
-                                            <th>Tên sản phẩm</th>
-                                            <th>Trạng thái</th>
-                                            <th>Biến thể</th>
+                                            <th>Product Name</th>
+                                            <th>Status</th>
+                                            <th>Variants</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -95,14 +95,14 @@
                                             <td>{{ $product->ProductName }}</td>
                                             <td>
                                                 @if($product->Status == 1)
-                                                    <span class="badge badge-success badge-sm">Đang bán</span>
+                                                <span class="badge badge-success badge-sm">Active</span>
                                                 @else
-                                                    <span class="badge badge-danger badge-sm">Ngừng bán</span>
+                                                <span class="badge badge-danger badge-sm">Inactive</span>
                                                 @endif
                                             </td>
                                             <td>
                                                 <span class="badge badge-secondary badge-sm">
-                                                    {{ $product->variants->count() }} biến thể
+                                                    {{ $product->variants->count() }} variants
                                                 </span>
                                             </td>
                                         </tr>
@@ -116,18 +116,18 @@
                     <div class="card-footer">
                         <div class="btn-group">
                             <a href="{{ route('admin.categories.edit', $category->CategoryID) }}" class="btn btn-warning">
-                                <i class="fas fa-edit mr-2"></i>Chỉnh sửa
+                                <i class="fas fa-edit mr-2"></i>Edit
                             </a>
                             <form action="{{ route('admin.categories.destroy', $category->CategoryID) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger" 
-                                        onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')">
-                                    <i class="fas fa-trash mr-2"></i>Xóa
+                                <button type="submit" class="btn btn-danger"
+                                    onclick="return confirm('Are you sure you want to delete this category?')">
+                                    <i class="fas fa-trash mr-2"></i>Delete
                                 </button>
                             </form>
                             <a href="{{ route('admin.categories') }}" class="btn btn-default">
-                                <i class="fas fa-arrow-left mr-2"></i>Quay lại
+                                <i class="fas fa-arrow-left mr-2"></i>Back
                             </a>
                         </div>
                     </div>
@@ -138,26 +138,26 @@
 </section>
 
 <style>
-.card {
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    border: none;
-    border-radius: 10px;
-}
+    .card {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: none;
+        border-radius: 10px;
+    }
 
-.card-header {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-    color: white;
-    border-radius: 10px 10px 0 0 !important;
-}
+    .card-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border-radius: 10px 10px 0 0 !important;
+    }
 
-.table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-}
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
 
-.btn-group .btn {
-    margin-right: 5px;
-    border-radius: 6px;
-}
+    .btn-group .btn {
+        margin-right: 5px;
+        border-radius: 6px;
+    }
 </style>
 @endsection

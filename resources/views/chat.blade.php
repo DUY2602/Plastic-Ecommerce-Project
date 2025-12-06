@@ -11,7 +11,7 @@
                 <div class="breadcrumb__text">
                     <h2>AI Chat Assistant</h2>
                     <div class="breadcrumb__option">
-                        <a href="{{ route('home') }}">Trang chủ</a>
+                        <a href="{{ route('home') }}">Home</a>
                         <span>Chat Assistant</span>
                     </div>
                 </div>
@@ -32,30 +32,30 @@
 
                 <!-- Quick Suggestions -->
                 <div class="suggestions-container mb-4">
-                    <h6 class="text-center mb-3">Câu hỏi nhanh:</h6>
+                    <h6 class="text-center mb-3">Quick Questions:</h6>
                     <div class="row">
                         <div class="col-md-6 mb-2">
-                            <div class="suggestion-card" data-question="Sự khác biệt giữa vật liệu PET, PP và PC là gì?">
+                            <div class="suggestion-card" data-question="What is the difference between PET, PP, and PC materials?">
                                 <i class="fa fa-flask"></i>
-                                <span>Khác biệt vật liệu</span>
+                                <span>Material Differences</span>
                             </div>
                         </div>
                         <div class="col-md-6 mb-2">
-                            <div class="suggestion-card" data-question="Gợi ý chai nhựa nào phù hợp cho đựng nước uống?">
+                            <div class="suggestion-card" data-question="Which plastic bottle is suitable for drinking water?">
                                 <i class="fa fa-tint"></i>
-                                <span>Chai đựng nước</span>
+                                <span>Water Bottles</span>
                             </div>
                         </div>
                         <div class="col-md-6 mb-2">
-                            <div class="suggestion-card" data-question="Loại nhựa nào tốt nhất cho đựng hóa chất?">
+                            <div class="suggestion-card" data-question="Which type of plastic is best for storing chemicals?">
                                 <i class="fa fa-exclamation-triangle"></i>
-                                <span>Đựng hóa chất</span>
+                                <span>Storing Chemicals</span>
                             </div>
                         </div>
                         <div class="col-md-6 mb-2">
-                            <div class="suggestion-card" data-question="Kể tôi nghe về sản phẩm bình thể thao của bạn">
+                            <div class="suggestion-card" data-question="Tell me about your sports bottle products">
                                 <i class="fa fa-futbol-o"></i>
-                                <span>Bình thể thao</span>
+                                <span>Sports Bottles</span>
                             </div>
                         </div>
                     </div>
@@ -300,95 +300,106 @@
 
     .prompt-input::placeholder {
         color: #a0aec0;
-        font-weight: 400;
-    }
-
-    /* Nút send/stop */
-    .send-btn,
-    .stop-btn {
-        border: none;
-        padding: 15px 25px;
-        border-radius: 0 25px 25px 0;
-        transition: all 0.3s ease;
-        min-width: 60px;
+        font-style: italic;
     }
 
     .send-btn {
+        padding: 0 25px;
+        border-radius: 0;
         background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        border: none;
+        transition: all 0.3s ease;
     }
 
     .send-btn:hover {
         background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
-        transform: scale(1.05);
-    }
-
-    .send-btn:disabled {
-        background: #6c757d;
-        transform: none;
     }
 
     .stop-btn {
+        padding: 0 25px;
+        border-radius: 0;
         background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        transition: all 0.3s ease;
     }
 
     .stop-btn:hover {
-        background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
-        transform: scale(1.05);
+        background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
     }
 
     .disclaimer-text {
-        font-size: 11px;
+        font-size: 12px;
         color: #a0aec0;
         text-align: center;
-        margin: 0;
+        margin-bottom: 0;
+    }
+
+    .loading .message-text {
+        color: #718096;
         font-style: italic;
+        animation: pulse 1.5s infinite;
     }
 
-    .loading {
-        opacity: 0.7;
-    }
-
-    .loading .message-text::after {
-        content: '...';
-        animation: dots 1.5s infinite;
-    }
-
-    @keyframes dots {
-
-        0%,
-        20% {
-            content: '.';
+    @keyframes pulse {
+        0% {
+            opacity: 0.6;
         }
 
-        40% {
-            content: '..';
+        50% {
+            opacity: 1;
         }
 
-        60%,
         100% {
-            content: '...';
+            opacity: 0.6;
         }
     }
 
-    /* Welcome message không có timestamp */
-    .welcome-message .message-text+small {
-        display: none !important;
+    .welcome-message .message-text {
+        background: linear-gradient(135deg, #f0fff4 0%, #e6fffa 100%);
+        border: 1px solid #c6f6d5;
+        border-radius: 18px;
+        padding: 20px;
+        font-size: 15px;
+        color: #2f855a;
+        box-shadow: 0 2px 10px rgba(56, 178, 172, 0.1);
     }
 
-    /* Responsive */
+    .welcome-message .message-text strong {
+        color: #276749;
+        font-weight: 600;
+    }
+
     @media (max-width: 768px) {
+        .chat-section {
+            padding: 30px 0;
+        }
+
         .chats-container {
             height: 350px;
             padding: 15px;
         }
 
-        .user-message .message-text,
-        .bot-message .message-text {
-            max-width: 85%;
+        .prompt-container {
+            padding: 15px;
+        }
+
+        .prompt-input {
+            padding: 12px 15px;
+            font-size: 13px;
+        }
+
+        .send-btn,
+        .stop-btn {
+            padding: 0 20px;
+        }
+
+        .suggestions-container {
+            padding: 15px;
         }
 
         .suggestion-card {
             padding: 12px;
+            font-size: 14px;
         }
 
         .suggestion-card i {
@@ -400,10 +411,10 @@
 
 @section('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener("DOMContentLoaded", () => {
         const chatsContainer = document.getElementById("chatsContainer");
-        const promptForm = document.getElementById("promptForm");
         const promptInput = document.getElementById("promptInput");
+        const promptForm = document.getElementById("promptForm");
         const sendButton = document.getElementById("sendButton");
         const stopButton = document.getElementById("stopButton");
 
@@ -411,15 +422,15 @@
         let typingInterval = null;
         let currentTypingContent = "";
         let currentMessageElement = null;
+        let isStopped = false;
         let abortController = null;
-        let isStopped = false; // Flag để kiểm tra đã stop chưa
 
-        // Create message element
+        // Hàm tạo message
         const createMessage = (content, isUser = false, showTimestamp = true) => {
             const messageDiv = document.createElement("div");
             messageDiv.className = `message ${isUser ? "user-message" : "bot-message"}`;
 
-            const timestamp = showTimestamp ? new Date().toLocaleTimeString('vi-VN', {
+            const timestamp = showTimestamp ? new Date().toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit'
             }) : '';
@@ -454,15 +465,15 @@
             chatsContainer.scrollTop = chatsContainer.scrollHeight;
         };
 
-        // Hàm stop - chỉ cancel request tương lai
+        // Stop function - only cancel future requests
         const stopGenerating = () => {
-            // Hủy request API (chỉ cancel request chưa hoàn thành)
+            // Cancel API request (only cancel incomplete requests)
             if (abortController) {
                 abortController.abort();
                 abortController = null;
             }
 
-            // Đánh dấu đã stop
+            // Mark as stopped
             isStopped = true;
 
             // Reset UI
@@ -471,11 +482,11 @@
             isGenerating = false;
             sendButton.disabled = false;
 
-            // KHÔNG xóa message hiện tại, giữ nguyên những gì đã generate
-            console.log("Đã dừng generate - giữ nguyên response hiện tại");
+            // DO NOT delete current message, keep what has been generated
+            console.log("Stopped generating - keeping current response");
         };
 
-        // Hàm typeMessage - sử dụng requestAnimationFrame thay vì setInterval
+        // typeMessage function - use requestAnimationFrame instead of setInterval
         const typeMessage = (content, element, messageElement) => {
             if (typingInterval) cancelAnimationFrame(typingInterval);
 
@@ -496,7 +507,7 @@
                 }
 
                 if (index < content.length) {
-                    // Đảm bảo tốc độ typing ổn định
+                    // Ensure stable typing speed
                     if (timestamp - lastTime > typingSpeed) {
                         const partialContent = content.substring(0, index + 1);
                         element.innerHTML = partialContent;
@@ -506,7 +517,7 @@
                     }
                     typingInterval = requestAnimationFrame(typeCharacter);
                 } else {
-                    // Hoàn thành
+                    // Complete
                     typingInterval = null;
                     sendButton.style.display = 'block';
                     stopButton.style.display = 'none';
@@ -515,7 +526,7 @@
                 }
             }
 
-            // Bắt đầu typing
+            // Start typing
             typingInterval = requestAnimationFrame(typeCharacter);
         };
 
@@ -537,17 +548,17 @@
             scrollToBottom();
 
             // Show loading
-            const loadingMessage = createMessage("Đang suy nghĩ...", false);
+            const loadingMessage = createMessage("Thinking...", false);
             loadingMessage.classList.add("loading");
             chatsContainer.appendChild(loadingMessage);
             scrollToBottom();
 
-            // Hiển thị nút stop
+            // Show stop button
             sendButton.style.display = 'none';
             stopButton.style.display = 'block';
 
             try {
-                // Tạo AbortController để có thể cancel request
+                // Create AbortController to cancel request
                 abortController = new AbortController();
 
                 const response = await fetch('{{ route("chat.send") }}', {
@@ -563,7 +574,7 @@
                     signal: abortController.signal
                 });
 
-                // Kiểm tra nếu đã stop thì không xử lý response
+                // Check if stopped, do not process response
                 if (isStopped) {
                     loadingMessage.remove();
                     return;
@@ -580,22 +591,22 @@
                 } else if (data.error && !isStopped) {
                     throw new Error(data.error);
                 } else if (!isStopped) {
-                    throw new Error('Không có dữ liệu phản hồi');
+                    throw new Error('No response data');
                 }
 
             } catch (error) {
-                // Chỉ xử lý lỗi nếu không phải do cancel và chưa stop
+                // Only handle error if not due to cancel and not stopped
                 if (error.name !== 'AbortError' && !isStopped) {
                     console.error("Chat error:", error);
                     loadingMessage.remove();
                     const errorMessage = createMessage(
-                        "❌ Lỗi: " + error.message,
+                        "❌ Error: " + error.message,
                         false
                     );
                     chatsContainer.appendChild(errorMessage);
                 } else if (error.name === 'AbortError') {
                     loadingMessage.remove();
-                    console.log("Request đã bị cancel");
+                    console.log("Request has been canceled");
                 }
             } finally {
                 abortController = null;
@@ -627,17 +638,17 @@
         // Stop button event
         stopButton.addEventListener('click', stopGenerating);
 
-        // KHÔNG stop khi chuyển tab - tiếp tục generate
-        // Comment hoặc xóa phần này hoàn toàn
+        // DO NOT stop when switching tabs - continue generating
+        // Comment or completely remove this part
 
         // Welcome message
         const welcomeMessage = createMessage(
-            "Xin chào! 👋 Tôi là trợ lý AI của Plastic Store. Tôi có thể giúp bạn với:<br><br>" +
-            "• <strong>Thông tin sản phẩm</strong> nhựa<br>" +
-            "• <strong>So sánh vật liệu</strong> PET, PP, PC<br>" +
-            "• <strong>Tư vấn lựa chọn</strong> sản phẩm phù hợp<br>" +
-            "• <strong>Giải đáp thắc mắc</strong> về đặc tính<br><br>" +
-            "Hãy hỏi tôi bất cứ điều gì về sản phẩm nhựa! 🛍️",
+            "Hello! 👋 I am the AI assistant of Plastic Store. I can help you with:<br><br>" +
+            "• <strong>Product Information</strong> about plastics<br>" +
+            "• <strong>Material Comparisons</strong> PET, PP, PC<br>" +
+            "• <strong>Product Selection Advice</strong> for suitable products<br>" +
+            "• <strong>Answering Questions</strong> about properties<br><br>" +
+            "Ask me anything about plastic products! 🛍️",
             false,
             false
         );

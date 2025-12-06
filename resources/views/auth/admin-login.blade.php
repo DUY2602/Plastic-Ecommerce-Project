@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Đăng nhập Admin')
+@section('title', 'Admin Login')
 
 @section('styles')
 <style>
@@ -209,14 +209,14 @@
         font-weight: 600;
         transition: all 0.3s ease;
         font-size: 15px;
-        /* ĐÃ BỎ HIỆU ỨNG MỜ - chỉ giữ màu thay đổi */
+        /* REMOVED FADE EFFECT - keep only color change */
         opacity: 1 !important;
     }
 
     .admin-link:hover {
         color: #ecf0f1;
         text-decoration: none;
-        /* BỎ HIỆU ỨNG DI CHUYỂN */
+        /* REMOVED MOVEMENT EFFECT */
         transform: none;
     }
 
@@ -269,7 +269,7 @@
         }
     }
 
-    /* Hiệu ứng particles tinh tế */
+    /* Subtle particles effect */
     .particles-container {
         position: absolute;
         width: 100%;
@@ -357,8 +357,8 @@
                 <div class="admin-login-card">
                     <div class="admin-header">
                         <i class="fas fa-user-shield admin-icon"></i>
-                        <h1 class="admin-title">Hệ Thống Quản Trị</h1>
-                        <p class="admin-subtitle">Đăng nhập để truy cập bảng điều khiển</p>
+                        <h1 class="admin-title">Administration System</h1>
+                        <p class="admin-subtitle">Login to access dashboard</p>
                     </div>
 
                     @if($errors->any())
@@ -389,7 +389,7 @@
                                 placeholder=" "
                                 required
                                 autofocus>
-                            <label class="form-label">Email Admin</label>
+                            <label class="form-label">Admin Email</label>
                             @error('email')
                             <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -402,14 +402,14 @@
                                 class="form-control"
                                 placeholder=" "
                                 required>
-                            <label class="form-label">Mật khẩu</label>
+                            <label class="form-label">Password</label>
                             @error('password')
                             <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <button type="submit" class="btn-admin" id="loginBtn">
-                            <span class="btn-text">ĐĂNG NHẬP HỆ THỐNG</span>
+                            <span class="btn-text">LOGIN TO SYSTEM</span>
                         </button>
                     </form>
 
@@ -420,9 +420,9 @@
                     @endif
 
                     <div class="admin-links">
-                        <p style="color: #bdc3c7;">Là người dùng thường?
+                        <p style="color: #bdc3c7;">Regular user?
                             <a href="{{ route('login') }}" class="admin-link">
-                                <i class="fas fa-arrow-right"></i> Đăng nhập tại đây
+                                <i class="fas fa-arrow-right"></i> Login here
                             </a>
                         </p>
                     </div>
@@ -439,7 +439,7 @@
         const form = document.getElementById('adminLoginForm');
         const loginBtn = document.getElementById('loginBtn');
 
-        // Hiệu ứng cho input
+        // Input effects
         const inputs = document.querySelectorAll('.form-control');
         inputs.forEach(input => {
             if (input.value) {
@@ -457,7 +457,7 @@
             });
         });
 
-        // Hiệu ứng khi submit form
+        // Form submit effect
         form.addEventListener('submit', function(e) {
             loginBtn.style.transform = 'scale(0.98)';
             setTimeout(() => {
@@ -465,7 +465,7 @@
             }, 150);
         });
 
-        // Hiệu ứng load trang cho card
+        // Page load effect for card
         const card = document.querySelector('.admin-login-card');
         card.style.opacity = '0';
         card.style.transform = 'translateY(50px) scale(0.9)';

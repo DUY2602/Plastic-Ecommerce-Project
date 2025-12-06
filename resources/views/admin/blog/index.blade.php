@@ -1,13 +1,13 @@
 @extends('layouts.admin')
 
-@section('title', 'Quản lý Blog')
+@section('title', 'Blog Management')
 
 @section('admin-content')
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Quản lý Blog</h1>
+                <h1 class="m-0">Blog Management</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -21,7 +21,7 @@
 
 <section class="content">
     <div class="container-fluid">
-        <!-- XÓA PHẦN STATS CARDS Ở ĐÂY -->
+        <!-- REMOVE STATS CARDS HERE -->
 
         <div class="row">
             <div class="col-12">
@@ -29,26 +29,26 @@
                     <div class="card-header bg-white">
                         <h3 class="card-title">
                             <i class="fas fa-blog mr-2 text-primary"></i>
-                            Danh sách bài viết
+                            Posts List
                         </h3>
                         <div class="card-tools">
                             <a href="{{ route('admin.blog.create') }}" class="btn btn-sm btn-primary btn-gradient">
-                                <i class="fas fa-plus mr-1"></i> Thêm bài viết
+                                <i class="fas fa-plus mr-1"></i> Add Post
                             </a>
                         </div>
                     </div>
                     <div class="card-body p-0">
-                        <!-- Giữ nguyên phần table -->
+                        <!-- Keep table section unchanged -->
                         <div class="table-responsive">
                             <table class="table table-hover table-striped">
                                 <thead class="thead-dark">
                                     <tr>
                                         <th width="80" class="text-center">ID</th>
-                                        <th width="100" class="text-center">Hình ảnh</th>
-                                        <th>Tiêu đề</th>
-                                        <th width="150">Tác giả</th>
-                                        <th width="120" class="text-center">Ngày tạo</th>
-                                        <th width="150" class="text-center">Thao tác</th>
+                                        <th width="100" class="text-center">Image</th>
+                                        <th>Title</th>
+                                        <th width="150">Author</th>
+                                        <th width="120" class="text-center">Created Date</th>
+                                        <th width="150" class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,15 +89,15 @@
                                         </td>
                                         <td>
                                             <div class="btn-group btn-group-sm w-100">
-                                                {{-- SỬA: route('blog.show') -> route('admin.blog.show') --}}
+                                                {{-- EDIT: route('blog.show') -> route('admin.blog.show') --}}
                                                 <a href="{{ route('admin.blog.show', $blog->BlogID) }}"
                                                     class="btn btn-info btn-view"
-                                                    title="Xem chi tiết">
+                                                    title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 <a href="{{ route('admin.blog.edit', $blog->BlogID) }}"
                                                     class="btn btn-warning btn-edit"
-                                                    title="Chỉnh sửa">
+                                                    title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <form action="{{ route('admin.blog.destroy', $blog->BlogID) }}"
@@ -107,8 +107,8 @@
                                                     @method('DELETE')
                                                     <button type="submit"
                                                         class="btn btn-danger btn-delete"
-                                                        title="Xóa"
-                                                        onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">
+                                                        title="Delete"
+                                                        onclick="return confirm('Are you sure you want to delete this post?')">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -127,7 +127,7 @@
 </section>
 
 <style>
-    /* Giữ nguyên CSS styles */
+    /* Keep CSS styles unchanged */
     .card-primary.card-outline {
         border-top: 3px solid #007bff;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
@@ -322,7 +322,7 @@
         const deleteForms = document.querySelectorAll('.delete-form');
         deleteForms.forEach(form => {
             form.addEventListener('submit', function(e) {
-                if (!confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+                if (!confirm('Are you sure you want to delete this post?')) {
                     e.preventDefault();
                 }
             });

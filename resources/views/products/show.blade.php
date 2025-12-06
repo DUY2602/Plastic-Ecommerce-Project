@@ -8,11 +8,11 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <div class="breadcrumb__text">
-                    <h2>Chi tiết sản phẩm</h2>
+                    <h2>Product Details</h2>
                     <div class="breadcrumb__option">
-                        <a href="{{ route('home') }}">Trang chủ</a>
-                        <a href="{{ route('products.index') }}">Sản phẩm</a>
-                        <span>Chi tiết sản phẩm</span>
+                        <a href="{{ route('home') }}">Home</a>
+                        <a href="{{ route('products.index') }}">Products</a>
+                        <span>Product Details</span>
                     </div>
                 </div>
             </div>
@@ -69,19 +69,19 @@
                             <i class="fa fa-star-o"></i>
                             @endif
                             @endfor
-                            <span>({{ $product->feedback->count() }} đánh giá)</span>
+                            <span>({{ $product->feedback->count() }} reviews)</span>
                     </div>
 
-                    {{-- Price Display - CHỈ HIỂN THỊ 1 GIÁ MẶC ĐỊNH --}}
+                    {{-- Price Display - ONLY SHOW 1 DEFAULT PRICE --}}
                     <div class="product__details__price" id="mainProductPrice">
                         @if($product->variants->count() > 0)
                         @php
-                        // Lấy giá mặc định từ variant đầu tiên hoặc giá thấp nhất
+                        // Get default price from first variant or lowest price
                         $defaultPrice = $product->variants->first()->Price ?? $product->variants->min('Price');
                         @endphp
                         {{ number_format($defaultPrice * 1000, 0, ',', '.') }}đ
                         @else
-                        Liên hệ để biết giá
+                        Contact for price
                         @endif
                     </div>
 
@@ -90,7 +90,7 @@
                     @if($product->variants->count() > 0)
                     <div class="product__details__variant">
                         <div class="variant__item">
-                            <span>Màu sắc:</span>
+                            <span>Color:</span>
                             <div class="color__list">
                                 @foreach($product->variants->groupBy('ColourID') as $colorId => $colorVariants)
                                 @php
@@ -98,13 +98,13 @@
                                 $firstVariant = $colorVariants->first();
 
                                 $swatchStyle = 'background: #ccc;';
-                                if($color->ColourName == 'Trong suốt') {
+                                if($color->ColourName == 'Transparent') {
                                 $swatchStyle = 'background: #f8f9fa; border: 1px solid #ddd;';
-                                } elseif($color->ColourName == 'Xanh dương') {
+                                } elseif($color->ColourName == 'Blue') {
                                 $swatchStyle = 'background: #007bff;';
-                                } elseif($color->ColourName == 'Xanh lá') {
+                                } elseif($color->ColourName == 'Green') {
                                 $swatchStyle = 'background: #28a745;';
-                                } elseif($color->ColourName == 'Vàng') {
+                                } elseif($color->ColourName == 'Yellow') {
                                 $swatchStyle = 'background: #ffc107;';
                                 }
                                 @endphp
@@ -120,7 +120,7 @@
                         </div>
 
                         <div class="variant__item">
-                            <span>Dung tích:</span>
+                            <span>Capacity:</span>
                             <div class="size__list">
                                 @php
                                 $uniqueVolumes = $product->variants->groupBy('VolumeID');
@@ -137,12 +137,12 @@
 
                     <div class="selected__variant__info">
                         <div class="variant__price">
-                            <strong>Giá: </strong>
+                            <strong>Price: </strong>
                             <span id="variantPrice">{{ number_format($defaultPrice * 1000, 0, ',', '.') }}đ</span>
                         </div>
                         <div class="variant__stock">
-                            <strong>Tồn kho: </strong>
-                            <span id="variantStock">Chọn màu và dung tích</span>
+                            <strong>Stock: </strong>
+                            <span id="variantStock">Select color and capacity</span>
                         </div>
                         <input type="hidden" id="selectedVariantId" value="">
                     </div>
@@ -160,19 +160,19 @@
                     </div>
 
                     {{-- Action Buttons --}}
-                    <button href="#" class="primary-btn" id="addToCartButton" style="border: none;">THÊM VÀO GIỎ</button>
+                    <button href="#" class="primary-btn" id="addToCartButton" style="border: none;">ADD TO CART</button>
                     <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
 
                     <ul>
-                        <li><b>Tình trạng</b> <span>
+                        <li><b>Availability</b> <span>
                                 @if($product->variants->where('StockQuantity', '>', 0)->count() > 0)
-                                Còn hàng
+                                In Stock
                                 @else
-                                Hết hàng
+                                Out of Stock
                                 @endif
                             </span></li>
-                        <li><b>Vận chuyển</b> <span>Giao hàng trong 1 ngày. <samp>Miễn phí giao hàng</samp></span></li>
-                        <li><b>Chia sẻ</b>
+                        <li><b>Shipping</b> <span>Delivery in 1 day. <samp>Free shipping</samp></span></li>
+                        <li><b>Share</b>
                             <div class="share">
                                 <a href="#"><i class="fa fa-facebook"></i></a>
                                 <a href="#"><i class="fa fa-twitter"></i></a>
@@ -190,41 +190,41 @@
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" data-toggle="tab" href="#tabs-1" role="tab"
-                                aria-selected="true">Mô tả</a>
+                                aria-selected="true">Description</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" href="#tabs-2" role="tab"
-                                aria-selected="false">Thông tin</a>
+                                aria-selected="false">Information</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab"
-                                aria-selected="false">Đánh giá <span>({{ $product->feedback->count() }})</span></a>
+                                aria-selected="false">Reviews <span>({{ $product->feedback->count() }})</span></a>
                         </li>
                     </ul>
                     <div class="tab-content">
                         {{-- Tab 1: Description --}}
                         <div class="tab-pane active" id="tabs-1" role="tabpanel">
                             <div class="product__details__tab__desc">
-                                <h6>Thông tin sản phẩm</h6>
+                                <h6>Product Information</h6>
                                 <p>{{ $product->Description }}</p>
-                                <p><strong>Chất liệu:</strong> {{ $product->category->CategoryName }} - {{ $product->category->Description }}</p>
+                                <p><strong>Material:</strong> {{ $product->category->CategoryName }} - {{ $product->category->Description }}</p>
                             </div>
                         </div>
 
                         {{-- Tab 2: Detailed Information --}}
                         <div class="tab-pane" id="tabs-2" role="tabpanel">
                             <div class="product__details__tab__desc">
-                                <h6>Thông tin chi tiết</h6>
-                                <p>Sản phẩm được làm từ chất liệu <strong>{{ $product->category->CategoryName }}</strong>. Các biến thể có sẵn:</p>
+                                <h6>Detailed Information</h6>
+                                <p>Product is made from <strong>{{ $product->category->CategoryName }}</strong> material. Available variants:</p>
                                 <div class="table-responsive">
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Mã biến thể</th>
-                                                <th>Màu sắc</th>
-                                                <th>Dung tích</th>
-                                                <th>Giá</th>
-                                                <th>Tồn kho</th>
+                                                <th>Variant Code</th>
+                                                <th>Color</th>
+                                                <th>Capacity</th>
+                                                <th>Price</th>
+                                                <th>Stock</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -246,25 +246,25 @@
                         {{-- Tab 3: Reviews --}}
                         <div class="tab-pane" id="tabs-3" role="tabpanel">
                             <div class="product__details__tab__desc">
-                                <h6>Đánh giá từ khách hàng ({{ $product->feedback->count() }})</h6>
+                                <h6>Customer Reviews ({{ $product->feedback->count() }})</h6>
                                 @if($product->feedback->count() > 0)
                                 @foreach($product->feedback as $feedback)
                                 <div class="review-item" style="border-bottom: 1px solid #eee; padding: 15px 0;">
-                                    <strong>{{ $feedback->account->Username ?? 'Khách hàng ẩn danh' }}</strong> -
+                                    <strong>{{ $feedback->account->Username ?? 'Anonymous Customer' }}</strong> -
                                     @for($i = 1; $i <= 5; $i++)
                                         <i class="fa fa-star" style="color: {{ $i <= $feedback->Rating ? '#ffd700' : '#ccc' }}"></i>
                                         @endfor
                                         ({{ $feedback->Rating }}/5)
                                         <p style="margin: 8px 0 0 0;">{{ $feedback->CommentText }}</p>
                                         @php
-                                        // Sửa lỗi format() bằng cách chuyển đổi thành Carbon instance
+                                        // Fix format() error by converting to Carbon instance
                                         $submissionDate = \Carbon\Carbon::parse($feedback->SubmissionDate);
                                         @endphp
-                                        <small>Đánh giá ngày: {{ $submissionDate->format('d/m/Y H:i') }}</small>
+                                        <small>Reviewed on: {{ $submissionDate->format('d/m/Y H:i') }}</small>
                                 </div>
                                 @endforeach
                                 @else
-                                <p>Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+                                <p>No reviews yet. Be the first to review this product!</p>
                                 @endif
                             </div>
                         </div>
@@ -281,7 +281,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="section-title related__product__title">
-                    <h2>Sản phẩm liên quan</h2>
+                    <h2>Related Products</h2>
                 </div>
             </div>
         </div>
@@ -313,7 +313,7 @@
                             @if($relatedProduct->variants->count() > 0)
                             {{ number_format($relatedProduct->variants->first()->Price * 1000, 0, ',', '.') }}đ
                             @else
-                            Liên hệ
+                            Contact
                             @endif
                         </h5>
                     </div>
@@ -321,7 +321,7 @@
             </div>
             @empty
             <div class="col-12 text-center">
-                <p>Không có sản phẩm liên quan</p>
+                <p>No related products</p>
             </div>
             @endforelse
         </div>
@@ -402,7 +402,7 @@ $variantsData[$key] = [
                 if (variant) {
                     variantPrice.textContent = variant.price;
                     mainProductPrice.textContent = variant.price;
-                    variantStock.textContent = variant.stock > 0 ? 'Còn hàng (' + variant.stock + ' sản phẩm)' : 'Hết hàng';
+                    variantStock.textContent = variant.stock > 0 ? 'In Stock (' + variant.stock + ' products)' : 'Out of Stock';
                     selectedVariantIdInput.value = variant.id;
 
                     // Update quantity input
@@ -426,7 +426,7 @@ $variantsData[$key] = [
                 } else {
                     variantPrice.textContent = defaultPrice;
                     mainProductPrice.textContent = defaultPrice;
-                    variantStock.textContent = 'Hết hàng';
+                    variantStock.textContent = 'Out of Stock';
                     selectedVariantIdInput.value = '';
                     productQuantityInput.value = 0;
                     addToCartButton.disabled = true;
@@ -496,12 +496,12 @@ $variantsData[$key] = [
             const quantity = productQuantityInput.value;
 
             if (!variantId) {
-                alert('Vui lòng chọn màu và dung tích sản phẩm');
+                alert('Please select product color and capacity');
                 return;
             }
 
             if (quantity < 1) {
-                alert('Số lượng sản phẩm không hợp lệ');
+                alert('Invalid product quantity');
                 return;
             }
 
@@ -510,7 +510,7 @@ $variantsData[$key] = [
                 variantId,
                 quantity
             });
-            alert('Đã thêm sản phẩm vào giỏ hàng');
+            alert('Product added to cart');
         });
 
         initializeVariant();
@@ -518,7 +518,7 @@ $variantsData[$key] = [
 </script>
 
 <style>
-    /* ĐỔI MÀU GIÁ SẢN PHẨM THÀNH ĐỎ */
+    /* CHANGE PRODUCT PRICE COLOR TO RED */
     .product__details__price {
         color: #ff0000 !important;
         font-size: 1.5rem;

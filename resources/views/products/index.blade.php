@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Sản phẩm - Plastic Store')
+@section('title', 'Products - Plastic Store')
 
 @section('content')
 <!-- Breadcrumb Section Begin -->
@@ -9,10 +9,10 @@
         <div class="row">
             <div class="col-lg-12 text-center">
                 <div class="breadcrumb__text">
-                    <h2>Tất cả sản phẩm</h2>
+                    <h2>All Products</h2>
                     <div class="breadcrumb__option">
-                        <a href="{{ route('home') }}">Trang chủ</a>
-                        <span>Sản phẩm</span>
+                        <a href="{{ route('home') }}">Home</a>
+                        <span>Products</span>
                     </div>
                 </div>
             </div>
@@ -29,16 +29,16 @@
                 <div class="hero__categories">
                     <div class="hero__categories__all">
                         <i class="fa fa-bars"></i>
-                        <span>Danh mục</span>
+                        <span>Categories</span>
                     </div>
                     <ul class="category-dropdown">
-                        <li><a href="#" data-category="">Tất cả danh mục</a></li>
+                        <li><a href="#" data-category="">All Categories</a></li>
                         @foreach($categories as $category)
                         <li><a href="#" data-category="{{ $category->CategoryName }}">{{ $category->CategoryName }}</a></li>
                         @endforeach
                     </ul>
 
-                    <!-- Hiển thị category đã chọn -->
+                    <!-- Display selected category -->
                     <div class="category-selected" id="category-selected" style="display: none;">
                         <i class="fa fa-tag"></i>
                         <span id="selected-category-name"></span>
@@ -50,8 +50,8 @@
                 <div class="hero__search">
                     <div class="hero__search__form">
                         <form id="search-form">
-                            <input type="text" name="search" placeholder="Tìm kiếm sản phẩm..." value="{{ request('search') }}">
-                            <button type="submit" class="site-btn">TÌM KIẾM</button>
+                            <input type="text" name="search" placeholder="Search products..." value="{{ request('search') }}">
+                            <button type="submit" class="site-btn">SEARCH</button>
                         </form>
                     </div>
                     <div class="hero__search__phone">
@@ -60,7 +60,7 @@
                         </div>
                         <div class="hero__search__phone__text">
                             <h5>+84 123 456 789</h5>
-                            <span>Hỗ trợ 24/7</span>
+                            <span>24/7 Support</span>
                         </div>
                     </div>
                 </div>
@@ -77,16 +77,16 @@
                 <div class="filter__item">
                     <div class="row">
                         <div class="col-lg-4 col-md-4">
-                            <span>Sắp xếp theo</span>
+                            <span>Sort by</span>
                             <select name="sort_by" id="sort-select">
-                                <option value="default" {{ request('sort_by', 'default') == 'default' ? 'selected' : '' }}>Mặc định</option>
-                                <option value="price_asc" {{ request('sort_by') == 'price_asc' ? 'selected' : '' }}>Giá thấp đến cao</option>
-                                <option value="price_desc" {{ request('sort_by') == 'price_desc' ? 'selected' : '' }}>Giá cao đến thấp</option>
+                                <option value="default" {{ request('sort_by', 'default') == 'default' ? 'selected' : '' }}>Default</option>
+                                <option value="price_asc" {{ request('sort_by') == 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                                <option value="price_desc" {{ request('sort_by') == 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
                             </select>
                         </div>
                         <div class="col-lg-4 col-md-4">
                             <div class="filter__found">
-                                <h6><span id="product-count">{{ $products->count() }}</span> sản phẩm được tìm thấy</h6>
+                                <h6><span id="product-count">{{ $products->count() }}</span> products found</h6>
                             </div>
                         </div>
                     </div>
@@ -102,7 +102,7 @@
                                     <img src="{{ asset($product->Photo) }}" alt="{{ $product->ProductName }}" class="img-fluid">
                                     <ul class="product__item__pic__hover">
                                         <li>
-                                            <a href="#" class="favorite-btn" data-product-id="{{ $product->ProductID }}" title="Yêu thích">
+                                            <a href="#" class="favorite-btn" data-product-id="{{ $product->ProductID }}" title="Favorite">
                                                 @if(isset($favoriteProductIds) && in_array($product->ProductID, $favoriteProductIds))
                                                 <i class="fa fa-heart heart-icon" style="color: #ff0000"></i>
                                                 @else
@@ -111,7 +111,7 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="{{ route('product.download', $product->ProductID) }}" class="download-btn" title="Tải tài liệu">
+                                            <a href="{{ route('product.download', $product->ProductID) }}" class="download-btn" title="Download document">
                                                 <i class="fa fa-download download-icon"></i>
                                             </a>
                                         </li>
@@ -140,12 +140,12 @@
         let currentSearch = '';
         let currentSort = 'default';
 
-        // Hàm cập nhật giao diện category
+        // Function to update category UI
         function updateCategoryUI(categoryName) {
-            // Xóa active cũ
+            // Remove old active
             $('.category-dropdown a').removeClass('active');
 
-            // Thêm active cho category được chọn
+            // Add active for selected category
             if (categoryName) {
                 $(`.category-dropdown a[data-category="${categoryName}"]`).addClass('active');
                 $('#selected-category-name').text(categoryName);
@@ -156,10 +156,10 @@
             }
         }
 
-        // Khởi tạo category UI
+        // Initialize category UI
         updateCategoryUI('');
 
-        // Dropdown danh mục - hover effect
+        // Category dropdown - hover effect
         $('.hero__categories').hover(
             function() {
                 $(this).find('.category-dropdown').stop(true, true).slideDown(300);
@@ -171,25 +171,25 @@
             }
         );
 
-        // Xử lý click danh mục
+        // Handle category click
         $(document).on('click', '.category-dropdown a', function(e) {
             e.preventDefault();
             e.stopPropagation();
 
             currentCategory = $(this).data('category') || '';
 
-            // Cập nhật giao diện
+            // Update UI
             updateCategoryUI(currentCategory);
 
-            // Đóng dropdown
+            // Close dropdown
             $('.category-dropdown').slideUp(300);
             $('.hero__categories__all').removeClass('active');
 
-            // Load sản phẩm
+            // Load products
             loadProducts();
         });
 
-        // Xử lý xóa category
+        // Handle clear category
         $(document).on('click', '#clear-category', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -199,20 +199,20 @@
             loadProducts();
         });
 
-        // Xử lý tìm kiếm
+        // Handle search
         $('#search-form').on('submit', function(e) {
             e.preventDefault();
             currentSearch = $('input[name="search"]').val();
             loadProducts();
         });
 
-        // Xử lý sắp xếp
+        // Handle sort
         $('#sort-select').on('change', function() {
             currentSort = $(this).val();
             loadProducts();
         });
 
-        // Hàm load sản phẩm
+        // Function to load products
         function loadProducts() {
             console.log('Loading products:', {
                 search: currentSearch,
@@ -220,7 +220,7 @@
                 category: currentCategory
             });
 
-            // Hiển thị loading
+            // Show loading
             $('#product-list').addClass('loading');
 
             $.ajax({
@@ -233,7 +233,7 @@
                     ajax: true
                 },
                 success: function(response) {
-                    // Cập nhật danh sách sản phẩm
+                    // Update product list
                     $('#product-list .row').html(response.html);
                     $('#product-count').text(response.count);
                     $('#product-list').removeClass('loading');
@@ -242,12 +242,12 @@
                 error: function(xhr) {
                     console.log('AJAX error:', xhr.responseText);
                     $('#product-list').removeClass('loading');
-                    alert('Có lỗi xảy ra khi tải sản phẩm');
+                    alert('An error occurred while loading products');
                 }
             });
         }
 
-        // Xử lý nút yêu thích
+        // Handle favorite button
         function attachFavoriteEvents() {
             $('.favorite-btn').off('click').on('click', function(e) {
                 e.preventDefault();
@@ -266,26 +266,26 @@
                         if (response.status === 'added') {
                             heartIcon.css('color', '#ff0000');
                             button.addClass('active');
-                            alert('Đã thêm vào danh sách yêu thích');
+                            alert('Added to favorites');
                         } else {
                             heartIcon.css('color', '#010101ff');
                             button.removeClass('active');
-                            alert('Đã xóa khỏi danh sách yêu thích');
+                            alert('Removed from favorites');
                         }
                     },
                     error: function(xhr) {
                         if (xhr.status === 401) {
-                            alert('Vui lòng đăng nhập để thêm sản phẩm yêu thích');
+                            alert('Please login to add favorite products');
                             window.location.href = '{{ route("login") }}';
                         } else {
-                            alert('Có lỗi xảy ra, vui lòng thử lại');
+                            alert('An error occurred, please try again');
                         }
                     }
                 });
             });
         }
 
-        // Gắn sự kiện ban đầu
+        // Attach initial events
         attachFavoriteEvents();
     });
 </script>
@@ -299,7 +299,7 @@
     }
 
     .loading:after {
-        content: "Đang tải sản phẩm...";
+        content: "Loading products...";
         display: block;
         text-align: center;
         padding: 40px;

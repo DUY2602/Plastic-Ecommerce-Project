@@ -1,18 +1,18 @@
 @extends('layouts.admin')
 
-@section('title', 'Quản lý người dùng')
+@section('title', 'Manage Users')
 
 @section('admin-content')
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Quản lý người dùng</h1>
+                <h1 class="m-0">Manage Users</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Người dùng</li>
+                    <li class="breadcrumb-item active">Users</li>
                 </ol>
             </div>
         </div>
@@ -25,7 +25,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Danh sách người dùng</h3>
+                        <h3 class="card-title">User List</h3>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -33,12 +33,12 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Tên đăng nhập</th>
+                                        <th>Username</th>
                                         <th>Email</th>
-                                        <th>Vai trò</th>
-                                        <th>Trạng thái</th>
-                                        <th>Ngày đăng ký</th>
-                                        <th>Thao tác</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Registration Date</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -56,22 +56,21 @@
                                         </td>
                                         <td>
                                             @if($user->Status == 1)
-                                            <span class="badge badge-success">Hoạt động</span>
+                                            <span class="badge badge-success">Active</span>
                                             @else
-                                            <span class="badge badge-danger">Khóa</span>
+                                            <span class="badge badge-danger">Inactive</span>
                                             @endif
                                         </td>
-                                        <td>{{ date('d/m/Y H:i', strtotime($user->CreatedAt)) }}</td>
+                                        <td>{{ date('m/d/Y H:i', strtotime($user->CreatedAt)) }}</td>
                                         <td>
-                                            {{-- Trong phần action buttons --}}
                                             <div class="btn-group">
-                                                <a href="{{ route('admin.users.edit', $user->AccountID) }}" class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                                <a href="{{ route('admin.users.edit', $user->AccountID) }}" class="btn btn-sm btn-warning" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <form action="{{ route('admin.users.destroy', $user->AccountID) }}" method="POST" class="d-inline">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?')">
+                                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this user?')">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>

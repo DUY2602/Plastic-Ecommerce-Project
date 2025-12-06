@@ -10,7 +10,7 @@
                 <div class="breadcrumb__text">
                     <h2>{{ $blog->Title }}</h2>
                     <div class="breadcrumb__option">
-                        <a href="{{ route('home') }}">Trang chủ</a>
+                        <a href="{{ route('home') }}">Home</a>
                         <a href="{{ route('blog.index') }}">Blog</a>
                         <span>{{ Str::limit($blog->Title, 30) }}</span>
                     </div>
@@ -37,8 +37,8 @@
                             <div class="blog__details__meta">
                                 <span><i class="fa fa-user"></i> {{ $blog->Author }}</span>
                                 <span><i class="fa fa-calendar"></i> {{ $blog->created_at->format('d/m/Y H:i') }}</span>
-                                <span><i class="fa fa-clock"></i> {{ $readTime }} phút đọc</span>
-                                <span><i class="fa fa-eye"></i> {{ $blog->Views ?? 0 }} lượt xem</span>
+                                <span><i class="fa fa-clock"></i> {{ $readTime }} min read</span>
+                                <span><i class="fa fa-eye"></i> {{ $blog->Views ?? 0 }} views</span>
                             </div>
                             <div class="blog__details__content">
                                 {!! $blog->Content !!}
@@ -49,7 +49,7 @@
                     <div class="blog__details__nav">
                         @if($prevBlog)
                         <div class="blog__details__nav__item prev__item">
-                            <h6><a href="{{ route('blog.show', $prevBlog->BlogID) }}"><i class="fa fa-angle-left"></i> Bài trước</a></h6>
+                            <h6><a href="{{ route('blog.show', $prevBlog->BlogID) }}"><i class="fa fa-angle-left"></i> Previous</a></h6>
                             <div class="blog__details__nav__img">
                                 @if($prevBlog->Image)
                                 <img src="{{ asset($prevBlog->Image) }}" alt="{{ $prevBlog->Title }}" style="width: 80px; height: 60px; object-fit: cover;">
@@ -64,7 +64,7 @@
 
                         @if($nextBlog)
                         <div class="blog__details__nav__item next__item">
-                            <h6><a href="{{ route('blog.show', $nextBlog->BlogID) }}">Bài sau <i class="fa fa-angle-right"></i></a></h6>
+                            <h6><a href="{{ route('blog.show', $nextBlog->BlogID) }}">Next <i class="fa fa-angle-right"></i></a></h6>
                             <div class="blog__details__nav__img">
                                 @if($nextBlog->Image)
                                 <img src="{{ asset($nextBlog->Image) }}" alt="{{ $nextBlog->Title }}" style="width: 80px; height: 60px; object-fit: cover;">
@@ -83,7 +83,7 @@
             <div class="col-lg-4">
                 <div class="blog__sidebar">
                     <div class="blog__sidebar__item">
-                        <h4>Bài viết gần đây</h4>
+                        <h4>Recent Posts</h4>
                         <div class="blog__sidebar__recent">
                             @foreach($recentBlogs as $recent)
                             <div class="blog__sidebar__recent__item">
@@ -106,20 +106,20 @@
                     </div>
 
                     <div class="blog__sidebar__item">
-                        <h4>Tìm kiếm</h4>
+                        <h4>Search</h4>
                         <div class="blog__sidebar__search">
                             <form action="{{ route('blog.index') }}" method="GET">
-                                <input type="text" name="search" placeholder="Tìm kiếm bài viết...">
+                                <input type="text" name="search" placeholder="Search posts...">
                                 <button type="submit"><i class="fa fa-search"></i></button>
                             </form>
                         </div>
                     </div>
 
-                    {{-- LOẠI BỎ PHẦN DANH MỤC GÂY LỖI --}}
+                    {{-- REMOVED ERROR-PRONE CATEGORY SECTION --}}
                     {{-- <div class="blog__sidebar__item">
-                        <h4>Danh mục</h4>
+                        <h4>Categories</h4>
                         <ul>
-                            <li><a href="{{ route('blog.index') }}">Tất cả bài viết</a></li>
+                            <li><a href="{{ route('blog.index') }}">All posts</a></li>
                     @php
                     $categories = \App\Models\Blog::select('Category')->distinct()->whereNotNull('Category')->get();
                     @endphp
@@ -129,15 +129,15 @@
                     </ul>
                 </div> --}}
 
-                {{-- THAY THẾ BẰNG PHẦN THẺ PHỔ BIẾN --}}
+                {{-- REPLACED WITH POPULAR TAGS --}}
                 <div class="blog__sidebar__item">
-                    <h4>Thẻ phổ biến</h4>
+                    <h4>Popular Tags</h4>
                     <div class="blog__sidebar__tags">
-                        <a href="{{ route('blog.index') }}">Tin tức</a>
-                        <a href="{{ route('blog.index') }}">Sản phẩm</a>
-                        <a href="{{ route('blog.index') }}">Khuyến mãi</a>
-                        <a href="{{ route('blog.index') }}">Hướng dẫn</a>
-                        <a href="{{ route('blog.index') }}">Tư vấn</a>
+                        <a href="{{ route('blog.index') }}">News</a>
+                        <a href="{{ route('blog.index') }}">Products</a>
+                        <a href="{{ route('blog.index') }}">Promotions</a>
+                        <a href="{{ route('blog.index') }}">Guides</a>
+                        <a href="{{ route('blog.index') }}">Advice</a>
                     </div>
                 </div>
             </div>

@@ -1,13 +1,13 @@
 @extends('layouts.admin')
 
-@section('title', 'Chỉnh sửa bài viết')
+@section('title', 'Edit Post')
 
 @section('admin-content')
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Chỉnh sửa bài viết</h1>
+                <h1 class="m-0">Edit Post</h1>
             </div>
         </div>
     </div>
@@ -22,64 +22,64 @@
                         @csrf
                         @method('PUT')
                         <div class="form-group">
-                            <label for="Image">Hình ảnh bài viết</label>
+                            <label for="Image">Post Image</label>
                             <div class="custom-file">
                                 <input type="file" class="custom-file-input @error('Image') is-invalid @enderror"
                                     id="Image" name="Image" accept="image/*">
                                 <label class="custom-file-label" for="Image">
-                                    {{ isset($blog) && $blog->Image ? 'Thay đổi hình ảnh' : 'Chọn hình ảnh' }}
+                                    {{ isset($blog) && $blog->Image ? 'Change Image' : 'Choose Image' }}
                                 </label>
                             </div>
                             @error('Image')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
-                            <small class="form-text text-muted">Định dạng: JPEG, PNG, JPG, GIF. Tối đa 2MB.</small>
+                            <small class="form-text text-muted">Formats: JPEG, PNG, JPG, GIF. Max 2MB.</small>
 
-                            {{-- Preview ảnh hiện tại (chỉ trong edit) --}}
+                            {{-- Current image preview (only in edit) --}}
                             @if(isset($blog) && $blog->Image)
                             <div class="mt-2">
-                                <p class="mb-1">Hình ảnh hiện tại:</p>
+                                <p class="mb-1">Current Image:</p>
                                 <img src="{{ asset($blog->Image) }}" alt="{{ $blog->Title }}"
                                     class="img-thumbnail" style="max-height: 150px;">
                             </div>
                             @endif
                         </div>
 
-                        {{-- Các trường khác --}}
+                        {{-- Other fields --}}
                         <div class="form-group">
-                            <label for="Title">Tiêu đề *</label>
+                            <label for="Title">Title *</label>
                             <input type="text" class="form-control @error('Title') is-invalid @enderror"
                                 id="Title" name="Title"
                                 value="{{ old('Title', isset($blog) ? $blog->Title : '') }}"
-                                placeholder="Nhập tiêu đề bài viết" required>
+                                placeholder="Enter post title" required>
                             @error('Title')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="Content">Nội dung *</label>
+                            <label for="Content">Content *</label>
                             <textarea class="form-control @error('Content') is-invalid @enderror"
                                 id="Content" name="Content" rows="6"
-                                placeholder="Nhập nội dung bài viết" required>{{ old('Content', isset($blog) ? $blog->Content : '') }}</textarea>
+                                placeholder="Enter post content" required>{{ old('Content', isset($blog) ? $blog->Content : '') }}</textarea>
                             @error('Content')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="Author">Tác giả *</label>
+                            <label for="Author">Author *</label>
                             <input type="text" class="form-control @error('Author') is-invalid @enderror"
                                 id="Author" name="Author"
                                 value="{{ old('Author', isset($blog) ? $blog->Author : '') }}"
-                                placeholder="Nhập tên tác giả" required>
+                                placeholder="Enter author name" required>
                             @error('Author')
                             <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save mr-2"></i>{{ isset($blog) ? 'Cập nhật' : 'Thêm' }} bài viết
+                            <i class="fas fa-save mr-2"></i>{{ isset($blog) ? 'Update' : 'Add' }} Post
                         </button>
                     </form>
                 </div>
@@ -92,13 +92,13 @@
 @section('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Hiển thị tên file khi chọn ảnh
+        // Display file name when image is selected
         document.getElementById('Image').addEventListener('change', function(e) {
-            var fileName = e.target.files[0] ? e.target.files[0].name : 'Chọn hình ảnh';
+            var fileName = e.target.files[0] ? e.target.files[0].name : 'Choose Image';
             var nextSibling = e.target.nextElementSibling;
             nextSibling.innerText = fileName;
 
-            // Preview ảnh
+            // Preview image
             if (e.target.files[0]) {
                 var reader = new FileReader();
                 reader.onload = function(event) {

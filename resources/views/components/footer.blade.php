@@ -4,39 +4,36 @@
         <div class="row">
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="footer__about">
-                    <div class="footer__about__logo">
-                        <a href="{{ route('home') }}"><img src="{{ asset('img/logo.png') }}" alt="Plastic Store"></a>
-                    </div>
                     <ul>
-                        <li>Địa chỉ: 123 Nguyễn Văn Linh, Quận 7, TP.HCM</li>
-                        <li>Điện thoại: +84 123 456 789</li>
+                        <li>Address: 123 Nguyen Van Linh, District 7, Ho Chi Minh City</li>
+                        <li>Phone: +84 123 456 789</li>
                         <li>Email: hello@plastic.com</li>
                     </ul>
                 </div>
             </div>
             <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
                 <div class="footer__widget">
-                    <h6>Liên kết hữu ích</h6>
+                    <h6>Useful Links</h6>
                     <ul>
-                        <li><a href="{{ route('about') }}">Về chúng tôi</a></li>
-                        <li><a href="{{ route('contact') }}">Liên hệ</a></li>
+                        <li><a href="{{ route('about') }}">About Us</a></li>
+                        <li><a href="{{ route('contact') }}">Contact</a></li>
                         <li><a href="{{ route('blog.index') }}">Blog</a></li>
                         <li><a href="#"></a></li>
                     </ul>
                     <ul>
-                        <li><a href="{{ route('category', 'pet') }}">Sản phẩm PET</a></li>
-                        <li><a href="{{ route('category', 'pp') }}">Sản phẩm PP</a></li>
-                        <li><a href="{{ route('category', 'pc') }}">Sản phẩm PC</a></li>
+                        <li><a href="{{ route('category', 'pet') }}">PET Products</a></li>
+                        <li><a href="{{ route('category', 'pp') }}">PP Products</a></li>
+                        <li><a href="{{ route('category', 'pc') }}">PC Products</a></li>
                     </ul>
                 </div>
             </div>
             <div class="col-lg-4 col-md-12">
                 <div class="footer__widget">
-                    <h6>Đăng ký nhận tin</h6>
-                    <p>Nhận thông tin cập nhật về sản phẩm mới và khuyến mãi đặc biệt.</p>
+                    <h6>Subscribe to Newsletter</h6>
+                    <p>Receive updates about new products and special promotions.</p>
                     <form action="#">
-                        <input type="text" placeholder="Nhập email của bạn">
-                        <button type="submit" class="site-btn">Đăng ký</button>
+                        <input type="text" placeholder="Enter your email">
+                        <button type="submit" class="site-btn">Subscribe</button>
                     </form>
                     <div class="footer__widget__social">
                         <a href="#"><i class="fa fa-facebook"></i></a>

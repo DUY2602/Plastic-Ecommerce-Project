@@ -1,18 +1,18 @@
 @extends('layouts.admin')
 
-@section('title', 'Quản lý danh mục')
+@section('title', 'Manage Categories')
 
 @section('admin-content')
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Quản lý danh mục</h1>
+                <h1 class="m-0">Manage Categories</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Danh mục</li>
+                    <li class="breadcrumb-item active">Categories</li>
                 </ol>
             </div>
         </div>
@@ -27,12 +27,12 @@
                 <div class="card theme-selector-card">
                     <div class="card-body py-2">
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Chọn giao diện:</span>
+                            <span class="text-muted">Select theme:</span>
                             <div class="theme-selector">
-                                <button class="theme-btn active" data-theme="default" title="Sáng">
+                                <button class="theme-btn active" data-theme="default" title="Light">
                                     <i class="fas fa-sun"></i>
                                 </button>
-                                <button class="theme-btn" data-theme="dark" title="Tối">
+                                <button class="theme-btn" data-theme="dark" title="Dark">
                                     <i class="fas fa-moon"></i>
                                 </button>
                             </div>
@@ -57,7 +57,7 @@
                                                 </span>
                                             </div>
                                             <input type="text" name="search" class="form-control"
-                                                placeholder="Tìm kiếm danh mục theo tên hoặc mô tả..."
+                                                placeholder="Search categories by name or description..."
                                                 value="{{ request('search') }}"
                                                 id="searchInput">
                                             <div class="input-group-append">
@@ -70,7 +70,7 @@
                                 </div>
                                 <div class="col-md-2">
                                     <a href="{{ route('admin.categories.create') }}" class="btn btn-success btn-block waves-effect">
-                                        <i class="fas fa-plus mr-2"></i>Thêm mới
+                                        <i class="fas fa-plus mr-2"></i>Add New
                                     </a>
                                 </div>
                             </div>
@@ -84,7 +84,7 @@
             <div class="col-12">
                 <div class="card card-success card-outline animated fadeInUp">
                     <div class="card-header">
-                        <h3 class="card-title">Danh sách danh mục</h3>
+                        <h3 class="card-title">Category List</h3>
                         <div class="card-tools">
                             <div class="btn-group">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -94,8 +94,8 @@
                                     <i class="fas fa-expand"></i>
                                 </button>
                                 @if(request('search'))
-                                <a href="{{ route('admin.categories') }}" class="btn btn-danger waves-effect" title="Xóa bộ lọc">
-                                    <i class="fas fa-times mr-2"></i>Xóa lọc
+                                <a href="{{ route('admin.categories') }}" class="btn btn-danger waves-effect" title="Clear filter">
+                                    <i class="fas fa-times mr-2"></i>Clear Filter
                                 </a>
                                 @endif
                             </div>
@@ -104,7 +104,7 @@
                     <div class="card-body" id="categoriesTable">
                         @if(request('search'))
                         <div class="alert alert-info alert-dismissible fade show mb-3" role="alert">
-                            <strong>Kết quả tìm kiếm:</strong> Từ khóa: "<strong>{{ request('search') }}</strong>"
+                            <strong>Search Results:</strong> Keyword: "<strong>{{ request('search') }}</strong>"
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -113,7 +113,7 @@
 
                         @if(session('success'))
                         <div class="alert alert-success alert-dismissible fade show mb-3" role="alert">
-                            <strong>Thành công!</strong> {{ session('success') }}
+                            <strong>Success!</strong> {{ session('success') }}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -122,7 +122,7 @@
 
                         @if(session('error'))
                         <div class="alert alert-danger alert-dismissible fade show mb-3" role="alert">
-                            <strong>Lỗi!</strong> {{ session('error') }}
+                            <strong>Error!</strong> {{ session('error') }}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -135,11 +135,11 @@
                                 <thead class="thead-dark">
                                     <tr>
                                         <th width="60">ID</th>
-                                        <th>Tên danh mục</th>
-                                        <th>Mô tả</th>
-                                        <th width="120">Số sản phẩm</th>
-                                        <th width="120">Trạng thái</th>
-                                        <th width="150" class="text-center">Thao tác</th>
+                                        <th>Category Name</th>
+                                        <th>Description</th>
+                                        <th width="120">Products Count</th>
+                                        <th width="120">Status</th>
+                                        <th width="150" class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -163,18 +163,18 @@
                                             <div class="product-count">
                                                 <span class="badge badge-primary badge-pill px-3 py-2">
                                                     <i class="fas fa-cube mr-1"></i>
-                                                    {{ $category->products_count }} sản phẩm
+                                                    {{ $category->products_count }} products
                                                 </span>
                                             </div>
                                         </td>
                                         <td>
                                             @if($category->Status == 1)
                                             <span class="badge badge-success badge-pill">
-                                                <i class="fas fa-eye mr-1"></i>Hiển thị
+                                                <i class="fas fa-eye mr-1"></i>Visible
                                             </span>
                                             @else
                                             <span class="badge badge-danger badge-pill">
-                                                <i class="fas fa-eye-slash mr-1"></i>Ẩn
+                                                <i class="fas fa-eye-slash mr-1"></i>Hidden
                                             </span>
                                             @endif
                                         </td>
@@ -182,12 +182,12 @@
                                             <div class="btn-group btn-group-sm w-100">
                                                 <a href="{{ route('admin.categories.show', $category->CategoryID) }}"
                                                     class="btn btn-info btn-flat waves-effect flex-fill"
-                                                    title="Xem chi tiết">
+                                                    title="View details">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 <a href="{{ route('admin.categories.edit', $category->CategoryID) }}"
                                                     class="btn btn-warning btn-flat waves-effect flex-fill"
-                                                    title="Chỉnh sửa">
+                                                    title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                                 <form action="{{ route('admin.categories.destroy', $category->CategoryID) }}"
@@ -196,8 +196,8 @@
                                                     @method('DELETE')
                                                     <button type="submit"
                                                         class="btn btn-danger btn-flat waves-effect w-100"
-                                                        title="Xóa"
-                                                        onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này?')">
+                                                        title="Delete"
+                                                        onclick="return confirm('Are you sure you want to delete this category?')">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </form>
@@ -212,15 +212,15 @@
                         <div class="text-center py-5">
                             <div class="empty-state">
                                 <i class="fas fa-folder-open fa-4x text-muted mb-3"></i>
-                                <h4 class="text-muted">Không tìm thấy danh mục nào</h4>
-                                <p class="text-muted mb-4">Không có danh mục nào phù hợp với tiêu chí tìm kiếm của bạn.</p>
+                                <h4 class="text-muted">No categories found</h4>
+                                <p class="text-muted mb-4">No categories match your search criteria.</p>
                                 @if(request('search'))
                                 <a href="{{ route('admin.categories') }}" class="btn btn-primary waves-effect">
-                                    <i class="fas fa-redo mr-2"></i>Xem tất cả danh mục
+                                    <i class="fas fa-redo mr-2"></i>View All Categories
                                 </a>
                                 @else
                                 <a href="{{ route('admin.categories.create') }}" class="btn btn-success waves-effect">
-                                    <i class="fas fa-plus mr-2"></i>Thêm danh mục đầu tiên
+                                    <i class="fas fa-plus mr-2"></i>Add First Category
                                 </a>
                                 @endif
                             </div>
@@ -230,11 +230,11 @@
                     <div class="card-footer clearfix">
                         <div class="float-left">
                             <span class="text-muted">
-                                Hiển thị <strong>{{ $categories->count() }}</strong> danh mục
+                                Showing <strong>{{ $categories->count() }}</strong> categories
                             </span>
                         </div>
                         <div class="float-right">
-                            <span class="text-muted">Tổng cộng {{ $categories->count() }} danh mục</span>
+                            <span class="text-muted">Total {{ $categories->count() }} categories</span>
                         </div>
                     </div>
                 </div>
@@ -487,35 +487,35 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Quản lý theme
+        // Theme management
         const themeButtons = document.querySelectorAll('.theme-btn');
         const savedTheme = localStorage.getItem('admin-categories-theme') || 'default';
 
-        // Áp dụng theme đã lưu
+        // Apply saved theme
         document.body.classList.add(`theme-${savedTheme}`);
         document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`).classList.add('active');
 
-        // Xử lý chuyển đổi theme
+        // Handle theme switching
         themeButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const theme = this.getAttribute('data-theme');
 
-                // Xóa tất cả class theme
+                // Remove all theme classes
                 document.body.classList.remove('theme-default', 'theme-dark');
 
-                // Thêm class theme mới
+                // Add new theme class
                 document.body.classList.add(`theme-${theme}`);
 
-                // Cập nhật trạng thái nút
+                // Update button states
                 themeButtons.forEach(btn => btn.classList.remove('active'));
                 this.classList.add('active');
 
-                // Lưu vào localStorage
+                // Save to localStorage
                 localStorage.setItem('admin-categories-theme', theme);
             });
         });
 
-        // Thêm hiệu ứng loading khi click các nút
+        // Add loading effect when clicking buttons
         const buttons = document.querySelectorAll('.waves-effect');
         buttons.forEach(button => {
             button.addEventListener('click', function(e) {
@@ -526,7 +526,7 @@
             });
         });
 
-        // Hiệu ứng hover cho card
+        // Hover effect for cards
         const cards = document.querySelectorAll('.card');
         cards.forEach(card => {
             card.addEventListener('mouseenter', function() {
@@ -538,7 +538,7 @@
             });
         });
 
-        // Tìm kiếm thời gian thực
+        // Real-time search
         const searchInput = document.getElementById('searchInput');
         const searchForm = document.getElementById('searchForm');
         const searchLoading = document.querySelector('.search-loading');
@@ -550,17 +550,17 @@
         searchInput.addEventListener('input', function() {
             const searchTerm = this.value.trim();
 
-            // Hiển thị loading
+            // Show loading
             searchLoading.classList.remove('d-none');
 
-            // Hủy timeout trước đó
+            // Cancel previous timeout
             clearTimeout(searchTimeout);
 
-            // Chỉ tìm kiếm nếu từ khóa thay đổi
+            // Only search if keyword changed
             if (searchTerm !== currentSearchTerm) {
                 currentSearchTerm = searchTerm;
 
-                // Đặt timeout mới với thời gian ngắn hơn (300ms)
+                // Set new timeout with shorter time (300ms)
                 searchTimeout = setTimeout(() => {
                     performSearch(searchTerm);
                 }, 300);
@@ -570,11 +570,11 @@
         });
 
         function performSearch(searchTerm) {
-            // Sử dụng fetch để tải kết quả tìm kiếm
+            // Use fetch to load search results
             fetch(`{{ route('admin.categories') }}?search=${encodeURIComponent(searchTerm)}&ajax=1`)
                 .then(response => response.text())
                 .then(html => {
-                    // Cập nhật nội dung bảng
+                    // Update table content
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
                     const newTableContent = doc.getElementById('categoriesTable');
@@ -583,30 +583,30 @@
                         categoriesTable.innerHTML = newTableContent.innerHTML;
                     }
 
-                    // Ẩn loading
+                    // Hide loading
                     searchLoading.classList.add('d-none');
 
-                    // Thêm lại sự kiện cho các nút sau khi cập nhật nội dung
+                    // Re-add event listeners to new elements
                     addEventListenersToNewElements();
                 })
                 .catch(error => {
-                    console.error('Lỗi tìm kiếm:', error);
+                    console.error('Search error:', error);
                     searchLoading.classList.add('d-none');
                 });
         }
 
         function addEventListenersToNewElements() {
-            // Thêm lại sự kiện cho các nút xóa
+            // Re-add event listeners for delete buttons
             const deleteForms = document.querySelectorAll('.delete-form');
             deleteForms.forEach(form => {
                 form.addEventListener('submit', function(e) {
-                    if (!confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
+                    if (!confirm('Are you sure you want to delete this category?')) {
                         e.preventDefault();
                     }
                 });
             });
 
-            // Thêm lại sự kiện cho các nút khác
+            // Re-add event listeners for other buttons
             const newButtons = document.querySelectorAll('.waves-effect');
             newButtons.forEach(button => {
                 button.addEventListener('click', function(e) {
@@ -618,17 +618,17 @@
             });
         }
 
-        // Xác nhận xóa danh mục
+        // Confirm category deletion
         const deleteForms = document.querySelectorAll('.delete-form');
         deleteForms.forEach(form => {
             form.addEventListener('submit', function(e) {
-                if (!confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
+                if (!confirm('Are you sure you want to delete this category?')) {
                     e.preventDefault();
                 }
             });
         });
 
-        // Hiển thị thông báo thành công trong 5 giây
+        // Show success message for 5 seconds
         const successAlert = document.querySelector('.alert-success');
         if (successAlert) {
             setTimeout(() => {

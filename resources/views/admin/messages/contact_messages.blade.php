@@ -1,18 +1,18 @@
 @extends('layouts.admin')
 
-@section('title', 'Quản lý Tin nhắn Liên hệ')
+@section('title', 'Manage Contact Messages')
 
 @section('admin-content')
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0 text-dark">Hộp thư Liên hệ</h1>
+                <h1 class="m-0 text-dark">Contact Inbox</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Tin nhắn</li>
+                    <li class="breadcrumb-item active">Messages</li>
                 </ol>
             </div>
         </div>
@@ -25,7 +25,7 @@
             <div class="card-header">
                 <h3 class="card-title">
                     <i class="fas fa-envelope mr-1"></i>
-                    Danh sách Tin nhắn (Chưa đọc: {{ $unreadCount }}) (Chưa xử lý: {{ $unhandledCount }})
+                    Messages List (Unread: {{ $unreadCount }}) (Pending: {{ $unhandledCount }})
                 </h3>
             </div>
 
@@ -34,13 +34,13 @@
                     <table class="table table-hover table-striped">
                         <thead>
                             <tr>
-                                <th style="width: 5%">Stt</th>
-                                <th style="width: 15%">Người gửi</th>
+                                <th style="width: 5%">#</th>
+                                <th style="width: 15%">Sender</th>
                                 <th style="width: 20%">Email</th>
-                                <th style="width: 35%">Nội dung (Trích đoạn)</th>
-                                <th style="width: 10%">Thời gian</th>
-                                <th style="width: 5%">Đã xử lý</th>
-                                <th style="width: 10%">Thao tác</th>
+                                <th style="width: 35%">Content (Excerpt)</th>
+                                <th style="width: 10%">Time</th>
+                                <th style="width: 5%">Status</th>
+                                <th style="width: 10%">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -52,28 +52,32 @@
                                 <td>
                                     {{ Str::limit($message->message, 50) }}
                                 </td>
-                                <td>{{ $message->created_at->format('d/m/Y H:i') }}</td>
+                                <td>{{ $message->created_at->format('m/d/Y H:i') }}</td>
                                 <td>
-                                    {{-- Cột Đã xử lý --}}
                                     @if($message->is_handled)
-                                    <span class="badge badge-success">Hoàn tất</span>
+                                    <span class="badge badge-success">Completed</span>
                                     @else
-                                    <span class="badge badge-warning">Đang chờ</span>
+                                    <span class="badge badge-warning">Pending</span>
                                     @endif
                                 </td>
                                 <td>
-                                    {{-- NÚT THAO TÁC --}}
                                     <form action="{{ route('admin.messages.toggle.handled', $message->id) }}" method="POST" style="display:inline;">
                                         @csrf
                                         <button type="submit" class="btn btn-sm @if($message->is_handled) btn-outline-danger @else btn-outline-success @endif"
-                                            title="@if($message->is_handled) Đánh dấu Chưa xử lý @else Đánh dấu Đã xử lý @endif">
+                                            title="@if($message->is_handled) Mark as Pending @else Mark as Completed @endif">
                                             <i class="fas @if($message->is_handled) fa-times @else fa-check @endif"></i>
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                             @empty
-                            {{-- ... --}}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No messages yet</h5>
+                                    <p class="text-muted">Your contact inbox is empty.</p>
+                                </td>
+                            </tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -86,4 +90,47 @@
         </div>
     </div>
 </section>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .card-outline {
+        border-top: 3px solid #007bff;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+    }
+
+    .badge-warning {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+    .btn-outline-success {
+        color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-outline-success:hover {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-outline-danger {
+        color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .btn-outline-danger:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+</style>
 @endsection

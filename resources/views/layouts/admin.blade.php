@@ -50,7 +50,7 @@
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="dropdown-item">
-                                <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
                             </button>
                         </form>
                     </div>
@@ -77,32 +77,32 @@
                         <li class="nav-item">
                             <a href="{{ route('admin.products') }}" class="nav-link {{ request()->routeIs('admin.products*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-box"></i>
-                                <p>Sản phẩm</p>
+                                <p>Products</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.categories') }}" class="nav-link {{ request()->routeIs('admin.categories*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-list"></i>
-                                <p>Danh mục</p>
+                                <p>Categories</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.blog.index') }}" class="nav-link {{ request()->routeIs('admin.blog*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-blog"></i>
-                                <p>Quản lý Blog</p>
+                                <p>Blogs</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{ route('admin.users') }}" class="nav-link {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-users"></i>
-                                <p>Người dùng</p>
+                                <p>Users</p>
                             </a>
                         </li>
 
                         <li class="nav-item">
                             <a href="{{ route('admin.messages') }}" class="nav-link {{ request()->routeIs('admin.messages*') ? 'active' : '' }}">
                                 <i class="nav-icon fas fa-envelope"></i>
-                                <p>Tin nhắn</p>
+                                <p>Messages</p>
                             </a>
                         </li>
                     </ul>
@@ -131,60 +131,6 @@
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                    </div>
-                    @endif
-
-                    <!-- VISITOR COUNT STATS -->
-                    @if(request()->routeIs('admin.dashboard'))
-                    <div class="row mb-4">
-                        <div class="col-lg-3 col-6">
-                            <div class="small-box bg-info">
-                                <div class="inner">
-                                    <h3 id="today-visitor">0</h3>
-                                    <p>Lượt truy cập hôm nay</p>
-                                </div>
-                                <div class="icon">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                                <a href="#" class="small-box-footer">Xem chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-6">
-                            <div class="small-box bg-success">
-                                <div class="inner">
-                                    <h3 id="total-visitor">0</h3>
-                                    <p>Tổng lượt truy cập</p>
-                                </div>
-                                <div class="icon">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                                <a href="#" class="small-box-footer">Xem chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-6">
-                            <div class="small-box bg-warning">
-                                <div class="inner">
-                                    <h3>{{ $stats['total_blogs'] ?? 0 }}</h3>
-                                    <p>Bài viết Blog</p>
-                                </div>
-                                <div class="icon">
-                                    <i class="fas fa-blog"></i>
-                                </div>
-                                <a href="{{ route('admin.blog.index') }}" class="small-box-footer">Xem chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-6">
-                            <div class="small-box bg-danger">
-                                <div class="inner">
-                                    <h3>{{ $stats['total_products'] ?? 0 }}</h3>
-                                    <p>Tổng sản phẩm</p>
-                                </div>
-                                <div class="icon">
-                                    <i class="fas fa-box"></i>
-                                </div>
-                                <a href="{{ route('admin.products') }}" class="small-box-footer">Xem chi tiết <i class="fas fa-arrow-circle-right"></i></a>
-                            </div>
-                        </div>
                     </div>
                     @endif
 
