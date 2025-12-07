@@ -7,10 +7,12 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Account;
 use App\Models\Blog;
+use App\Models\Colour;
 use App\Models\Contact;
 use App\Models\ProductVariant;
 use App\Models\Feedback;
 use App\Models\VisitorCount;
+use App\Models\Volume;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -26,7 +28,7 @@ class AdminController extends Controller
             'low_stock_variants' => ProductVariant::where('StockQuantity', '<', 10)->count(),
             'today_visitors' => VisitorCount::where('date', today())->value('count') ?? 0,
             'total_visitors' => VisitorCount::sum('count'),
-            'total_blogs' => Blog::count(), // THÊM DÒNG NÀY
+            'total_blogs' => Blog::count(),
         ];
 
         // Recent products
@@ -41,7 +43,7 @@ class AdminController extends Controller
             ->take(5)
             ->get();
 
-        // Recent blogs - THÊM PHẦN NÀY
+        // Recent blogs
         $recentBlogs = Blog::orderBy('created_at', 'desc')
             ->take(5)
             ->get();
@@ -72,19 +74,28 @@ class AdminController extends Controller
         return view('admin.products.index', compact('products', 'categories', 'search'));
     }
 
-    public function variants()
+    // Thêm method lowStock
+    public function lowStock()
     {
-        $variants = ProductVariant::with(['product', 'colour', 'volume'])->orderBy('VariantID', 'desc')->get();
-        return view('admin.variants', compact('variants'));
+        $variants = ProductVariant::with(['product', 'colour', 'volume'])
+            ->where('StockQuantity', '<', 5)
+            ->orderBy('StockQuantity', 'asc')
+            ->orderBy('VariantID', 'desc')
+            ->get();
+
+        return view('admin.products.low-stock', compact('variants'));
     }
 
     // Hiển thị form thêm sản phẩm mới
     public function create()
     {
         $categories = Category::where('Status', 1)->get();
-        return view('admin.products.create', compact('categories'));
+        $colours = Colour::all();
+        $volumes = Volume::all();
+        return view('admin.products.create', compact('categories', 'colours', 'volumes'));
     }
 
+    // Lưu sản phẩm mới (với variants)
     public function store(Request $request)
     {
         $request->validate([
@@ -93,47 +104,84 @@ class AdminController extends Controller
             'Description' => 'nullable|string',
             'Photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'Status' => 'required|boolean',
+            'variants' => 'required|array|min:1',
+            'variants.*.colour_id' => 'required|exists:colour,ColourID',
+            'variants.*.volume_id' => 'required|exists:volume,VolumeID',
+            'variants.*.price' => 'required|numeric|min:0',
+            'variants.*.stock' => 'required|integer|min:0',
+            'variants.*.main_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        DB::beginTransaction();
 
         try {
             $photoPath = null;
 
-            // Xử lý upload ảnh nếu có
+            // Xử lý upload ảnh sản phẩm chính
             if ($request->hasFile('Photo')) {
                 $file = $request->file('Photo');
-
-                // Tạo tên file unique
                 $fileName = 'product_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
-                // Tạo thư mục nếu chưa tồn tại
                 $directory = public_path('img/products');
                 if (!file_exists($directory)) {
                     mkdir($directory, 0755, true);
                 }
-
-                // Di chuyển file vào thư mục public/img/products
                 $file->move($directory, $fileName);
-
-                // Lưu đường dẫn (tương đối từ thư mục public)
                 $photoPath = '/img/products/' . $fileName;
             }
 
-            Product::create([
+            // Tạo sản phẩm
+            $product = Product::create([
                 'ProductName' => $request->ProductName,
                 'Description' => $request->Description,
                 'CategoryID' => $request->CategoryID,
-                'Photo' => $photoPath, // Lưu đường dẫn tương đối
+                'Photo' => $photoPath,
                 'Status' => $request->Status,
             ]);
 
-            return redirect()->route('admin.products')->with('success', 'Sản phẩm đã được thêm thành công!');
+            // Tạo các variants
+            if ($request->has('variants')) {
+                foreach ($request->variants as $index => $variantData) {
+                    if (!empty($variantData['colour_id']) && !empty($variantData['volume_id'])) {
+
+                        $mainImagePath = null;
+
+                        // Xử lý upload ảnh cho variant
+                        if (isset($variantData['main_image']) && $variantData['main_image']) {
+                            $file = $variantData['main_image'];
+                            $fileName = 'variant_' . time() . '_' . $index . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                            $directory = public_path('img/variants');
+                            if (!file_exists($directory)) {
+                                mkdir($directory, 0755, true);
+                            }
+                            $file->move($directory, $fileName);
+                            $mainImagePath = '/img/variants/' . $fileName;
+                        }
+
+                        ProductVariant::create([
+                            'ProductID' => $product->ProductID,
+                            'ColourID' => $variantData['colour_id'],
+                            'VolumeID' => $variantData['volume_id'],
+                            'Price' => $variantData['price'] ?? 0,
+                            'StockQuantity' => $variantData['stock'] ?? 0,
+                            'MainImage' => $mainImagePath,
+                            'Status' => 1,
+                        ]);
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('admin.products')->with('success', 'Product and variants created successfully!');
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->back()
-                ->with('error', 'Có lỗi xảy ra khi thêm sản phẩm: ' . $e->getMessage())
+                ->with('error', 'Error occurred: ' . $e->getMessage())
                 ->withInput();
         }
     }
 
+    // Cập nhật sản phẩm (với variants)
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
@@ -144,36 +192,38 @@ class AdminController extends Controller
             'Description' => 'nullable|string',
             'Photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'Status' => 'required|boolean',
+            'variants' => 'required|array|min:1',
+            'variants.*.id' => 'nullable|exists:productvariant,VariantID',
+            'variants.*.colour_id' => 'required|exists:colour,ColourID',
+            'variants.*.volume_id' => 'required|exists:volume,VolumeID',
+            'variants.*.price' => 'required|numeric|min:0',
+            'variants.*.stock' => 'required|integer|min:0',
+            'variants.*.main_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'variants.*.status' => 'nullable|boolean',
         ]);
+
+        DB::beginTransaction();
 
         try {
             $photoPath = $product->Photo;
 
-            // Xử lý upload ảnh nếu có ảnh mới
+            // Xử lý upload ảnh mới cho sản phẩm
             if ($request->hasFile('Photo')) {
-                // Xóa ảnh cũ nếu tồn tại
                 if ($photoPath && file_exists(public_path($photoPath))) {
                     unlink(public_path($photoPath));
                 }
 
                 $file = $request->file('Photo');
-
-                // Tạo tên file unique
                 $fileName = 'product_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-
-                // Tạo thư mục nếu chưa tồn tại
                 $directory = public_path('img/products');
                 if (!file_exists($directory)) {
                     mkdir($directory, 0755, true);
                 }
-
-                // Di chuyển file vào thư mục public/img/products
                 $file->move($directory, $fileName);
-
-                // Lưu đường dẫn mới
                 $photoPath = '/img/products/' . $fileName;
             }
 
+            // Cập nhật sản phẩm
             $product->update([
                 'ProductName' => $request->ProductName,
                 'Description' => $request->Description,
@@ -182,14 +232,91 @@ class AdminController extends Controller
                 'Status' => $request->Status,
             ]);
 
-            return redirect()->route('admin.products')->with('success', 'Sản phẩm đã được cập nhật thành công!');
+            // Xử lý variants
+            if ($request->has('variants')) {
+                $existingVariantIds = [];
+
+                foreach ($request->variants as $index => $variantData) {
+                    if (!empty($variantData['colour_id']) && !empty($variantData['volume_id'])) {
+                        $mainImagePath = null;
+
+                        // Xử lý upload ảnh cho variant
+                        if (isset($variantData['main_image']) && $variantData['main_image']) {
+                            $file = $variantData['main_image'];
+                            $fileName = 'variant_' . time() . '_' . $index . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                            $directory = public_path('img/variants');
+                            if (!file_exists($directory)) {
+                                mkdir($directory, 0755, true);
+                            }
+                            $file->move($directory, $fileName);
+                            $mainImagePath = '/img/variants/' . $fileName;
+                        }
+
+                        if (isset($variantData['id'])) {
+                            // Cập nhật variant hiện có
+                            $variant = ProductVariant::find($variantData['id']);
+                            if ($variant && $variant->ProductID == $product->ProductID) {
+                                // Nếu có ảnh mới, xóa ảnh cũ
+                                if ($mainImagePath && $variant->MainImage && file_exists(public_path($variant->MainImage))) {
+                                    unlink(public_path($variant->MainImage));
+                                }
+
+                                $updateData = [
+                                    'ColourID' => $variantData['colour_id'],
+                                    'VolumeID' => $variantData['volume_id'],
+                                    'Price' => $variantData['price'] ?? 0,
+                                    'StockQuantity' => $variantData['stock'] ?? 0,
+                                    'Status' => $variantData['status'] ?? 1,
+                                ];
+
+                                if ($mainImagePath) {
+                                    $updateData['MainImage'] = $mainImagePath;
+                                }
+
+                                $variant->update($updateData);
+                                $existingVariantIds[] = $variant->VariantID;
+                            }
+                        } else {
+                            // Tạo variant mới
+                            $newVariant = ProductVariant::create([
+                                'ProductID' => $product->ProductID,
+                                'ColourID' => $variantData['colour_id'],
+                                'VolumeID' => $variantData['volume_id'],
+                                'Price' => $variantData['price'] ?? 0,
+                                'StockQuantity' => $variantData['stock'] ?? 0,
+                                'MainImage' => $mainImagePath,
+                                'Status' => $variantData['status'] ?? 1,
+                            ]);
+                            $existingVariantIds[] = $newVariant->VariantID;
+                        }
+                    }
+                }
+
+                // Xóa các variant không còn trong danh sách
+                $variantsToDelete = ProductVariant::where('ProductID', $product->ProductID)
+                    ->whereNotIn('VariantID', $existingVariantIds)
+                    ->get();
+
+                foreach ($variantsToDelete as $variant) {
+                    // Xóa ảnh của variant nếu có
+                    if ($variant->MainImage && file_exists(public_path($variant->MainImage))) {
+                        unlink(public_path($variant->MainImage));
+                    }
+                    $variant->delete();
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('admin.products')->with('success', 'Product and variants updated successfully!');
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->back()
-                ->with('error', 'Có lỗi xảy ra khi cập nhật sản phẩm: ' . $e->getMessage())
+                ->with('error', 'Error occurred: ' . $e->getMessage())
                 ->withInput();
         }
     }
-    
+
     // Hiển thị chi tiết sản phẩm
     public function show($id)
     {
@@ -197,12 +324,15 @@ class AdminController extends Controller
         return view('admin.products.show', compact('product'));
     }
 
-    // Hiển thị form chỉnh sửa sản phẩm
+    // Hiển thị form chỉnh sửa sản phẩm (với variants)
     public function edit($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('variants.colour', 'variants.volume')->findOrFail($id);
         $categories = Category::where('Status', 1)->get();
-        return view('admin.products.edit', compact('product', 'categories'));
+        $colours = Colour::all();
+        $volumes = Volume::all();
+
+        return view('admin.products.edit', compact('product', 'categories', 'colours', 'volumes'));
     }
 
     // Xóa sản phẩm
@@ -214,14 +344,19 @@ class AdminController extends Controller
             // Kiểm tra xem sản phẩm có biến thể không
             $variantCount = ProductVariant::where('ProductID', $id)->count();
             if ($variantCount > 0) {
-                return redirect()->route('admin.products')->with('error', 'Không thể xóa sản phẩm vì có ' . $variantCount . ' biến thể đang thuộc sản phẩm này!');
+                return redirect()->route('admin.products')->with('error', 'Cannot delete product because it has ' . $variantCount . ' variants!');
+            }
+
+            // Xóa ảnh sản phẩm nếu có
+            if ($product->Photo && file_exists(public_path($product->Photo))) {
+                unlink(public_path($product->Photo));
             }
 
             $product->delete();
 
-            return redirect()->route('admin.products')->with('success', 'Sản phẩm đã được xóa thành công!');
+            return redirect()->route('admin.products')->with('success', 'Product deleted successfully!');
         } catch (\Exception $e) {
-            return redirect()->route('admin.products')->with('error', 'Có lỗi xảy ra khi xóa sản phẩm: ' . $e->getMessage());
+            return redirect()->route('admin.products')->with('error', 'Error deleting product: ' . $e->getMessage());
         }
     }
 
@@ -257,7 +392,7 @@ class AdminController extends Controller
     public function storeCategory(Request $request)
     {
         $request->validate([
-            'CategoryName' => 'required|string|max:255|unique:category,CategoryName', // SỬA: categories -> category
+            'CategoryName' => 'required|string|max:255|unique:category,CategoryName',
             'Description' => 'nullable|string',
             'Status' => 'required|boolean',
         ]);
@@ -267,13 +402,12 @@ class AdminController extends Controller
                 'CategoryName' => $request->CategoryName,
                 'Description' => $request->Description,
                 'Status' => $request->Status,
-                // XÓA: CreatedAt vì đã có DEFAULT
             ]);
 
-            return redirect()->route('admin.categories')->with('success', 'Danh mục đã được thêm thành công!');
+            return redirect()->route('admin.categories')->with('success', 'Category created successfully!');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Có lỗi xảy ra khi thêm danh mục: ' . $e->getMessage())
+                ->with('error', 'Error creating category: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -301,7 +435,7 @@ class AdminController extends Controller
         $category = Category::findOrFail($id);
 
         $request->validate([
-            'CategoryName' => 'required|string|max:255|unique:category,CategoryName,' . $id . ',CategoryID', // SỬA: categories -> category
+            'CategoryName' => 'required|string|max:255|unique:category,CategoryName,' . $id . ',CategoryID',
             'Description' => 'nullable|string',
             'Status' => 'required|boolean',
         ]);
@@ -311,13 +445,12 @@ class AdminController extends Controller
                 'CategoryName' => $request->CategoryName,
                 'Description' => $request->Description,
                 'Status' => $request->Status,
-                // XÓA: UpdatedAt vì không có trường này
             ]);
 
-            return redirect()->route('admin.categories')->with('success', 'Danh mục đã được cập nhật thành công!');
+            return redirect()->route('admin.categories')->with('success', 'Category updated successfully!');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Có lỗi xảy ra khi cập nhật danh mục: ' . $e->getMessage())
+                ->with('error', 'Error updating category: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -331,14 +464,14 @@ class AdminController extends Controller
             // Kiểm tra xem danh mục có sản phẩm không
             $productCount = Product::where('CategoryID', $id)->count();
             if ($productCount > 0) {
-                return redirect()->route('admin.categories')->with('error', 'Không thể xóa danh mục vì có ' . $productCount . ' sản phẩm đang thuộc danh mục này!');
+                return redirect()->route('admin.categories')->with('error', 'Cannot delete category because it has ' . $productCount . ' products!');
             }
 
             $category->delete();
 
-            return redirect()->route('admin.categories')->with('success', 'Danh mục đã được xóa thành công!');
+            return redirect()->route('admin.categories')->with('success', 'Category deleted successfully!');
         } catch (\Exception $e) {
-            return redirect()->route('admin.categories')->with('error', 'Có lỗi xảy ra khi xóa danh mục: ' . $e->getMessage());
+            return redirect()->route('admin.categories')->with('error', 'Error deleting category: ' . $e->getMessage());
         }
     }
 
@@ -383,10 +516,10 @@ class AdminController extends Controller
 
             $user->update($updateData);
 
-            return redirect()->route('admin.users')->with('success', 'Cập nhật người dùng thành công!');
+            return redirect()->route('admin.users')->with('success', 'User updated successfully!');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Có lỗi xảy ra khi cập nhật người dùng: ' . $e->getMessage())
+                ->with('error', 'Error updating user: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -400,7 +533,7 @@ class AdminController extends Controller
             $user = Account::findOrFail($id);
 
             if ($user->Role == 1) {
-                return redirect()->route('admin.users')->with('error', 'Không thể xóa tài khoản admin!');
+                return redirect()->route('admin.users')->with('error', 'Cannot delete admin account!');
             }
 
             // Xóa user - feedback sẽ tự động set AccountID = NULL
@@ -408,10 +541,10 @@ class AdminController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.users')->with('success', 'Người dùng đã được xóa thành công!');
+            return redirect()->route('admin.users')->with('success', 'User deleted successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('admin.users')->with('error', 'Có lỗi xảy ra khi xóa người dùng: ' . $e->getMessage());
+            return redirect()->route('admin.users')->with('error', 'Error deleting user: ' . $e->getMessage());
         }
     }
 
@@ -437,7 +570,7 @@ class AdminController extends Controller
         $request->validate([
             'Title' => 'required|string|max:255',
             'Content' => 'required|string',
-            'Image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // THÊM VALIDATION CHO IMAGE
+            'Image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'Author' => 'required|string|max:100',
         ]);
 
@@ -467,14 +600,14 @@ class AdminController extends Controller
             Blog::create([
                 'Title' => $request->Title,
                 'Content' => $request->Content,
-                'Image' => $imagePath, // Lưu đường dẫn ảnh
+                'Image' => $imagePath,
                 'Author' => $request->Author,
             ]);
 
-            return redirect()->route('admin.blog.index')->with('success', 'Bài viết đã được thêm thành công!');
+            return redirect()->route('admin.blog.index')->with('success', 'Blog post created successfully!');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Có lỗi xảy ra khi thêm bài viết: ' . $e->getMessage())
+                ->with('error', 'Error creating blog post: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -489,7 +622,7 @@ class AdminController extends Controller
         $request->validate([
             'Title' => 'required|string|max:255',
             'Content' => 'required|string',
-            'Image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // THÊM VALIDATION CHO IMAGE
+            'Image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'Author' => 'required|string|max:100',
         ]);
 
@@ -524,14 +657,14 @@ class AdminController extends Controller
             $blog->update([
                 'Title' => $request->Title,
                 'Content' => $request->Content,
-                'Image' => $imagePath, // Cập nhật đường dẫn ảnh
+                'Image' => $imagePath,
                 'Author' => $request->Author,
             ]);
 
-            return redirect()->route('admin.blog.index')->with('success', 'Bài viết đã được cập nhật thành công!');
+            return redirect()->route('admin.blog.index')->with('success', 'Blog post updated successfully!');
         } catch (\Exception $e) {
             return redirect()->back()
-                ->with('error', 'Có lỗi xảy ra khi cập nhật bài viết: ' . $e->getMessage())
+                ->with('error', 'Error updating blog post: ' . $e->getMessage())
                 ->withInput();
         }
     }
@@ -561,11 +694,17 @@ class AdminController extends Controller
     {
         try {
             $blog = Blog::findOrFail($id);
+
+            // Xóa ảnh blog nếu có
+            if ($blog->Image && file_exists(public_path($blog->Image))) {
+                unlink(public_path($blog->Image));
+            }
+
             $blog->delete();
 
-            return redirect()->route('admin.blog.index')->with('success', 'Bài viết đã được xóa thành công!');
+            return redirect()->route('admin.blog.index')->with('success', 'Blog post deleted successfully!');
         } catch (\Exception $e) {
-            return redirect()->route('admin.blog.index')->with('error', 'Có lỗi xảy ra khi xóa bài viết: ' . $e->getMessage());
+            return redirect()->route('admin.blog.index')->with('error', 'Error deleting blog post: ' . $e->getMessage());
         }
     }
 
@@ -579,7 +718,7 @@ class AdminController extends Controller
         $message->save();
 
         // Chuyển hướng về trang danh sách tin nhắn với thông báo
-        return redirect()->route('admin.messages')->with('success', 'Trạng thái xử lý đã được cập nhật.');
+        return redirect()->route('admin.messages')->with('success', 'Processing status updated successfully.');
     }
 
     public function messages()
@@ -589,5 +728,48 @@ class AdminController extends Controller
         $unhandledCount = Contact::where('is_handled', 0)->count();
 
         return view('admin.messages.contact_messages', compact('messages', 'unreadCount', 'unhandledCount'));
+    }
+
+    public function visitors()
+    {
+        // Lấy dữ liệu 30 ngày gần nhất
+        $visitorStats = VisitorCount::orderBy('date', 'desc')
+            ->take(30)
+            ->get();
+
+        // Tổng visitors
+        $totalVisitors = VisitorCount::sum('count');
+
+        // Today visitors
+        $todayVisitors = VisitorCount::where('date', today())->value('count') ?? 0;
+
+        // Tháng này
+        $monthVisitors = VisitorCount::whereYear('date', now()->year)
+            ->whereMonth('date', now()->month)
+            ->sum('count');
+
+        return view('admin.visitors.index', compact(
+            'visitorStats',
+            'totalVisitors',
+            'todayVisitors',
+            'monthVisitors'
+        ));
+    }
+
+    public function reviews()
+    {
+        $reviews = Feedback::with(['product', 'user'])
+            ->orderBy('SubmissionDate', 'desc')
+            ->paginate(20);
+
+        // Thống kê
+        $stats = [
+            'total' => Feedback::count(),
+            'average_rating' => Feedback::avg('Rating') ?? 0,
+            'five_star' => Feedback::where('Rating', 5)->count(),
+            'today' => Feedback::whereDate('SubmissionDate', today())->count(),
+        ];
+
+        return view('admin.reviews.index', compact('reviews', 'stats'));
     }
 }

@@ -23,7 +23,7 @@
 <section class="content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-8 mx-auto">
+            <div class="col-md-12">
                 <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Product Information</h3>
@@ -70,7 +70,7 @@
                                         <td>
                                             <span class="badge badge-secondary badge-pill px-3">
                                                 <i class="fas fa-layer-group mr-1"></i>
-                                                {{ $product->variants_count ?? $product->variants->count() ?? 0 }}
+                                                {{ $product->variants->count() }}
                                             </span>
                                         </td>
                                     </tr>
@@ -92,13 +92,57 @@
                                         <th>Created Date</th>
                                         <td>{{ date('m/d/Y H:i', strtotime($product->CreatedAt)) }}</td>
                                     </tr>
-                                    <tr>
-                                        <th>Last Updated</th>
-                                        <td>{{ date('m/d/Y H:i', strtotime($product->UpdatedAt)) }}</td>
-                                    </tr>
                                 </table>
                             </div>
                         </div>
+
+                        <!-- Product Variants Section -->
+                        @if($product->variants->count() > 0)
+                        <div class="mt-4">
+                            <h4 class="mb-3">Product Variants</h4>
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Variant ID</th>
+                                            <th>Colour</th>
+                                            <th>Volume</th>
+                                            <th>Price</th>
+                                            <th>Stock</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($product->variants as $variant)
+                                        <tr>
+                                            <td>#{{ $variant->VariantID }}</td>
+                                            <td>{{ $variant->colour->ColourName ?? 'N/A' }}</td>
+                                            <td>{{ $variant->volume->VolumeValue ?? 'N/A' }}</td>
+                                            <td>${{ number_format($variant->Price, 2) }}</td>
+                                            <td>
+                                                <span class="badge {{ $variant->StockQuantity < 10 ? 'badge-warning' : 'badge-success' }}">
+                                                    {{ $variant->StockQuantity }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                @if($variant->Status == 1)
+                                                <span class="badge badge-success">Active</span>
+                                                @else
+                                                <span class="badge badge-danger">Inactive</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        @else
+                        <div class="alert alert-warning mt-4">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            No variants found for this product.
+                        </div>
+                        @endif
                     </div>
                     <div class="card-footer">
                         <div class="btn-group">
@@ -145,6 +189,11 @@
     .btn-group .btn {
         margin-right: 5px;
         border-radius: 6px;
+    }
+
+    .badge-pill {
+        border-radius: 15px;
+        padding: 6px 12px;
     }
 </style>
 @endsection

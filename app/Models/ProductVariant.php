@@ -33,9 +33,9 @@ class ProductVariant extends Model
     }
 
     /**
-     * Get the color of the variant
+     * Get the colour of the variant
      */
-    public function color()
+    public function colour()
     {
         return $this->belongsTo(Colour::class, 'ColourID', 'ColourID');
     }

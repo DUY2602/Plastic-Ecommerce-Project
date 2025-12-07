@@ -23,75 +23,125 @@
 <section class="content">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-8 mx-auto">
+            <div class="col-md-12">
                 <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">Product Information</h3>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
                     </div>
-                    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
                         @csrf
                         <div class="card-body">
-                            <div class="form-group">
-                                <label for="ProductName">Product Name *</label>
-                                <input type="text" class="form-control @error('ProductName') is-invalid @enderror"
-                                    id="ProductName" name="ProductName"
-                                    value="{{ old('ProductName') }}"
-                                    placeholder="Enter product name" required>
-                                @error('ProductName')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                            <!-- Basic Product Information -->
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label for="ProductName">Product Name *</label>
+                                        <input type="text" class="form-control @error('ProductName') is-invalid @enderror"
+                                            id="ProductName" name="ProductName"
+                                            value="{{ old('ProductName') }}"
+                                            placeholder="Enter product name" required>
+                                        @error('ProductName')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="CategoryID">Category *</label>
-                                <select class="form-control @error('CategoryID') is-invalid @enderror"
-                                    id="CategoryID" name="CategoryID" required>
-                                    <option value="">Select category</option>
-                                    @foreach($categories as $category)
-                                    <option value="{{ $category->CategoryID }}"
-                                        {{ old('CategoryID') == $category->CategoryID ? 'selected' : '' }}>
-                                        {{ $category->CategoryName }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                                @error('CategoryID')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
+                                    <div class="form-group">
+                                        <label for="CategoryID">Category *</label>
+                                        <select class="form-control @error('CategoryID') is-invalid @enderror"
+                                            id="CategoryID" name="CategoryID" required>
+                                            <option value="">Select category</option>
+                                            @foreach($categories as $category)
+                                            <option value="{{ $category->CategoryID }}"
+                                                {{ old('CategoryID') == $category->CategoryID ? 'selected' : '' }}>
+                                                {{ $category->CategoryName }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                        @error('CategoryID')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
 
-                            <div class="form-group">
-                                <label for="Description">Product Description</label>
-                                <textarea class="form-control @error('Description') is-invalid @enderror"
-                                    id="Description" name="Description"
-                                    rows="4" placeholder="Enter product description">{{ old('Description') }}</textarea>
-                                @error('Description')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <label for="Photo">Product Image</label>
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input @error('Photo') is-invalid @enderror"
-                                        id="Photo" name="Photo" accept="image/*">
-                                    <label class="custom-file-label" for="Photo">Choose image</label>
+                                    <div class="form-group">
+                                        <label for="Description">Product Description</label>
+                                        <textarea class="form-control @error('Description') is-invalid @enderror"
+                                            id="Description" name="Description"
+                                            rows="3" placeholder="Enter product description">{{ old('Description') }}</textarea>
+                                        @error('Description')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
-                                @error('Photo')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                                @enderror
-                                <small class="form-text text-muted">Formats: JPEG, PNG, JPG, GIF. Max 2MB.</small>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="Photo">Product Main Image</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input @error('Photo') is-invalid @enderror"
+                                                id="Photo" name="Photo" accept="image/*">
+                                            <label class="custom-file-label" for="Photo">Choose main image</label>
+                                        </div>
+                                        @error('Photo')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                        <small class="form-text text-muted">Formats: JPEG, PNG, JPG, GIF. Max 2MB.</small>
+                                        <div id="imagePreview" class="mt-2" style="display: none;">
+                                            <img src="" alt="Preview" class="img-thumbnail" style="max-height: 150px;">
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="Status">Status *</label>
+                                        <select class="form-control @error('Status') is-invalid @enderror"
+                                            id="Status" name="Status" required>
+                                            <option value="1" {{ old('Status', 1) == 1 ? 'selected' : '' }}>Active</option>
+                                            <option value="0" {{ old('Status') == 0 ? 'selected' : '' }}>Inactive</option>
+                                        </select>
+                                        @error('Status')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="Status">Status *</label>
-                                <select class="form-control @error('Status') is-invalid @enderror"
-                                    id="Status" name="Status" required>
-                                    <option value="1" {{ old('Status', 1) == 1 ? 'selected' : '' }}>Active</option>
-                                    <option value="0" {{ old('Status') == 0 ? 'selected' : '' }}>Inactive</option>
-                                </select>
-                                @error('Status')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <!-- Product Variants Section -->
+                            <div class="card card-secondary mt-4">
+                                <div class="card-header">
+                                    <h3 class="card-title">Product Variants</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-success btn-sm" id="addVariantBtn">
+                                            <i class="fas fa-plus mr-1"></i> Add Variant
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered" id="variantsTable">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th width="20%">Colour</th>
+                                                    <th width="20%">Volume</th>
+                                                    <th width="15%">Price ($)</th>
+                                                    <th width="10%">Stock</th>
+                                                    <th width="25%">Variant Image</th>
+                                                    <th width="10%">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="variantsTbody">
+                                                <!-- Variant rows will be added here dynamically -->
+                                                <tr class="no-variants">
+                                                    <td colspan="6" class="text-center text-muted py-3">
+                                                        No variants added yet. Click "Add Variant" to add one.
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="card-footer">
@@ -122,6 +172,10 @@
         border-radius: 10px 10px 0 0 !important;
     }
 
+    .card-secondary .card-header {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    }
+
     .btn-primary {
         background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
         border: none;
@@ -133,16 +187,231 @@
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
     }
+
+    .variant-row {
+        transition: all 0.3s ease;
+    }
+
+    .variant-row:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .remove-variant {
+        cursor: pointer;
+        color: #dc3545;
+        transition: all 0.3s ease;
+    }
+
+    .remove-variant:hover {
+        color: #bd2130;
+        transform: scale(1.2);
+    }
+
+    .variant-image-preview {
+        max-height: 80px;
+        max-width: 100%;
+        object-fit: cover;
+    }
 </style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Display file name when selecting image
+        let variantCounter = 0;
+
+        // Lấy dữ liệu từ PHP sang JS - Sử dụng PHP trực tiếp
+        const colours = <?php echo json_encode($colours ?? []); ?>;
+        const volumes = <?php echo json_encode($volumes ?? []); ?>;
+
+        // Display file name and preview when selecting main image
         document.getElementById('Photo').addEventListener('change', function(e) {
-            var fileName = e.target.files[0].name;
+            var fileName = e.target.files[0]?.name || 'Choose image';
             var nextSibling = e.target.nextElementSibling;
             nextSibling.innerText = fileName;
+
+            // Show preview
+            if (e.target.files && e.target.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var preview = document.getElementById('imagePreview');
+                    preview.style.display = 'block';
+                    preview.querySelector('img').src = e.target.result;
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
         });
+
+        // Add variant button
+        document.getElementById('addVariantBtn').addEventListener('click', function() {
+            addVariantRow();
+        });
+
+        function addVariantRow(variantData = {}) {
+            // Remove "no variants" message
+            const noVariantsRow = document.querySelector('.no-variants');
+            if (noVariantsRow) {
+                noVariantsRow.remove();
+            }
+
+            const tbody = document.getElementById('variantsTbody');
+            const rowId = variantCounter++;
+
+            // Tạo option cho colour select
+            let colourOptions = '<option value="">Select Colour</option>';
+            if (colours && Array.isArray(colours)) {
+                colours.forEach(colour => {
+                    colourOptions += `<option value="${colour.ColourID}" ${variantData.colour_id == colour.ColourID ? 'selected' : ''}>
+                        ${colour.ColourName}
+                    </option>`;
+                });
+            }
+
+            // Tạo option cho volume select
+            let volumeOptions = '<option value="">Select Volume</option>';
+            if (volumes && Array.isArray(volumes)) {
+                volumes.forEach(volume => {
+                    volumeOptions += `<option value="${volume.VolumeID}" ${variantData.volume_id == volume.VolumeID ? 'selected' : ''}>
+                        ${volume.VolumeValue}
+                    </option>`;
+                });
+            }
+
+            const row = document.createElement('tr');
+            row.className = 'variant-row';
+            row.innerHTML = `
+                <td>
+                    <select name="variants[${rowId}][colour_id]" class="form-control form-control-sm" required>
+                        ${colourOptions}
+                    </select>
+                </td>
+                <td>
+                    <select name="variants[${rowId}][volume_id]" class="form-control form-control-sm" required>
+                        ${volumeOptions}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" step="0.01" min="0" 
+                           name="variants[${rowId}][price]" 
+                           class="form-control form-control-sm" 
+                           value="${variantData.price || ''}"
+                           placeholder="0.00" required>
+                </td>
+                <td>
+                    <input type="number" min="0" 
+                           name="variants[${rowId}][stock]" 
+                           class="form-control form-control-sm" 
+                           value="${variantData.stock || ''}"
+                           placeholder="0" required>
+                </td>
+                <td>
+                    <div class="form-group mb-0">
+                        <div class="custom-file custom-file-sm">
+                            <input type="file" class="custom-file-input variant-image-input" 
+                                   name="variants[${rowId}][main_image]" 
+                                   accept="image/*"
+                                   data-preview-id="preview_${rowId}">
+                            <label class="custom-file-label">Choose image</label>
+                        </div>
+                        <small class="form-text text-muted">Max 2MB</small>
+                        <div id="preview_${rowId}" class="mt-1 variant-image-preview-container" style="display: none;">
+                            <img src="" alt="Preview" class="img-thumbnail variant-image-preview">
+                        </div>
+                    </div>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm remove-variant" 
+                            onclick="removeVariantRow(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+
+            // Thêm event listener cho file input mới
+            const fileInput = row.querySelector('.variant-image-input');
+            const previewContainer = row.querySelector('.variant-image-preview-container');
+            const previewImg = row.querySelector('.variant-image-preview');
+            const fileLabel = row.querySelector('.custom-file-label');
+
+            fileInput.addEventListener('change', function(e) {
+                var fileName = e.target.files[0]?.name || 'Choose image';
+                fileLabel.innerText = fileName;
+
+                // Show preview
+                if (e.target.files && e.target.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewContainer.style.display = 'block';
+                        previewImg.src = e.target.result;
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        }
+
+        // Remove variant row
+        window.removeVariantRow = function(button) {
+            const row = button.closest('tr');
+            row.remove();
+
+            // Show "no variants" message if table is empty
+            const tbody = document.getElementById('variantsTbody');
+            if (tbody.children.length === 0) {
+                const noVariantsRow = document.createElement('tr');
+                noVariantsRow.className = 'no-variants';
+                noVariantsRow.innerHTML = `
+                    <td colspan="6" class="text-center text-muted py-3">
+                        No variants added yet. Click "Add Variant" to add one.
+                    </td>
+                `;
+                tbody.appendChild(noVariantsRow);
+            }
+        };
+
+        // Form validation before submit
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            // Check if at least one variant is added
+            const hasVariants = document.querySelectorAll('#variantsTbody tr:not(.no-variants)').length > 0;
+            if (!hasVariants) {
+                e.preventDefault();
+                alert('Please add at least one product variant.');
+                return false;
+            }
+
+            // Validate variant combinations (unique colour-volume)
+            const combinations = new Set();
+            const variantRows = document.querySelectorAll('#variantsTbody tr:not(.no-variants)');
+            let hasDuplicate = false;
+
+            variantRows.forEach(row => {
+                const colourSelect = row.querySelector('select[name*="colour_id"]');
+                const volumeSelect = row.querySelector('select[name*="volume_id"]');
+
+                if (colourSelect && volumeSelect) {
+                    const colourId = colourSelect.value;
+                    const volumeId = volumeSelect.value;
+
+                    if (colourId && volumeId) {
+                        const combo = `${colourId}-${volumeId}`;
+                        if (combinations.has(combo)) {
+                            hasDuplicate = true;
+                            row.style.backgroundColor = '#ffe6e6';
+                        } else {
+                            combinations.add(combo);
+                        }
+                    }
+                }
+            });
+
+            if (hasDuplicate) {
+                e.preventDefault();
+                alert('Duplicate colour-volume combination found. Please ensure each variant has unique combination.');
+                return false;
+            }
+        });
+
+        // Tự động thêm 1 variant mặc định khi tạo sản phẩm mới (tuỳ chọn)
+        // addVariantRow();
     });
 </script>
 @endsection

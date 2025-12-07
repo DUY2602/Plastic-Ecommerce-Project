@@ -70,12 +70,18 @@ Route::middleware(['auth.check'])->group(function () {
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
+    Route::get('/visitors', [AdminController::class, 'visitors'])->name('visitors');
+
+    Route::get('/reviews', [AdminController::class, 'reviews'])->name('reviews');
+
     Route::get('/messages', [AdminController::class, 'messages'])->name('messages');
     Route::post('/messages/{id}/toggle-handled', [AdminController::class, 'toggleMessageHandled'])->name('messages.toggle.handled');
 
 
     // Product routes
     Route::get('/products', [AdminController::class, 'products'])->name('products');
+    // Low Stock items routes
+    Route::get('/products/low-stock', [AdminController::class, 'lowStock'])->name('products.low-stock');
     Route::get('/products/create', [AdminController::class, 'create'])->name('products.create');
     Route::post('/products', [AdminController::class, 'store'])->name('products.store');
     Route::get('/products/{id}', [AdminController::class, 'show'])->name('products.show');
@@ -97,9 +103,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('users.edit');
     Route::put('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{id}', [AdminController::class, 'destroyUser'])->name('users.destroy');
-
-    // Variant routes
-    Route::get('/variants', [AdminController::class, 'variants'])->name('variants');
 
     // Blog routes - TRANG ADMIN QUẢN LÝ BLOG (yêu cầu đăng nhập admin)
     Route::get('/blog', [AdminController::class, 'blogIndex'])->name('blog.index');

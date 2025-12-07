@@ -77,7 +77,7 @@
                     <div class="icon">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <a href="{{ route('admin.variants') }}" class="small-box-footer waves-effect">
+                    <a href="{{ route('admin.products.low-stock') }}" class="small-box-footer">
                         View Details <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
@@ -123,7 +123,7 @@
                     <div class="icon">
                         <i class="fas fa-eye"></i>
                     </div>
-                    <a href="#" class="small-box-footer waves-effect">
+                    <a href="{{ route('admin.visitors') }}" class="small-box-footer waves-effect">
                         View Details <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
@@ -138,7 +138,7 @@
                     <div class="icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
-                    <a href="#" class="small-box-footer waves-effect">
+                    <a href="{{ route('admin.visitors') }}" class="small-box-footer waves-effect">
                         View Details <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>
@@ -247,7 +247,7 @@
                         </div>
                     </div>
                     <div class="card-footer glass-header">
-                        <a href="#" class="btn btn-sm btn-light btn-block waves-effect">
+                        <a href="{{ route('admin.reviews') }}" class="btn btn-sm btn-light btn-block waves-effect">
                             View All Reviews <i class="fas fa-arrow-right ml-1"></i>
                         </a>
                     </div>
