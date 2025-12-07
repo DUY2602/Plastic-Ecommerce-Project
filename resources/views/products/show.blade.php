@@ -31,7 +31,7 @@
                     <div class="product__details__pic__slider owl-carousel">
                         @foreach($product->variants->groupBy('ColourID') as $colorId => $colorVariants)
                         @php
-                        $color = $colorVariants->first()->color;
+                        $color = $colorVariants->first()->colour;
                         $firstVariant = $colorVariants->first();
                         @endphp
                         <img data-imgbigurl="{{ asset($firstVariant->MainImage ? str_replace('/images/', '/img/', $firstVariant->MainImage) : 'img/product/default.jpg') }}"
@@ -89,7 +89,7 @@
                             <div class="color__list">
                                 @foreach($product->variants->groupBy('ColourID') as $colorId => $colorVariants)
                                 @php
-                                $color = $colorVariants->first()->color;
+                                $color = $colorVariants->first()->colour;
                                 $firstVariant = $colorVariants->first();
 
                                 $swatchStyle = 'background: #ccc;';
@@ -226,7 +226,7 @@
                                             @foreach($product->variants as $variant)
                                             <tr>
                                                 <td>#{{ $variant->VariantID }}</td>
-                                                <td>{{ $variant->color->ColourName }}</td>
+                                                <td>{{ $variant->colour->ColourName }}</td>
                                                 <td>{{ $variant->volume->VolumeValue }}</td>
                                                 <td>{{ number_format($variant->Price * 1000, 0, ',', '.') }}đ</td>
                                                 <td>{{ $variant->StockQuantity }}</td>
