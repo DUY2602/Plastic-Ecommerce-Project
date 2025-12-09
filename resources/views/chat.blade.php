@@ -10,10 +10,6 @@
             <div class="col-lg-12 text-center">
                 <div class="breadcrumb__text">
                     <h2>AI Chat Assistant</h2>
-                    <div class="breadcrumb__option">
-                        <a href="{{ route('home') }}">Home</a>
-                        <span>Chat Assistant</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -54,7 +50,7 @@
                         </div>
                         <div class="col-md-6 mb-2">
                             <div class="suggestion-card" data-question="Tell me about your sports bottle products">
-                                <i class="fa fa-futbol-o"></i>
+                                <i class="fa fa-heartbeat"></i>
                                 <span>Sports Bottles</span>
                             </div>
                         </div>
@@ -642,19 +638,15 @@
         // Comment or completely remove this part
 
         // Welcome message
-        const welcomeMessage = createMessage(
-            "Hello! 👋 I am the AI assistant of Plastic Store. I can help you with:<br><br>" +
+        const welcomeMessage = createMessage("", false, false);
+        welcomeMessage.classList.add('welcome-message');
+        const messageText = welcomeMessage.querySelector(".message-text");
+        messageText.innerHTML = "Hello! 👋 I am the AI assistant of Plastic Store. I can help you with:<br><br>" +
             "• <strong>Product Information</strong> about plastics<br>" +
             "• <strong>Material Comparisons</strong> PET, PP, PC<br>" +
             "• <strong>Product Selection Advice</strong> for suitable products<br>" +
             "• <strong>Answering Questions</strong> about properties<br><br>" +
-            "Ask me anything about plastic products! 🛍️",
-            false,
-            false
-        );
-        welcomeMessage.classList.add('welcome-message');
-        const messageText = welcomeMessage.querySelector(".message-text");
-        messageText.innerHTML = welcomeMessage.querySelector(".message-text").textContent;
+            "Ask me anything about plastic products! 🛍️";
         chatsContainer.appendChild(welcomeMessage);
         scrollToBottom();
     });

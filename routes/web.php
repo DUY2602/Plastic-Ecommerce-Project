@@ -7,6 +7,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\VisitorCountController;
@@ -64,6 +65,9 @@ Route::get('/visitor/stats', [VisitorCountController::class, 'getTodayCount'])
 // User routes (require login)
 Route::middleware(['auth.check'])->group(function () {
     Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
+
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::delete('/feedback/{id}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
 });
 
 // Admin Routes - CHỈ cho admin đã đăng nhập

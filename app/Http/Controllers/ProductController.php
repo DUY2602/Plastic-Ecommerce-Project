@@ -161,8 +161,22 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::with(['category', 'variants'])->findOrFail($id);
-        return view('products.show', compact('product'));
+        $product = Product::with([
+            'category',
+            'variants.colour',     // Eager load colour
+            'variants.volume',     // Eager load volume
+            'feedback.user'     // QUAN TRỌNG: Eager load feedback với account
+        ])->findOrFail($id);
+
+        // Lấy danh sách favorite product IDs nếu user đã đăng nhập
+        $favoriteProductIds = [];
+        if (Auth::check()) {
+            $favoriteProductIds = \App\Models\Favorite::where('AccountID', Auth::id())
+                ->pluck('ProductID')
+                ->toArray();
+        }
+
+        return view('products.show', compact('product', 'favoriteProductIds'));
     }
 
     /**

@@ -20,10 +20,6 @@ class ChatController extends Controller
             'message' => 'required|string|max:1000'
         ]);
 
-        if (!Auth::check()) {
-            return response()->json(['error' => 'Vui lòng đăng nhập trước'], 401);
-        }
-
         try {
             $response = Http::timeout(30)->withHeaders([
                 'Authorization' => 'Bearer ' . env('GROQ_API_KEY'),

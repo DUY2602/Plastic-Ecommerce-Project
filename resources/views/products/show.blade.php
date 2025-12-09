@@ -67,11 +67,10 @@
                             <span>({{ $product->feedback->count() }} reviews)</span>
                     </div>
 
-                    {{-- Price Display - ONLY SHOW 1 DEFAULT PRICE --}}
+                    {{-- Price Display --}}
                     <div class="product__details__price" id="mainProductPrice">
                         @if($product->variants->count() > 0)
                         @php
-                        // Get default price from first variant or lowest price
                         $defaultPrice = $product->variants->first()->Price ?? $product->variants->min('Price');
                         @endphp
                         {{ number_format($defaultPrice * 1000, 0, ',', '.') }}đ
@@ -143,20 +142,24 @@
                     </div>
                     @endif
 
-                    {{-- Quantity Counter --}}
-                    <div class="product__details__quantity">
-                        <div class="quantity">
-                            <div class="pro-qty">
-                                <span class="qtybtn dec">-</span>
-                                <input type="text" value="1" id="productQuantityInput" readonly>
-                                <span class="qtybtn inc">+</span>
-                            </div>
-                        </div>
-                    </div>
+                    {{-- Action Buttons - Chỉ giữ Favorite và Download --}}
+                    <div class="product__details__actions">
+                        {{-- Favorite Button --}}
+                        <a href="#" class="action-btn favorite-btn" data-product-id="{{ $product->ProductID }}" title="Add to Favorite">
+                            @if(isset($favoriteProductIds) && in_array($product->ProductID, $favoriteProductIds))
+                            <i class="fa fa-heart" style="color: #ff0000"></i>
+                            @else
+                            <i class="fa fa-heart" style="color: #333"></i>
+                            @endif
+                            <span>Favorite</span>
+                        </a>
 
-                    {{-- Action Buttons --}}
-                    <button href="#" class="primary-btn" id="addToCartButton" style="border: none;">ADD TO CART</button>
-                    <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
+                        {{-- Download Button --}}
+                        <a href="{{ route('product.download', $product->ProductID) }}" class="action-btn download-btn" title="Download Product Document">
+                            <i class="fa fa-download"></i>
+                            <span>Document</span>
+                        </a>
+                    </div>
 
                     <ul>
                         <li><b>Availability</b> <span>
@@ -167,14 +170,6 @@
                                 @endif
                             </span></li>
                         <li><b>Shipping</b> <span>Delivery in 1 day. <samp>Free shipping</samp></span></li>
-                        <li><b>Share</b>
-                            <div class="share">
-                                <a href="#"><i class="fa fa-facebook"></i></a>
-                                <a href="#"><i class="fa fa-twitter"></i></a>
-                                <a href="#"><i class="fa fa-instagram"></i></a>
-                                <a href="#"><i class="fa fa-pinterest"></i></a>
-                            </div>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -242,17 +237,51 @@
                         <div class="tab-pane" id="tabs-3" role="tabpanel">
                             <div class="product__details__tab__desc">
                                 <h6>Customer Reviews ({{ $product->feedback->count() }})</h6>
+                                {{-- FORM VIẾT REVIEW MỚI --}}
+                                @auth
+                                <div class="write-review-form" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+                                    <h6 style="margin-bottom: 15px;">Write Your Review</h6>
+                                    <form action="{{ route('feedback.store') }}" method="POST" id="reviewForm">
+                                        @csrf
+                                        <input type="hidden" name="ProductID" value="{{ $product->ProductID }}">
+
+                                        <div class="form-group mb-3">
+                                            <label for="rating" class="form-label">Rating:</label>
+                                            <div class="rating-stars">
+                                                @for($i = 5; $i >= 1; $i--)
+                                                <input type="radio" id="star{{ $i }}" name="Rating" value="{{ $i }}" required>
+                                                <label for="star{{ $i }}" title="{{ $i }} stars">
+                                                    <i class="fa fa-star"></i>
+                                                </label>
+                                                @endfor
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="comment" class="form-label">Your Review:</label>
+                                            <textarea name="CommentText" id="comment" class="form-control"
+                                                rows="4" placeholder="Share your thoughts about this product..."
+                                                required></textarea>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                                    </form>
+                                </div>
+                                @else
+                                <div class="alert alert-info">
+                                    Please <a href="{{ route('login') }}">login</a> to write a review.
+                                </div>
+                                @endauth
                                 @if($product->feedback->count() > 0)
                                 @foreach($product->feedback as $feedback)
                                 <div class="review-item" style="border-bottom: 1px solid #eee; padding: 15px 0;">
-                                    <strong>{{ $feedback->account->Username ?? 'Anonymous Customer' }}</strong> -
+                                    <strong>{{ $feedback->user->Username ?? 'Anonymous Customer' }}</strong> -
                                     @for($i = 1; $i <= 5; $i++)
                                         <i class="fa fa-star" style="color: {{ $i <= $feedback->Rating ? '#ffd700' : '#ccc' }}"></i>
                                         @endfor
                                         ({{ $feedback->Rating }}/5)
                                         <p style="margin: 8px 0 0 0;">{{ $feedback->CommentText }}</p>
                                         @php
-                                        // Fix format() error by converting to Carbon instance
                                         $submissionDate = \Carbon\Carbon::parse($feedback->SubmissionDate);
                                         @endphp
                                         <small>Reviewed on: {{ $submissionDate->format('d/m/Y H:i') }}</small>
@@ -297,9 +326,22 @@
                         data-setbg="{{ asset($relatedProduct->Photo ? str_replace('/images/', '/img/', $relatedProduct->Photo) : 'img/product/default.jpg') }}"
                         style="background-size: cover; background-position: center; height: 250px;">
                         <ul class="product__item__pic__hover">
-                            <li><a href="#"><i class="fa fa-heart"></i></a></li>
-                            <li><a href="#"><i class="fa fa-retweet"></i></a></li>
-                            <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                            {{-- Favorite button for related products --}}
+                            <li>
+                                <a href="#" class="favorite-btn" data-product-id="{{ $relatedProduct->ProductID }}" title="Favorite">
+                                    @if(isset($favoriteProductIds) && in_array($relatedProduct->ProductID, $favoriteProductIds))
+                                    <i class="fa fa-heart" style="color: #ff0000"></i>
+                                    @else
+                                    <i class="fa fa-heart" style="color: #ffffff"></i>
+                                    @endif
+                                </a>
+                            </li>
+                            {{-- Download button for related products --}}
+                            <li>
+                                <a href="{{ route('product.download', $relatedProduct->ProductID) }}" title="Download document" class="download-btn">
+                                    <i class="fa fa-download"></i>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     <div class="product__item__text">
@@ -325,15 +367,13 @@
 
 @php
 $variantsData = [];
-$firstVariantID = null;
 $firstColorID = null;
 $firstVolumeID = null;
 $defaultPrice = $product->variants->count() > 0 ? $product->variants->first()->Price : 0;
 
 if ($product->variants->count() > 0) {
 foreach ($product->variants as $variant) {
-if (is_null($firstVariantID)) {
-$firstVariantID = $variant->VariantID;
+if (is_null($firstColorID)) {
 $firstColorID = $variant->ColourID;
 $firstVolumeID = $variant->VolumeID;
 }
@@ -367,8 +407,6 @@ $variantsData[$key] = [
         const mainProductPrice = document.getElementById('mainProductPrice');
         const variantStock = document.getElementById('variantStock');
         const selectedVariantIdInput = document.getElementById('selectedVariantId');
-        const productQuantityInput = document.getElementById('productQuantityInput');
-        const addToCartButton = document.getElementById('addToCartButton');
 
         const hasVariants = Object.keys(allVariants).length > 0;
         const defaultPrice = '{{ number_format($defaultPrice * 1000, 0, ",", ".") }}đ';
@@ -399,33 +437,11 @@ $variantsData[$key] = [
                     mainProductPrice.textContent = variant.price;
                     variantStock.textContent = variant.stock > 0 ? 'In Stock (' + variant.stock + ' products)' : 'Out of Stock';
                     selectedVariantIdInput.value = variant.id;
-
-                    // Update quantity input
-                    const currentQuantity = parseInt(productQuantityInput.value);
-                    const stock = parseInt(variant.stock);
-
-                    if (stock === 0) {
-                        productQuantityInput.value = 0;
-                        addToCartButton.disabled = true;
-                        addToCartButton.style.opacity = '0.6';
-                    } else {
-                        if (currentQuantity > stock) {
-                            productQuantityInput.value = stock;
-                        }
-                        if (currentQuantity === 0 && stock > 0) {
-                            productQuantityInput.value = 1;
-                        }
-                        addToCartButton.disabled = false;
-                        addToCartButton.style.opacity = '1';
-                    }
                 } else {
                     variantPrice.textContent = defaultPrice;
                     mainProductPrice.textContent = defaultPrice;
                     variantStock.textContent = 'Out of Stock';
                     selectedVariantIdInput.value = '';
-                    productQuantityInput.value = 0;
-                    addToCartButton.disabled = true;
-                    addToCartButton.style.opacity = '0.6';
                 }
             } else {
                 variantPrice.textContent = defaultPrice;
@@ -460,52 +476,70 @@ $variantsData[$key] = [
             });
         });
 
-        // Quantity controls
-        const proQty = document.querySelector('.pro-qty');
-        if (proQty) {
-            const decBtn = proQty.querySelector('.dec');
-            const incBtn = proQty.querySelector('.inc');
+        // Favorite button functionality
+        document.querySelectorAll('.favorite-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const productId = this.getAttribute('data-product-id');
+                const heartIcon = this.querySelector('i');
+                const isRelatedProduct = this.closest('.product__item__pic__hover');
 
-            decBtn.addEventListener('click', function() {
-                let value = parseInt(productQuantityInput.value);
-                if (value > 1) {
-                    productQuantityInput.value = value - 1;
-                }
+                $.ajax({
+                    url: '{{ route("favorite.toggle") }}',
+                    type: 'POST',
+                    data: {
+                        product_id: productId,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.status === 'added') {
+                            heartIcon.style.color = '#ff0000';
+                            if (!isRelatedProduct) {
+                                showNotification('Added to favorites', 'success');
+                            }
+                        } else {
+                            heartIcon.style.color = isRelatedProduct ? '#ffffff' : '#333';
+                            if (!isRelatedProduct) {
+                                showNotification('Removed from favorites', 'info');
+                            }
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 401) {
+                            showNotification('Please login to add favorite products', 'warning');
+                            setTimeout(() => {
+                                window.location.href = '{{ route("login") }}';
+                            }, 1500);
+                        } else {
+                            showNotification('An error occurred, please try again', 'error');
+                        }
+                    }
+                });
             });
+        });
 
-            incBtn.addEventListener('click', function() {
-                let value = parseInt(productQuantityInput.value);
-                const variantKey = selectedColor + '_' + selectedSize;
-                const variant = allVariants[variantKey];
+        // Notification function
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">&times;</button>
+            `;
+            document.body.appendChild(notification);
 
-                if (variant && value < parseInt(variant.stock)) {
-                    productQuantityInput.value = value + 1;
-                }
-            });
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
 
-        // Add to cart functionality
-        addToCartButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            const variantId = selectedVariantIdInput.value;
-            const quantity = productQuantityInput.value;
-
-            if (!variantId) {
-                alert('Please select product color and capacity');
-                return;
-            }
-
-            if (quantity < 1) {
-                alert('Invalid product quantity');
-                return;
-            }
-
-            // Add to cart logic here
-            console.log('Add to cart:', {
-                variantId,
-                quantity
+        // Disable click on disabled download buttons
+        document.querySelectorAll('.download-btn.disabled').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                showNotification('No document available for this product', 'info');
             });
-            alert('Product added to cart');
         });
 
         initializeVariant();
@@ -531,6 +565,123 @@ $variantsData[$key] = [
         color: #ff0000 !important;
         font-weight: 700;
         font-size: 1.2rem;
+    }
+
+    /* Action Buttons Styling */
+    .product__details__actions {
+        display: flex;
+        gap: 20px;
+        margin: 25px 0;
+        align-items: center;
+    }
+
+    .action-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 20px;
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s ease;
+        min-width: 100px;
+        cursor: pointer;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn:hover {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+    }
+
+    .action-btn i {
+        font-size: 24px;
+        margin-bottom: 8px;
+    }
+
+    .action-btn span {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .favorite-btn.active i {
+        color: #ff0000 !important;
+    }
+
+    .disabled-btn {
+        opacity: 0.6;
+        cursor: not-allowed !important;
+    }
+
+    .disabled-btn:hover {
+        background: #f8f9fa !important;
+        color: #333 !important;
+        border-color: #e0e0e0 !important;
+        transform: none !important;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Notification Styling */
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 5px;
+        color: white;
+        font-weight: 500;
+        z-index: 9999;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-width: 300px;
+        animation: slideIn 0.3s ease;
+        transition: opacity 0.3s ease;
+    }
+
+    .notification.success {
+        background: #28a745;
+    }
+
+    .notification.info {
+        background: #17a2b8;
+    }
+
+    .notification.warning {
+        background: #ffc107;
+        color: #333;
+    }
+
+    .notification.error {
+        background: #dc3545;
+    }
+
+    .notification button {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        margin-left: 15px;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
     }
 
     .color__list,
@@ -595,49 +746,6 @@ $variantsData[$key] = [
         border-color: #7fad39;
     }
 
-    .pro-qty {
-        width: 120px;
-        height: 40px;
-        border: 1px solid #ebebeb;
-        border-radius: 3px;
-        overflow: hidden;
-        position: relative;
-        display: inline-block;
-    }
-
-    .pro-qty input {
-        width: 100%;
-        height: 100%;
-        text-align: center;
-        border: none;
-        outline: none;
-        background: transparent;
-    }
-
-    .pro-qty .qtybtn {
-        position: absolute;
-        top: 0;
-        width: 30px;
-        height: 100%;
-        background: #f5f5f5;
-        border: none;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        user-select: none;
-    }
-
-    .pro-qty .dec {
-        left: 0;
-        border-right: 1px solid #ebebeb;
-    }
-
-    .pro-qty .inc {
-        right: 0;
-        border-left: 1px solid #ebebeb;
-    }
-
     .table-responsive {
         margin-top: 15px;
     }
@@ -649,6 +757,137 @@ $variantsData[$key] = [
 
     .review-item:last-child {
         border-bottom: none !important;
+    }
+
+    /* Related products hover buttons */
+    .product__item__pic__hover {
+        position: absolute;
+        left: 0;
+        bottom: -50px;
+        width: 100%;
+        text-align: center;
+        transition: all 0.5s ease;
+        opacity: 0;
+        padding: 0;
+        margin: 0;
+    }
+
+    .product__item:hover .product__item__pic__hover {
+        bottom: 20px;
+        opacity: 1;
+    }
+
+    .product__item__pic__hover li {
+        list-style: none;
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .product__item__pic__hover li:last-child {
+        margin-right: 0;
+    }
+
+    .product__item__pic__hover li a {
+        font-size: 16px;
+        color: #1c1c1c;
+        height: 40px;
+        width: 40px;
+        line-height: 40px;
+        text-align: center;
+        border-radius: 50%;
+        background: #ffffff;
+        display: block;
+        transition: all 0.5s ease;
+    }
+
+    .product__item__pic__hover li a:hover {
+        background: #7fad39;
+        color: #ffffff;
+    }
+
+    .product__item__pic__hover li a.disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .product__item__pic__hover li a.disabled:hover {
+        background: #ffffff;
+        color: #1c1c1c;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .product__details__actions {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .action-btn {
+            width: 100%;
+        }
+
+        .notification {
+            min-width: auto;
+            width: 90%;
+            left: 5%;
+            right: 5%;
+        }
+    }
+
+    /* Rating Stars Styling */
+    .rating-stars {
+        direction: rtl;
+        display: inline-block;
+        unicode-bidi: bidi-override;
+    }
+
+    .rating-stars input[type="radio"] {
+        display: none;
+    }
+
+    .rating-stars label {
+        color: #ccc;
+        font-size: 24px;
+        padding: 0;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .rating-stars label:hover,
+    .rating-stars label:hover~label,
+    .rating-stars input[type="radio"]:checked~label {
+        color: #ffc107;
+    }
+
+    /* Write review form styling */
+    .write-review-form {
+        border: 1px solid #e0e0e0;
+    }
+
+    .write-review-form .form-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .write-review-form .form-control {
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .write-review-form .btn-primary {
+        background: #7fad39;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 5px;
+        font-weight: 600;
+        transition: background 0.3s;
+    }
+
+    .write-review-form .btn-primary:hover {
+        background: #68982d;
     }
 </style>
 @endsection
