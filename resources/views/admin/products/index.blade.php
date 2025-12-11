@@ -46,9 +46,11 @@
                                     <div class="form-group">
                                         <select name="category" class="form-control" id="categorySelect">
                                             <option value="">All categories</option>
-                                            <option value="PET" {{ request('category') == 'PET' ? 'selected' : '' }}>PET</option>
-                                            <option value="PP" {{ request('category') == 'PP' ? 'selected' : '' }}>PP</option>
-                                            <option value="PC" {{ request('category') == 'PC' ? 'selected' : '' }}>PC</option>
+                                            @foreach($categories as $cat)
+                                            <option value="{{ $cat->CategoryID }}" {{ request('category') == $cat->CategoryID ? 'selected' : '' }}>
+                                                {{ $cat->CategoryName }}
+                                            </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
