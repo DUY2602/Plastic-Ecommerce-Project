@@ -93,6 +93,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('/products/{id}', [AdminController::class, 'update'])->name('products.update');
     Route::delete('/products/{id}', [AdminController::class, 'destroy'])->name('products.destroy');
 
+    // Delete document
+    Route::delete('/products/{id}/delete-document', [AdminController::class, 'deleteDocument'])->name('products.delete-document');
+
     // Category routes
     Route::get('/categories', [AdminController::class, 'categories'])->name('categories');
     Route::get('/categories/create', [AdminController::class, 'createCategory'])->name('categories.create');

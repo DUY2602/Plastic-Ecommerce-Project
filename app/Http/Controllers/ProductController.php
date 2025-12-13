@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -296,36 +298,95 @@ class ProductController extends Controller
     //download file
     public function downloadFile($id)
     {
-        // 1. Tìm sản phẩm và kiểm tra đường dẫn
+        // 1. Tìm sản phẩm
         $product = Product::select('ProductID', 'ProductName', 'DocumentURL')
             ->where('ProductID', $id)
             ->firstOrFail();
 
-
         $documentUrl = $product->DocumentURL;
 
-
         if (!$documentUrl) {
-            // Không có đường dẫn nào được lưu
             abort(404, 'Sản phẩm này không có tài liệu để tải xuống.');
         }
 
+        // 2. Xác định đường dẫn thư mục lưu trữ
+        $storageDir = storage_path('app/product_documents/');
 
-        // 2. Xây dựng đường dẫn vật lý (dựa trên vị trí lưu file trong storage/app)
-        $filePath = storage_path('app/' . $documentUrl);
+        // Kiểm tra thư mục tồn tại
+        if (!is_dir($storageDir)) {
+            // Thử đường dẫn khác theo config
+            $storageDir = storage_path('app/private/product_documents/');
 
-
-        // Đặt tên file tải xuống
-        $fileName = $product->ProductName . '_TaiLieuKyThuat.pdf';
-
-
-        // 3. Kiểm tra file có tồn tại
-        if (!File::exists($filePath)) {
-            abort(404, 'File tài liệu không tìm thấy trên server.');
+            if (!is_dir($storageDir)) {
+                abort(404, 'Thư mục lưu trữ tài liệu không tồn tại.');
+            }
         }
 
+        // 3. Tìm file
+        $foundFile = null;
+        $allFiles = scandir($storageDir);
 
-        // 4. Trả về Response download
-        return response()->download($filePath, $fileName);
+        // Loại bỏ . và ..
+        $allFiles = array_diff($allFiles, ['.', '..']);
+
+        // TH1: DocumentURL là đường dẫn đầy đủ
+        if (strpos($documentUrl, '/') !== false) {
+            $filename = basename($documentUrl);
+        } else {
+            $filename = $documentUrl;
+        }
+
+        // TH2: Kiểm tra file trực tiếp
+        if (file_exists($storageDir . $filename)) {
+            $foundFile = $storageDir . $filename;
+        }
+        // TH3: Tìm file theo ProductID
+        elseif (!$foundFile) {
+            foreach ($allFiles as $file) {
+                if (strpos($file, (string)$product->ProductID) !== false) {
+                    $foundFile = $storageDir . $file;
+                    break;
+                }
+            }
+        }
+        // TH4: Tìm bất kỳ file nào
+        elseif (!$foundFile && count($allFiles) > 0) {
+            $foundFile = $storageDir . reset($allFiles);
+        }
+
+        if (!$foundFile || !file_exists($foundFile)) {
+            // Debug thông tin
+            Log::error('File not found for download', [
+                'product_id' => $product->ProductID,
+                'product_name' => $product->ProductName,
+                'document_url' => $documentUrl,
+                'storage_dir' => $storageDir,
+                'available_files' => $allFiles,
+            ]);
+
+            abort(404, 'Không tìm thấy file tài liệu. Vui lòng liên hệ quản trị viên.');
+        }
+
+        // 4. Tạo tên file download an toàn
+        $extension = pathinfo($foundFile, PATHINFO_EXTENSION);
+
+        // Làm sạch tên sản phẩm: loại bỏ ký tự không hợp lệ
+        $safeProductName = preg_replace('/[\/\\\\:*?"<>|]/', '_', $product->ProductName);
+
+        // Giới hạn độ dài tên file (tránh quá dài)
+        if (strlen($safeProductName) > 100) {
+            $safeProductName = substr($safeProductName, 0, 100);
+        }
+
+        $downloadName = $safeProductName . '_TaiLieuKyThuat.' . $extension;
+
+        // 5. Kiểm tra headers trước khi download
+        $headers = [
+            'Content-Type' => mime_content_type($foundFile),
+            'Content-Disposition' => 'attachment; filename="' . $downloadName . '"',
+        ];
+
+        // 6. Trả về file download
+        return response()->download($foundFile, $downloadName, $headers);
     }
 }

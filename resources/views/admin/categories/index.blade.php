@@ -21,27 +21,6 @@
 
 <section class="content">
     <div class="container-fluid">
-        <!-- Theme Selector -->
-        <div class="row mb-3">
-            <div class="col-12">
-                <div class="card theme-selector-card">
-                    <div class="card-body py-2">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Select theme:</span>
-                            <div class="theme-selector">
-                                <button class="theme-btn active" data-theme="default" title="Light">
-                                    <i class="fas fa-sun"></i>
-                                </button>
-                                <button class="theme-btn" data-theme="dark" title="Dark">
-                                    <i class="fas fa-moon"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="row mb-3">
             <div class="col-12">
                 <div class="card animated fadeIn">
@@ -254,18 +233,6 @@
         --theme-warning: #ffc107;
         --theme-danger: #dc3545;
         --theme-info: #17a2b8;
-    }
-
-    .theme-dark {
-        --theme-bg: #1a1a1a;
-        --theme-card-bg: #2d3748;
-        --theme-text: #e2e8f0;
-        --theme-border: #4a5568;
-        --theme-primary: #4299e1;
-        --theme-success: #48bb78;
-        --theme-warning: #ed8936;
-        --theme-danger: #f56565;
-        --theme-info: #0bc5ea;
     }
 
     body {

@@ -14,6 +14,7 @@ use App\Models\Feedback;
 use App\Models\VisitorCount;
 use App\Models\Volume;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
@@ -96,6 +97,7 @@ class AdminController extends Controller
     }
 
     // Lưu sản phẩm mới (với variants)
+
     public function store(Request $request)
     {
         $request->validate([
@@ -103,6 +105,7 @@ class AdminController extends Controller
             'CategoryID' => 'required|exists:category,CategoryID',
             'Description' => 'nullable|string',
             'Photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'document' => 'nullable|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt|max:10240',
             'Status' => 'required|boolean',
             'variants' => 'required|array|min:1',
             'variants.*.colour_id' => 'required|exists:colour,ColourID',
@@ -116,25 +119,49 @@ class AdminController extends Controller
 
         try {
             $photoPath = null;
+            $documentPath = null;
 
             // Xử lý upload ảnh sản phẩm chính
             if ($request->hasFile('Photo')) {
                 $file = $request->file('Photo');
                 $fileName = 'product_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
                 $directory = public_path('img/products');
+
                 if (!file_exists($directory)) {
                     mkdir($directory, 0755, true);
                 }
+
                 $file->move($directory, $fileName);
                 $photoPath = '/img/products/' . $fileName;
             }
 
-            // Tạo sản phẩm
+            // ========== SỬA PHẦN NÀY: Upload document vào storage ==========
+            if ($request->hasFile('document')) {
+                $file = $request->file('document');
+
+                // Tạo tên file
+                $fileName = 'document_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+                // Lưu vào storage/app/product_documents
+                $file->storeAs('product_documents', $fileName);
+
+                // Lưu chỉ tên file vào database
+                $documentPath = $fileName;
+
+                Log::info('Document uploaded to storage', [
+                    'file_name' => $fileName,
+                    'storage_path' => 'product_documents/' . $fileName,
+                    'file_exists' => Storage::exists('product_documents/' . $fileName)
+                ]);
+            }
+
+            // Tạo sản phẩm - Lưu chỉ tên file
             $product = Product::create([
                 'ProductName' => $request->ProductName,
                 'Description' => $request->Description,
                 'CategoryID' => $request->CategoryID,
                 'Photo' => $photoPath,
+                'DocumentURL' => $documentPath, // Chỉ lưu tên file
                 'Status' => $request->Status,
             ]);
 
@@ -181,7 +208,80 @@ class AdminController extends Controller
         }
     }
 
+    // Xóa document
+    public function deleteDocument($id)
+    {
+        try {
+            $product = Product::findOrFail($id);
+
+            if ($product->DocumentURL) {
+                $storagePath = 'product_documents/' . $product->DocumentURL;
+
+                if (Storage::exists($storagePath)) {
+                    Storage::delete($storagePath);
+                }
+            }
+
+            $product->update(['DocumentURL' => null]);
+
+            return redirect()->back()->with('success', 'Document deleted successfully!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error deleting document: ' . $e->getMessage());
+        }
+    }
+
     // Cập nhật sản phẩm (với variants)
+    public function edit($id)
+    {
+        $product = Product::with(['variants.colour', 'variants.volume'])->findOrFail($id);
+        $categories = Category::where('Status', 1)->get();
+        $colours = Colour::all();
+        $volumes = Volume::all();
+
+        // Xử lý variants để thêm đường dẫn ảnh đầy đủ
+        $product->variants->each(function ($variant) {
+            if ($variant->MainImage) {
+                // Tạo đường dẫn đầy đủ cho ảnh variant
+                $variant->full_image_url = asset($variant->MainImage);
+            } else {
+                $variant->full_image_url = null;
+            }
+        });
+
+        // === QUAN TRỌNG: Sửa phần xử lý document ===
+        $product->document_exists = false;
+        $product->document_url = null;
+        $product->document_filename = null;
+
+        if ($product->DocumentURL) {
+            // Lấy tên file từ DocumentURL (có thể có hoặc không có 'product_documents/')
+            $filename = basename($product->DocumentURL);
+
+            // Đường dẫn đầy đủ trong storage
+            $storagePath = 'product_documents/' . $filename;
+
+            if (Storage::exists($storagePath)) {
+                $product->document_exists = true;
+                $product->document_url = route('product.download', $product->ProductID);
+                $product->document_filename = $filename;
+            } else {
+                // Thử tìm file bằng ProductID
+                $allFiles = Storage::files('product_documents');
+                foreach ($allFiles as $file) {
+                    $fileBasename = basename($file);
+                    if (strpos($fileBasename, (string)$product->ProductID) !== false) {
+                        $product->document_exists = true;
+                        $product->document_url = route('product.download', $product->ProductID);
+                        $product->document_filename = $fileBasename;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return view('admin.products.edit', compact('product', 'categories', 'colours', 'volumes'));
+    }
+    // Cập nhật sản phẩm - THÊM phần document upload VÀ XỬ LÝ VARIANTS
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
@@ -192,6 +292,7 @@ class AdminController extends Controller
             'Description' => 'nullable|string',
             'Photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'Status' => 'required|boolean',
+            'document' => 'nullable|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,txt|max:10240',
             'variants' => 'required|array|min:1',
             'variants.*.id' => 'nullable|exists:productvariant,VariantID',
             'variants.*.colour_id' => 'required|exists:colour,ColourID',
@@ -206,6 +307,7 @@ class AdminController extends Controller
 
         try {
             $photoPath = $product->Photo;
+            $documentPath = $product->DocumentURL;
 
             // Xử lý upload ảnh mới cho sản phẩm
             if ($request->hasFile('Photo')) {
@@ -223,86 +325,105 @@ class AdminController extends Controller
                 $photoPath = '/img/products/' . $fileName;
             }
 
+            // Xử lý upload document mới vào storage
+            if ($request->hasFile('document')) {
+                // Xóa document cũ nếu có
+                if ($documentPath) {
+                    $oldStoragePath = 'product_documents/' . $documentPath;
+                    if (Storage::exists($oldStoragePath)) {
+                        Storage::delete($oldStoragePath);
+                    }
+                }
+
+                $file = $request->file('document');
+                $fileName = 'document_' . $product->ProductID . '_' . time() . '.' . $file->getClientOriginalExtension();
+
+                // Lưu vào storage
+                $file->storeAs('product_documents', $fileName);
+                $documentPath = $fileName;
+            }
+
             // Cập nhật sản phẩm
             $product->update([
                 'ProductName' => $request->ProductName,
                 'Description' => $request->Description,
                 'CategoryID' => $request->CategoryID,
                 'Photo' => $photoPath,
+                'DocumentURL' => $documentPath,
                 'Status' => $request->Status,
             ]);
 
-            // Xử lý variants
+            // ========== THÊM PHẦN XỬ LÝ VARIANTS ==========
             if ($request->has('variants')) {
-                $existingVariantIds = [];
+                // Lấy tất cả variant IDs hiện tại
+                $existingVariantIds = ProductVariant::where('ProductID', $id)
+                    ->pluck('VariantID')
+                    ->toArray();
 
-                foreach ($request->variants as $index => $variantData) {
+                $updatedVariantIds = [];
+
+                foreach ($request->variants as $variantData) {
                     if (!empty($variantData['colour_id']) && !empty($variantData['volume_id'])) {
-                        $mainImagePath = null;
+                        $variantDataArray = [
+                            'ProductID' => $product->ProductID,
+                            'ColourID' => $variantData['colour_id'],
+                            'VolumeID' => $variantData['volume_id'],
+                            'Price' => $variantData['price'] ?? 0,
+                            'StockQuantity' => $variantData['stock'] ?? 0,
+                            'Status' => $variantData['status'] ?? 1,
+                        ];
 
-                        // Xử lý upload ảnh cho variant
-                        if (isset($variantData['main_image']) && $variantData['main_image']) {
-                            $file = $variantData['main_image'];
-                            $fileName = 'variant_' . time() . '_' . $index . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
-                            $directory = public_path('img/variants');
-                            if (!file_exists($directory)) {
-                                mkdir($directory, 0755, true);
-                            }
-                            $file->move($directory, $fileName);
-                            $mainImagePath = '/img/variants/' . $fileName;
-                        }
-
-                        if (isset($variantData['id'])) {
-                            // Cập nhật variant hiện có
+                        // Nếu có variant ID, đó là update
+                        if (!empty($variantData['id'])) {
                             $variant = ProductVariant::find($variantData['id']);
-                            if ($variant && $variant->ProductID == $product->ProductID) {
-                                // Nếu có ảnh mới, xóa ảnh cũ
-                                if ($mainImagePath && $variant->MainImage && file_exists(public_path($variant->MainImage))) {
-                                    unlink(public_path($variant->MainImage));
+                            if ($variant) {
+                                // Xử lý upload ảnh mới cho variant
+                                if (isset($variantData['main_image']) && $variantData['main_image']) {
+                                    // Xóa ảnh cũ nếu có
+                                    if ($variant->MainImage && file_exists(public_path($variant->MainImage))) {
+                                        unlink(public_path($variant->MainImage));
+                                    }
+
+                                    $file = $variantData['main_image'];
+                                    $fileName = 'variant_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                                    $directory = public_path('img/variants');
+                                    if (!file_exists($directory)) {
+                                        mkdir($directory, 0755, true);
+                                    }
+                                    $file->move($directory, $fileName);
+                                    $variantDataArray['MainImage'] = '/img/variants/' . $fileName;
                                 }
 
-                                $updateData = [
-                                    'ColourID' => $variantData['colour_id'],
-                                    'VolumeID' => $variantData['volume_id'],
-                                    'Price' => $variantData['price'] ?? 0,
-                                    'StockQuantity' => $variantData['stock'] ?? 0,
-                                    'Status' => $variantData['status'] ?? 1,
-                                ];
-
-                                if ($mainImagePath) {
-                                    $updateData['MainImage'] = $mainImagePath;
-                                }
-
-                                $variant->update($updateData);
-                                $existingVariantIds[] = $variant->VariantID;
+                                $variant->update($variantDataArray);
+                                $updatedVariantIds[] = $variantData['id'];
                             }
                         } else {
-                            // Tạo variant mới
-                            $newVariant = ProductVariant::create([
-                                'ProductID' => $product->ProductID,
-                                'ColourID' => $variantData['colour_id'],
-                                'VolumeID' => $variantData['volume_id'],
-                                'Price' => $variantData['price'] ?? 0,
-                                'StockQuantity' => $variantData['stock'] ?? 0,
-                                'MainImage' => $mainImagePath,
-                                'Status' => $variantData['status'] ?? 1,
-                            ]);
-                            $existingVariantIds[] = $newVariant->VariantID;
+                            // Đây là variant mới
+                            $mainImagePath = null;
+
+                            // Xử lý upload ảnh cho variant mới
+                            if (isset($variantData['main_image']) && $variantData['main_image']) {
+                                $file = $variantData['main_image'];
+                                $fileName = 'variant_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                                $directory = public_path('img/variants');
+                                if (!file_exists($directory)) {
+                                    mkdir($directory, 0755, true);
+                                }
+                                $file->move($directory, $fileName);
+                                $mainImagePath = '/img/variants/' . $fileName;
+                            }
+
+                            $variantDataArray['MainImage'] = $mainImagePath;
+                            $newVariant = ProductVariant::create($variantDataArray);
+                            $updatedVariantIds[] = $newVariant->VariantID;
                         }
                     }
                 }
 
-                // Xóa các variant không còn trong danh sách
-                $variantsToDelete = ProductVariant::where('ProductID', $product->ProductID)
-                    ->whereNotIn('VariantID', $existingVariantIds)
-                    ->get();
-
-                foreach ($variantsToDelete as $variant) {
-                    // Xóa ảnh của variant nếu có
-                    if ($variant->MainImage && file_exists(public_path($variant->MainImage))) {
-                        unlink(public_path($variant->MainImage));
-                    }
-                    $variant->delete();
+                // Xóa các variant không còn tồn tại
+                $variantsToDelete = array_diff($existingVariantIds, $updatedVariantIds);
+                if (!empty($variantsToDelete)) {
+                    ProductVariant::whereIn('VariantID', $variantsToDelete)->delete();
                 }
             }
 
@@ -324,39 +445,27 @@ class AdminController extends Controller
         return view('admin.products.show', compact('product'));
     }
 
-    // Hiển thị form chỉnh sửa sản phẩm (với variants)
-    public function edit($id)
-    {
-        $product = Product::with('variants.colour', 'variants.volume')->findOrFail($id);
-        $categories = Category::where('Status', 1)->get();
-        $colours = Colour::all();
-        $volumes = Volume::all();
-
-        return view('admin.products.edit', compact('product', 'categories', 'colours', 'volumes'));
-    }
-
     // Xóa sản phẩm
     public function destroy($id)
     {
         try {
-            $product = Product::findOrFail($id);
+            $product = Product::find($id);
 
-            // Kiểm tra xem sản phẩm có biến thể không
-            $variantCount = ProductVariant::where('ProductID', $id)->count();
-            if ($variantCount > 0) {
-                return redirect()->route('admin.products')->with('error', 'Cannot delete product because it has ' . $variantCount . ' variants!');
+            if (!$product) {
+                return redirect()->back()->with('error', 'Product not found!');
             }
 
-            // Xóa ảnh sản phẩm nếu có
-            if ($product->Photo && file_exists(public_path($product->Photo))) {
-                unlink(public_path($product->Photo));
-            }
+            // Xóa tất cả variants trước
+            $product->variants()->delete();
 
+            // Xóa product
             $product->delete();
 
-            return redirect()->route('admin.products')->with('success', 'Product deleted successfully!');
+            return redirect()->route('admin.products')
+                ->with('success', 'Product and all variants deleted successfully!');
         } catch (\Exception $e) {
-            return redirect()->route('admin.products')->with('error', 'Error deleting product: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Error deleting product!');
         }
     }
 

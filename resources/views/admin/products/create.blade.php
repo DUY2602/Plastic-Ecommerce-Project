@@ -94,6 +94,23 @@
                                         </div>
                                     </div>
 
+                                    <!-- THÊM PHẦN DOCUMENT Ở ĐÂY -->
+                                    <div class="form-group">
+                                        <label for="document">Product Document (Optional)</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input @error('document') is-invalid @enderror"
+                                                id="document" name="document" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt">
+                                            <label class="custom-file-label" for="document">Choose document</label>
+                                        </div>
+                                        @error('document')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                        <small class="form-text text-muted">
+                                            Formats: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT. Max 10MB.
+                                        </small>
+                                        <div id="documentName" class="mt-1 text-muted small"></div>
+                                    </div>
+
                                     <div class="form-group">
                                         <label for="Status">Status *</label>
                                         <select class="form-control @error('Status') is-invalid @enderror"
@@ -198,12 +215,12 @@
 
     .remove-variant {
         cursor: pointer;
-        color: #dc3545;
+        color: #000000ff;
         transition: all 0.3s ease;
     }
 
     .remove-variant:hover {
-        color: #bd2130;
+        color: #ffffffff;
         transform: scale(1.2);
     }
 
@@ -238,6 +255,17 @@
                 }
                 reader.readAsDataURL(e.target.files[0]);
             }
+        });
+
+        // Display file name for document
+        document.getElementById('document').addEventListener('change', function(e) {
+            var fileName = e.target.files[0]?.name || 'Choose document';
+            var nextSibling = e.target.nextElementSibling;
+            nextSibling.innerText = fileName;
+
+            // Show file name
+            document.getElementById('documentName').innerHTML =
+                '<i class="fas fa-file mr-1"></i>' + fileName;
         });
 
         // Add variant button
@@ -410,8 +438,8 @@
             }
         });
 
-        // Tự động thêm 1 variant mặc định khi tạo sản phẩm mới (tuỳ chọn)
-        // addVariantRow();
+        // Tự động thêm 1 variant mặc định khi tạo sản phẩm mới
+        addVariantRow();
     });
 </script>
 @endsection
