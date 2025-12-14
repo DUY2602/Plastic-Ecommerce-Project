@@ -5,9 +5,9 @@
             <div class="col-lg-3 col-md-6 col-sm-6">
                 <div class="footer__about">
                     <ul>
-                        <li>Address: 123 Nguyen Van Linh, District 7, Ho Chi Minh City</li>
-                        <li>Phone: +84 123 456 789</li>
-                        <li>Email: hello@plastic.com</li>
+                        <li>Address: 778/10 Nguyen Kiem, Go Vap ward, Ho Chi Minh City</li>
+                        <li>Phone: +84 929 097 779</li>
+                        <li>Email: duydo7779@gmail.com</li>
                     </ul>
                 </div>
             </div>

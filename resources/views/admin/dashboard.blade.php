@@ -93,7 +93,7 @@
                     <div class="icon">
                         <i class="fas fa-star"></i>
                     </div>
-                    <a href="#" class="small-box-footer waves-effect">
+                    <a href="{{ route('admin.reviews') }}" class="small-box-footer waves-effect">
                         View Details <i class="fas fa-arrow-circle-right"></i>
                     </a>
                 </div>

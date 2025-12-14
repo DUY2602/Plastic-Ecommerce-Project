@@ -99,41 +99,6 @@
                             @endforeach
                         </div>
                     </div>
-
-                    <div class="blog__sidebar__item">
-                        <h4>Search</h4>
-                        <div class="blog__sidebar__search">
-                            <form action="{{ route('blog.index') }}" method="GET">
-                                <input type="text" name="search" placeholder="Search posts...">
-                                <button type="submit"><i class="fa fa-search"></i></button>
-                            </form>
-                        </div>
-                    </div>
-
-                    {{-- REMOVED ERROR-PRONE CATEGORY SECTION --}}
-                    {{-- <div class="blog__sidebar__item">
-                        <h4>Categories</h4>
-                        <ul>
-                            <li><a href="{{ route('blog.index') }}">All posts</a></li>
-                    @php
-                    $categories = \App\Models\Blog::select('Category')->distinct()->whereNotNull('Category')->get();
-                    @endphp
-                    @foreach($categories as $category)
-                    <li><a href="{{ route('blog.index') }}?category={{ urlencode($category->Category) }}">{{ $category->Category }}</a></li>
-                    @endforeach
-                    </ul>
-                </div> --}}
-
-                {{-- REPLACED WITH POPULAR TAGS --}}
-                <div class="blog__sidebar__item">
-                    <h4>Popular Tags</h4>
-                    <div class="blog__sidebar__tags">
-                        <a href="{{ route('blog.index') }}">News</a>
-                        <a href="{{ route('blog.index') }}">Products</a>
-                        <a href="{{ route('blog.index') }}">Promotions</a>
-                        <a href="{{ route('blog.index') }}">Guides</a>
-                        <a href="{{ route('blog.index') }}">Advice</a>
-                    </div>
                 </div>
             </div>
         </div>

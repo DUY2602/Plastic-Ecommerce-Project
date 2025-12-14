@@ -125,9 +125,9 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if($stat->count >= 10)
+                                        @if($stat->count >= 5)
                                         <span class="badge bg-success">High</span>
-                                        @elseif($stat->count >= 5)
+                                        @elseif($stat->count >= 3)
                                         <span class="badge bg-warning">Medium</span>
                                         @else
                                         <span class="badge bg-danger">Low</span>
