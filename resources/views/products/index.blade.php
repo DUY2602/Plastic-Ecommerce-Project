@@ -52,10 +52,11 @@
                     </div>
                     <div class="hero__search__phone">
                         <div class="hero__search__phone__icon">
-                            <i class="fa fa-phone"></i>
+                            <a href="tel:+84901234567"><i class="fa fa-phone"></i></a>
                         </div>
                         <div class="hero__search__phone__text">
-                            <h5>+84 123 456 789</h5>
+                            </a>
+                            <h5>+84 929 097 779</h5>
                             <span>24/7 Support</span>
                         </div>
                     </div>

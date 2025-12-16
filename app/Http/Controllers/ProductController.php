@@ -378,7 +378,7 @@ class ProductController extends Controller
             $safeProductName = substr($safeProductName, 0, 100);
         }
 
-        $downloadName = $safeProductName . '_TaiLieuKyThuat.' . $extension;
+        $downloadName = $safeProductName . '_TechnicalDocument.' . $extension;
 
         // 5. Kiểm tra headers trước khi download
         $headers = [
