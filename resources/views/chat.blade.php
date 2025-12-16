@@ -493,7 +493,7 @@
             let index = 0;
             element.innerHTML = "";
             let lastTime = 0;
-            const typingSpeed = 20; // milliseconds per character
+            const typingSpeed = 10; // milliseconds per character
 
             function typeCharacter(timestamp) {
                 if (isStopped) {
