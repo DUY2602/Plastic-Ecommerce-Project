@@ -1,0 +1,41 @@
+/* Make text bold in register form */
+.checkout__input label,
+.checkout__input p {
+    font-weight: 700 !important;
+    color: #000 !important;
+    font-size: 15px;
+}
+
+/* Make terms text especially bold */
+.checkout__input__checkbox label {
+    font-weight: 700 !important;
+    color: #000 !important;
+}
+
+/* Make links in terms bold */
+.checkout__input__checkbox a {
+    font-weight: 800 !important;
+    color: #007bff !important;
+    text-decoration: underline;
+}
+
+/* Make text bold WHEN TYPING in input */
+.checkout__input input {
+    font-weight: 600 !important;
+    color: #000 !important;
+}
+
+/* Ensure text is bold when it has value */
+.checkout__input input,
+.checkout__input input:focus,
+.checkout__input input:not(:placeholder-shown) {
+    font-weight: 600 !important;
+    color: #000 !important;
+}
+
+/* Clarify placeholder */
+.checkout__input input::placeholder {
+    font-weight: 500 !important;
+    color: #666 !important;
+    opacity: 1;
+}

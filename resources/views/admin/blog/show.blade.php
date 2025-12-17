@@ -168,64 +168,11 @@
         </div>
     </div>
 </section>
-
-<style>
-    .card {
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        border: none;
-        border-radius: 10px;
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-        color: white;
-        border-radius: 10px 10px 0 0 !important;
-    }
-
-    .card-info .card-header {
-        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-    }
-
-    .table th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-    }
-
-    .btn-group .btn {
-        margin-right: 5px;
-        border-radius: 6px;
-    }
-
-    .no-image-placeholder {
-        border: 2px dashed #dee2e6;
-    }
-
-    .badge-pill {
-        font-size: 0.85rem;
-        padding: 6px 12px;
-    }
-
-    .table-responsive {
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: rgba(0, 123, 255, 0.05);
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Confirm post deletion
-        const deleteForms = document.querySelectorAll('form[action*="destroy"]');
-        deleteForms.forEach(form => {
-            form.addEventListener('submit', function(e) {
-                if (!confirm('Are you sure you want to delete this post?')) {
-                    e.preventDefault();
-                }
-            });
-        });
-    });
-</script>
 @endsection
+
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/blog/show.css') }}">
+@endsection
+
+@section('scripts')
+<script src="{{ asset('js/admin/blog/show.js') }}"></script>@endsection

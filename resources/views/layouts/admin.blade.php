@@ -22,6 +22,7 @@
             border-color: #007bff;
         }
     </style>
+    @yield('styles')
 </head>
 
 <body class="hold-transition sidebar-mini">

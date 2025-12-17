@@ -148,19 +148,8 @@
         </div>
     </div>
 </section>
+@endsection
 
-<style>
-    .bg-purple {
-        background-color: #6f42c1 !important;
-        color: white;
-    }
-
-    .bg-purple .icon i {
-        color: rgba(255, 255, 255, 0.9) !important;
-    }
-
-    .table-info {
-        background-color: rgba(0, 123, 255, 0.1) !important;
-    }
-</style>
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/visitors/index.css') }}">
 @endsection

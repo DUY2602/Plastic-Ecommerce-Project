@@ -90,47 +90,8 @@
         </div>
     </div>
 </section>
+@endsection
 
-<style>
-    .table-hover tbody tr:hover {
-        background-color: rgba(0, 123, 255, 0.05);
-    }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: rgba(0, 0, 0, 0.02);
-    }
-
-    .card-outline {
-        border-top: 3px solid #007bff;
-    }
-
-    .badge-success {
-        background-color: #28a745;
-    }
-
-    .badge-warning {
-        background-color: #ffc107;
-        color: #212529;
-    }
-
-    .btn-outline-success {
-        color: #28a745;
-        border-color: #28a745;
-    }
-
-    .btn-outline-success:hover {
-        background-color: #28a745;
-        color: white;
-    }
-
-    .btn-outline-danger {
-        color: #dc3545;
-        border-color: #dc3545;
-    }
-
-    .btn-outline-danger:hover {
-        background-color: #dc3545;
-        color: white;
-    }
-</style>
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/messages/contact_messages.css') }}">
 @endsection

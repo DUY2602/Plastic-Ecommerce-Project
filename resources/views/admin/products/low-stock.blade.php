@@ -231,32 +231,8 @@
         </div>
     </div>
 </section>
+@endsection
 
-<style>
-    .table-warning {
-        background-color: rgba(255, 193, 7, 0.1) !important;
-    }
-
-    .table-danger {
-        background-color: rgba(220, 53, 69, 0.1) !important;
-    }
-
-    .table-warning:hover {
-        background-color: rgba(255, 193, 7, 0.2) !important;
-    }
-
-    .table-danger:hover {
-        background-color: rgba(220, 53, 69, 0.2) !important;
-    }
-
-    .progress {
-        height: 10px;
-        margin-bottom: 5px;
-    }
-
-    .progress-text {
-        font-size: 0.85rem;
-        font-weight: bold;
-    }
-</style>
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/products/low-stock.css') }}">
 @endsection

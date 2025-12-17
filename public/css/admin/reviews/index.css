@@ -1,0 +1,15 @@
+.rating-stars {
+    font-size: 0.9rem;
+}
+
+.comment-text {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bg-purple {
+    background-color: #6f42c1 !important;
+    color: white;
+}

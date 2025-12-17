@@ -170,42 +170,5 @@
 </section>
 <!-- About Section End -->
 
-<style>
-    .about__pic img {
-        width: 100%;
-        border-radius: 10px;
-    }
-
-    .about__achievement__item {
-        text-align: center;
-        padding: 20px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-
-    .about__achievement__item h4 {
-        font-size: 2rem;
-        color: #7fad39;
-        font-weight: bold;
-    }
-
-    .mission__item {
-        padding: 30px 20px;
-    }
-
-    .mission__icon {
-        font-size: 3rem;
-        color: #7fad39;
-        margin-bottom: 20px;
-    }
-
-    .team__pic img {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-bottom: 20px;
-    }
-</style>
+<link rel="stylesheet" href="{{ asset('css/about.css') }}">
 @endsection

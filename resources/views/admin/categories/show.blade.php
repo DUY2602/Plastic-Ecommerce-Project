@@ -136,28 +136,8 @@
         </div>
     </div>
 </section>
+@endsection
 
-<style>
-    .card {
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        border: none;
-        border-radius: 10px;
-    }
-
-    .card-header {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        color: white;
-        border-radius: 10px 10px 0 0 !important;
-    }
-
-    .table th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-    }
-
-    .btn-group .btn {
-        margin-right: 5px;
-        border-radius: 6px;
-    }
-</style>
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/categories/show.css') }}">
 @endsection

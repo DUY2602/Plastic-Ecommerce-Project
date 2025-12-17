@@ -216,41 +216,12 @@
         </div>
     </div>
 </section>
+@endsection
 
-<script>
-    function confirmDelete(feedbackId) {
-        if (confirm('Are you sure you want to delete this review?')) {
-            // Gửi request xóa (cần tạo route và method)
-            fetch(`/admin/reviews/${feedbackId}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                }
-            }).then(response => {
-                if (response.ok) {
-                    location.reload();
-                }
-            });
-        }
-    }
-</script>
+@section('scripts')
+<script src="{{ asset('js/admin/reviews/index.js') }}"></script>
+@endsection
 
-<style>
-    .rating-stars {
-        font-size: 0.9rem;
-    }
-
-    .comment-text {
-        max-width: 300px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .bg-purple {
-        background-color: #6f42c1 !important;
-        color: white;
-    }
-</style>
+@section('styles')
+<link rel="stylesheet" href="{{ asset('css/admin/reviews/index.css') }}">
 @endsection
