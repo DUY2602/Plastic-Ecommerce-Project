@@ -388,6 +388,12 @@ $variantsData[$key] = [
 }
 }
 @endphp
+{{-- Truyền dữ liệu từ PHP sang JavaScript --}}
+<div id="variants-data" data-variants="{{ json_encode($variantsData) }}" style="display: none;"></div>
+<div id="first-color" data-color="{{ $firstColorID }}" style="display: none;"></div>
+<div id="first-volume" data-volume="{{ $firstVolumeID }}" style="display: none;"></div>
+<div id="default-price" data-price="{{ $defaultPrice * 1000 }}" style="display: none;"></div>
+@endsection
 
 @section('scripts')
 <script src="{{ asset('js/products/show.js') }}"></script>
