@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plastic Store - Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 50px;
+        }
+        
+        h1 {
+            color: #667eea;
+            font-size: 2.8em;
+            margin-bottom: 10px;
+            margin-top: 0;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #764ba2;
+            font-size: 1.8em;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #555;
+            font-size: 1.1em;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+        }
+        
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #c7254e;
+        }
+        
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+        
+        pre code {
+            background: none;
+            color: #f8f8f2;
+            padding: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .hr {
+            border: none;
+            height: 2px;
+            background: linear-gradient(to right, #667eea, transparent);
+            margin: 40px 0;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏪 Plastic Store - Laravel E-Commerce & AI Chatbot</h1>
+        <p class="subtitle">Modern e-commerce platform for plastic products with integrated AI chatbot powered by Groq AI.</p>
+
+        <h2>📋 Quick Links</h2>
+        <ul>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#configuration">Configuration</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#troubleshooting">Troubleshooting</a></li>
+        </ul>
+
+        <hr class="hr">
+
+        <h2 id="installation">🚀 Installation</h2>
+
+        <h3>Prerequisites</h3>
+        <p>PHP >= 7.4 | Composer | MySQL | Node.js (optional)</p>
+
+        <h3>Setup Steps</h3>
+
+        <pre><code># 1. Clone & navigate
+git clone &lt;repository-url&gt;
+cd plastic-store
+
+# 2. Environment setup
+cp .env.example .env
+
+# 3. Install dependencies
+composer install
+
+# 4. Generate app key
+php artisan key:generate
+
+# 5. Configure database in .env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_DATABASE=plastic_store
+DB_USERNAME=root
+DB_PASSWORD=
+
+# 6. Create database & migrate
+# CREATE DATABASE plastic_store; (in MySQL)
+php artisan migrate
+
+# 7. Clear cache & start
+php artisan config:clear
+php artisan view:clear
+php artisan serve
+
+# 8. Access application
+http://localhost:8000/admin/category/index</code></pre>
+
+        <hr class="hr">
+
+        <h2 id="configuration">⚙️ Configuration</h2>
+
+        <h3>Groq AI API (Required for Chatbot)</h3>
+
+        <ol>
+            <li>Get API key from <a href="https://console.groq.com">Groq Console</a></li>
+            <li>Add to <code>.env</code>:
+                <pre><code>GROQ_API_KEY=your_api_key_here</code></pre>
+            </li>
+            <li>Clear cache:
+                <pre><code>php artisan config:clear
+php artisan view:clear</code></pre>
+            </li>
+        </ol>
+
+        <p><strong>⚠️ Never commit `.env` to GitHub</strong></p>
+
+        <hr class="hr">
+
+        <h2 id="features">✨ Features</h2>
+
+        <h3>1️⃣ Download Documents</h3>
+        <p><strong>Branch:</strong> <code>feature/download-documents</code></p>
+
+        <h4>Setup:</h4>
+        <pre><code># Create storage folder
+mkdir -p storage/app/product_documents</code></pre>
+
+        <h4>Route (routes/web.php):</h4>
+        <pre><code>Route::get('/product/{id}/download', [ProductController::class, 'downloadFile'])
+    ->name('product.download');</code></pre>
+
+        <h4>Controller Method (ProductController.php):</h4>
+        <pre><code>use Illuminate\Support\Facades\File;
+
+public function downloadFile($id)
+{
+    $product = Product::select('ProductID', 'ProductName', 'DocumentURL')
+        ->where('ProductID', $id)
+        ->firstOrFail();
+
+    if (!$product->DocumentURL) {
+        abort(404, 'No document available');
+    }
+
+    $filePath = storage_path('app/' . $product->DocumentURL);
+    $fileName = $product->ProductName . '_TaiLieuKyThuat.pdf';
+
+    if (!File::exists($filePath)) {
+        abort(404, 'File not found');
+    }
+
+    return response()->download($filePath, $fileName);
+}</code></pre>
+
+        <h4>View (blade template):</h4>
+        <pre><code>@if($product->DocumentURL)
+&lt;a href="{{ route('product.download', $product->ProductID) }}" class="primary-btn"&gt;
+    &lt;i class="fa fa-download"&gt;&lt;/i&gt; Download Document
+&lt;/a&gt;
+@endif</code></pre>
+
+        <hr class="hr">
+
+        <h3>2️⃣ CAPTCHA Verification</h3>
+        <p><strong>Branch:</strong> <code>feature/captcha</code></p>
+
+        <h4>Install:</h4>
+        <pre><code>composer require mews/captcha</code></pre>
+
+        <h4>Fix GD Extension (if error):</h4>
+        <pre><code># Find php.ini location
+php --ini
+
+# Open php.ini and uncomment: extension=gd
+
+# Verify GD enabled
+php -m | findstr /i "gd"</code></pre>
+
+        <h4>Form (register.blade.php):</h4>
+        <pre><code>&lt;div class="form-group"&gt;
+    &lt;label&gt;Captcha&lt;/label&gt;
+    &lt;div&gt;{!! captcha_img() !!}&lt;/div&gt;
+    &lt;input type="text" class="form-control" name="captcha" placeholder="Enter captcha" required&gt;
+&lt;/div&gt;</code></pre>
+
+        <h4>Validation (AuthController):</h4>
+        <pre><code>$request->validate([
+    'name' => 'required',
+    'email' => 'required|email|unique:users',
+    'password' => 'required|confirmed',
+    'captcha' => 'required|captcha'
+]);</code></pre>
+
+        <h4>Fix 404 Routing:</h4>
+        <pre><code># 1. Edit public/.htaccess
+RewriteEngine On
+RewriteBase /your-project-name/public/
+
+# 2. Enable Apache rewrite_module in httpd.conf
+LoadModule rewrite_module modules/mod_rewrite.so
+
+# 3. Clear Laravel cache
+php artisan config:cache
+php artisan cache:clear --store=file
+php artisan view:clear</code></pre>
+
+        <p><strong>Test:</strong> http://localhost:8000/register</p>
+
+        <hr class="hr">
+
+        <h3>3️⃣ AI Chatbot</h3>
+        <p><strong>Technology:</strong> Groq AI (llama-3.1-8b-instant)</p>
+
+        <h4>Structure:</h4>
+        <pre><code>resources/views/
+├── layouts/app.blade.php
+├── chat.blade.php
+└── components/
+    ├── header.blade.php
+    └── footer.blade.php
+
+app/Http/Controllers/ChatController.php
+
+public/
+├── css/chat.css
+└── js/chat.js</code></pre>
+
+        <h4>Layout (resources/views/layouts/app.blade.php):</h4>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;title&gt;@yield('title', 'Plastic Store')&lt;/title&gt;
+    
+    &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"&gt;
+    &lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"&gt;
+    &lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css"&gt;
+    &lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/SlickNav/1.0.10/slicknav.min.css"&gt;
+    &lt;link rel="stylesheet" href="{{ asset('css/style.css') }}"&gt;
+    @yield('styles')
+&lt;/head&gt;
+&lt;body&gt;
+    @include('components.header')
+    &lt;main&gt;@yield('content')&lt;/main&gt;
+    @include('components.footer')
+    
+    &lt;script src="https://code.jquery.com/jquery-3.6.0.min.js"&gt;&lt;/script&gt;
+    &lt;script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"&gt;&lt;/script&gt;
+    &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"&gt;&lt;/script&gt;
+    &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/SlickNav/1.0.10/jquery.slicknav.min.js"&gt;&lt;/script&gt;
+    &lt;script src="{{ asset('js/main.js') }}"&gt;&lt;/script&gt;
+    @yield('scripts')
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <h4>Chat View (resources/views/chat.blade.php):</h4>
+        <pre><code>@extends('layouts.app')
+
+@section('title', 'AI Chatbot')
+
+@section('styles')
+&lt;link rel="stylesheet" href="{{ asset('css/chat.css') }}"&gt;
+@endsection
+
+@section('content')
+&lt;div class="container mt-5"&gt;
+    &lt;div class="chat-container"&gt;
+        &lt;div class="chat-header"&gt;
+            &lt;h3&gt;🤖 AI Assistant&lt;/h3&gt;
+            &lt;span class="badge badge-success"&gt;Connected&lt;/span&gt;
+        &lt;/div&gt;
+
+        &lt;div id="chatBox" class="chat-box"&gt;
+            &lt;div class="chat-message ai-message"&gt;
+                &lt;p&gt;👋 Hi! Ask me about plastic materials, products, or anything else!&lt;/p&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class="quick-questions"&gt;
+            &lt;button class="quick-btn" onclick="sendQuickQuestion('What is PET plastic?')"&gt;PET Materials&lt;/button&gt;
+            &lt;button class="quick-btn" onclick="sendQuickQuestion('What are plastic bottle applications?')"&gt;Bottle Uses&lt;/button&gt;
+            &lt;button class="quick-btn" onclick="sendQuickQuestion('How can you help me?')"&gt;Need Help?&lt;/button&gt;
+        &lt;/div&gt;
+
+        &lt;form id="promptForm" data-chat-route="{{ route('chat.send') }}"&gt;
+            @csrf
+            &lt;div class="input-group"&gt;
+                &lt;input type="text" id="userMessage" name="message" class="form-control" placeholder="Ask a question..."&gt;
+                &lt;button class="btn btn-primary" type="submit"&gt;&lt;i class="fa fa-paper-plane"&gt;&lt;/i&gt;&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+@endsection
+
+@section('scripts')
+&lt;script src="{{ asset('js/chat.js') }}"&gt;&lt;/script&gt;
+@endsection</code></pre>
+
+        <h4>Controller (app/Http/Controllers/ChatController.php):</h4>
+        <pre><code>&lt;?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
+class ChatController extends Controller
+{
+    public function index()
+    {
+        return view('chat');
+    }
+
+    public function send(Request $request)
+    {
+        $request->validate(['message' => 'required|string|max:500']);
+        $userMessage = $request->input('message');
+
+        try {
+            $apiKey = config('services.groq.api_key');
+            
+            if (!$apiKey) {
+                return response()->json([
+                    'reply' => '🤖 API configuration error. Check GROQ_API_KEY.'
+                ]);
+            }
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type' => 'application/json'
+            ])->post('https://api.groq.com/openai/v1/chat/completions', [
+                'model' => 'llama-3.1-8b-instant',
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => 'You are a professional AI assistant for Plastic Store. Reply in ENGLISH. Use bold text for key terms. Team: Khai (Leader), Duy, Vu, Tuan.'
+                    ],
+                    ['role' => 'user', 'content' => $userMessage]
+                ],
+                'max_tokens' => 500,
+                'temperature' => 0.7
+            ]);
+
+            if ($response->successful()) {
+                return response()->json([
+                    'reply' => $response->json()['choices'][0]['message']['content']
+                ]);
+            }
+
+            return response()->json([
+                'reply' => '🤖 Connection error. Please try again.'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'reply' => '🤖 Error occurred. Please try again or check GROQ_API_KEY.'
+            ]);
+        }
+    }
+}</code></pre>
+
+        <h4>Routes (routes/web.php):</h4>
+        <pre><code>Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');</code></pre>
+
+        <h4>JavaScript (public/js/chat.js):</h4>
+        <pre><code>$(document).ready(function () {
+    const chatRoute = $('#promptForm').data('chat-route');
+
+    $('#promptForm').on('submit', function (e) {
+        e.preventDefault();
+        const message = $('#userMessage').val().trim();
+        if (!message) return;
+
+        // Show user message
+        $('#chatBox').append(`
+            &lt;div class="chat-message user-message"&gt;
+                &lt;p&gt;${escapeHtml(message)}&lt;/p&gt;
+            &lt;/div&gt;
+        `);
+
+        $('#userMessage').val('');
+        $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
+
+        // Send to server
+        $.ajax({
+            url: chatRoute,
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: { message: message },
+            success: function (response) {
+                $('#chatBox').append(`
+                    &lt;div class="chat-message ai-message"&gt;
+                        &lt;p&gt;${escapeHtml(response.reply)}&lt;/p&gt;
+                    &lt;/div&gt;
+                `);
+                $('#chatBox').scrollTop($('#chatBox')[0].scrollHeight);
+            },
+            error: function () {
+                $('#chatBox').append(`
+                    &lt;div class="chat-message ai-message"&gt;
+                        &lt;p&gt;🤖 Error. Please try again.&lt;/p&gt;
+                    &lt;/div&gt;
+                `);
+            }
+        });
+    });
+
+    function escapeHtml(text) {
+        const map = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'};
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+});
+
+function sendQuickQuestion(question) {
+    $('#userMessage').val(question);
+    $('#promptForm').submit();
+}</code></pre>
+
+        <h4>Styles (public/css/chat.css):</h4>
+        <pre><code>.chat-container {
+    max-width: 800px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.chat-box {
+    height: 400px;
+    overflow-y: auto;
+    padding: 20px;
+    background: white;
+}
+
+.chat-message { margin-bottom: 15px; display: flex; }
+.chat-message p { max-width: 70%; padding: 10px 15px; border-radius: 8px; word-wrap: break-word; }
+.user-message { justify-content: flex-end; }
+.user-message p { background: #667eea; color: white; }
+.ai-message p { background: #e9ecef; color: #333; }
+
+.quick-questions {
+    padding: 15px 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+}
+
+.quick-btn {
+    flex: 1;
+    min-width: 150px;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.3s ease;
+}
+
+.quick-btn:hover { background: #667eea; color: white; border-color: #667eea; }
+
+#promptForm { padding: 15px 20px; background: white; border-top: 1px solid #ddd; }
+#promptForm .input-group { display: flex; gap: 10px; }
+#promptForm input { flex: 1; border: 1px solid #ddd; border-radius: 5px; padding: 10px; }
+#promptForm button { padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; }
+#promptForm button:hover { background: #764ba2; }</code></pre>
+
+        <hr class="hr">
+
+        <h2>🔗 Access Points</h2>
+
+        <table>
+            <tr>
+                <th>Feature</th>
+                <th>URL</th>
+            </tr>
+            <tr>
+                <td>Store</td>
+                <td>http://localhost:8000</td>
+            </tr>
+            <tr>
+                <td>Admin</td>
+                <td>http://localhost:8000/admin/category/index</td>
+            </tr>
+            <tr>
+                <td>Chatbot</td>
+                <td>http://localhost:8000/chat</td>
+            </tr>
+            <tr>
+                <td>Register</td>
+                <td>http://localhost:8000/register</td>
+            </tr>
+        </table>
+
+        <hr class="hr">
+
+        <h2 id="troubleshooting">🛠 Troubleshooting</h2>
+
+        <table>
+            <tr>
+                <th>Issue</th>
+                <th>Solution</th>
+            </tr>
+            <tr>
+                <td>CAPTCHA not showing</td>
+                <td>Enable GD extension: uncomment <code>extension=gd</code> in php.ini</td>
+            </tr>
+            <tr>
+                <td>API errors</td>
+                <td>Verify <code>GROQ_API_KEY</code> in .env file</td>
+            </tr>
+            <tr>
+                <td>404 routing errors</td>
+                <td>Check <code>.htaccess</code> in public folder & Apache rewrite module enabled</td>
+            </tr>
+            <tr>
+                <td>Cache issues</td>
+                <td>Run <code>php artisan config:clear && php artisan view:clear</code></td>
+            </tr>
+            <tr>
+                <td>Blank chatbot</td>
+                <td>Check browser console for errors, verify GROQ_API_KEY</td>
+            </tr>
+        </table>
+
+        <hr class="hr">
+
+        <h2>👥 Team</h2>
+
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+            </tr>
+            <tr>
+                <td>Khai</td>
+                <td>👨‍💼 Leader</td>
+            </tr>
+            <tr>
+                <td>Duy</td>
+                <td>💻 Developer</td>
+            </tr>
+            <tr>
+                <td>Vu</td>
+                <td>💻 Developer</td>
+            </tr>
+            <tr>
+                <td>Tuan</td>
+                <td>💻 Developer</td>
+            </tr>
+        </table>
+
+        <hr class="hr">
+
+        <h2>⚡ Tech Stack</h2>
+
+        <p>Laravel • PHP • Bootstrap 4 • jQuery • Groq AI • MySQL</p>
+
+        <hr class="hr">
+
+        <h2>📝 Notes</h2>
+
+        <ul>
+            <li>✅ Clear cache after pulling new changes</li>
+            <li>✅ Never commit <code>.env</code> to GitHub</li>
+            <li>✅ Keep <code>GROQ_API_KEY</code> secure</li>
+            <li>✅ Test features on separate branches before merging</li>
+        </ul>
+
+        <hr class="hr">
+
+        <h2>🔗 GitHub Repository</h2>
+
+        <p><strong>Project Repository:</strong> <a href="https://github.com/duckhai20/project_finall" target="_blank">https://github.com/duckhai20/project_finall</a></p>
+
+        <p>Clone the repository:</p>
+        <pre><code>git clone https://github.com/duckhai20/project_finall.git
+cd project_finall</code></pre>
+
+        <hr class="hr">
+
+        <h2>📚 Getting Started After Clone</h2>
+
+        <p>After cloning the repository, follow these steps:</p>
+
+        <h3>Step 1: Install Dependencies</h3>
+        <pre><code>composer install
+npm install</code></pre>
+
+        <h3>Step 2: Setup Environment</h3>
+        <pre><code>cp .env.example .env
+php artisan key:generate</code></pre>
+
+        <h3>Step 3: Configure Database</h3>
+        <p>Edit <code>.env</code> with your database details:</p>
+        <pre><code>DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_DATABASE=plastic_store
+DB_USERNAME=root
+DB_PASSWORD=your_password</code></pre>
+
+        <h3>Step 4: Setup Groq AI API</h3>
+        <pre><code>GROQ_API_KEY=your_groq_api_key_here</code></pre>
+
+        <h3>Step 5: Run Migrations & Start</h3>
+        <pre><code>php artisan migrate
+php artisan serve</code></pre>
+
+        <p>Access at: <strong>http://localhost:8000</strong></p>
+
+        <hr class="hr">
+
+        <h2>📁 Project Structure</h2>
+
+        <pre><code>project_finall/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       ├── ChatController.php
+│   │       ├── ProductController.php
+│   │       └── AuthController.php
+│   └── Models/
+├── routes/
+│   └── web.php
+├── resources/
+│   └── views/
+│       ├── layouts/
+│       ├── chat.blade.php
+│       └── components/
+├── public/
+│   ├── css/
+│   │   ├── style.css
+│   │   └── chat.css
+│   └── js/
+│       ├── main.js
+│       └── chat.js
+├── storage/
+│   └── app/
+│       └── product_documents/
+├── database/
+│   └── migrations/
+├── .env.example
+├── composer.json
+└── README.md</code></pre>
+
+        <hr class="hr">
+
+        <h2>🌳 Branch Structure</h2>
+
+        <table>
+            <tr>
+                <th>Branch Name</th>
+                <th>Description</th>
+                <th>Features</th>
+            </tr>
+            <tr>
+                <td><code>main</code></td>
+                <td>Production branch</td>
+                <td>Stable version</td>
+            </tr>
+            <tr>
+                <td><code>develop</code></td>
+                <td>Development branch</td>
+                <td>Latest features</td>
+            </tr>
+            <tr>
+                <td><code>feature/download-documents</code></td>
+                <td>Document download feature</td>
+                <td>PDF download</td>
+            </tr>
+            <tr>
+                <td><code>feature/captcha</code></td>
+                <td>CAPTCHA security feature</td>
+                <td>Registration protection</td>
+            </tr>
+        </table>
+
+        <hr class="hr">
+
+        <h2>🚀 Deployment</h2>
+
+        <h3>Production Checklist</h3>
+        <ul>
+            <li>✅ Set <code>APP_ENV=production</code> in .env</li>
+            <li>✅ Set <code>APP_DEBUG=false</code> in .env</li>
+            <li>✅ Generate secure <code>APP_KEY</code></li>
+            <li>✅ Configure <code>GROQ_API_KEY</code> securely</li>
+            <li>✅ Setup proper database backup</li>
+            <li>✅ Configure HTTPS/SSL certificate</li>
+            <li>✅ Setup proper file permissions</li>
+            <li>✅ Run migrations on production</li>
+        </ul>
+
+        <h3>Deployment Commands</h3>
+        <pre><code># Pull latest code
+git pull origin main
+
+# Install/update dependencies
+composer install --optimize-autoloader --no-dev
+
+# Clear caches
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Run migrations
+php artisan migrate --force
+
+# Restart queue/services
+php artisan queue:restart</code></pre>
+
+        <hr class="hr">
+
+        <h2>📞 Support & Contribution</h2>
+
+        <h3>Reporting Issues</h3>
+        <p>If you find a bug or have a feature request:</p>
+        <ol>
+            <li>Check <a href="https://github.com/duckhai20/project_finall/issues" target="_blank">existing issues</a></li>
+            <li>Create a new issue with detailed description</li>
+            <li>Include error messages and steps to reproduce</li>
+        </ol>
+
+        <h3>Contributing</h3>
+        <ol>
+            <li>Fork the repository</li>
+            <li>Create a feature branch: <code>git checkout -b feature/your-feature</code></li>
+            <li>Commit changes: <code>git commit -m 'Add your feature'</code></li>
+            <li>Push to branch: <code>git push origin feature/your-feature</code></li>
+            <li>Open a Pull Request</li>
+        </ol>
+
+        <h3>Code Standards</h3>
+        <ul>
+            <li>Follow PSR-12 PHP coding standards</li>
+            <li>Use meaningful variable and function names</li>
+            <li>Add comments for complex logic</li>
+            <li>Test features before pushing</li>
+            <li>Keep commits clean and descriptive</li>
+        </ul>
+
+        <hr class="hr">
+
+        <h2>📖 Additional Resources</h2>
+
+        <ul>
+            <li><a href="https://laravel.com/docs" target="_blank">Laravel Documentation</a></li>
+            <li><a href="https://console.groq.com" target="_blank">Groq AI Console</a></li>
+            <li><a href="https://getbootstrap.com" target="_blank">Bootstrap Documentation</a></li>
+            <li><a href="https://jquery.com" target="_blank">jQuery Documentation</a></li>
+            <li><a href="https://github.com/duckhai20/project_finall/wiki" target="_blank">Project Wiki</a></li>
+        </ul>
+
+        <hr class="hr">
+
+        <h2>📋 Changelog</h2>
+
+        <h3>Version 1.0 - Initial Release</h3>
+        <ul>
+            <li>✅ E-commerce platform with product management</li>
+            <li>✅ AI Chatbot powered by Groq AI</li>
+            <li>✅ Document download feature</li>
+            <li>✅ CAPTCHA security verification</li>
+            <li>✅ User authentication & authorization</li>
+            <li>✅ Shopping cart functionality</li>
+        </ul>
+
+        <h3>Upcoming Features</h3>
+        <ul>
+            <li>🔲 Payment gateway integration</li>
+            <li>🔲 Order tracking system</li>
+            <li>🔲 Email notifications</li>
+            <li>🔲 SMS alerts</li>
+            <li>🔲 Advanced analytics dashboard</li>
+            <li>🔲 Multi-language support</li>
+        </ul>
+
+        <hr class="hr">
+
+        <h2>📄 License</h2>
+
+        <p>This project is licensed under the MIT License. See the <a href="https://github.com/duckhai20/project_finall/blob/main/LICENSE" target="_blank">LICENSE</a> file for details.</p>
+
+        <hr class="hr">
+
+        <h2>✉️ Contact & Support</h2>
+
+        <p><strong>Project Lead:</strong> Khai</p>
+        <p><strong>Team Members:</strong> Duy, Vu, Tuan</p>
+        <p><strong>GitHub Issues:</strong> <a href="https://github.com/duckhai20/project_finall/issues" target="_blank">Report Issues</a></p>
+        <p><strong>GitHub Discussions:</strong> <a href="https://github.com/duckhai20/project_finall/discussions" target="_blank">Join Discussion</a></p>
+
+        <hr class="hr">
+
+        <p><strong>Need help? Check troubleshooting section or open an issue on GitHub!</strong> 🚀</p>
+
+        <p style="text-align: center; margin-top: 40px; color: #999;">
+            <em>Last updated: December 2024 | Plastic Store v1.0</em>
+        </p>
+
+    </div>
+</body>
+</html>
